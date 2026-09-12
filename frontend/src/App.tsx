@@ -9,13 +9,11 @@ import type { ExecutionResult } from './types';
 function App() {
   const { setExecutionData } = usePlayerStore();
   const [loading, setLoading] = useState(false);
-  const [arraySize, setArraySize] = useState(10); // Default to smaller for block view
+  const [arraySize, setArraySize] = useState(10); 
 
   const generateAndRun = async () => {
     setLoading(true);
     try {
-      // Generate a dataset (unique values are better for Framer Motion keys)
-      // We shuffle an array of 1 to arraySize to avoid duplicate keys.
       const values = Array.from({ length: arraySize }, (_, i) => i + 1)
         .map(value => ({ value, sort: Math.random() }))
         .sort((a, b) => a.sort - b.sort)
@@ -40,49 +38,64 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-800 p-8 font-sans">
-      <div className="max-w-7xl mx-auto flex flex-col gap-6">
-        
-        <header className="flex items-center justify-between">
+    <div className="min-h-screen flex flex-col font-sans selection:bg-accent/30">
+      
+      {/* Sleek Top Navigation */}
+      <header className="border-b border-border bg-surface px-6 py-4 flex items-center justify-between z-10">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded bg-gradient-to-br from-accent to-blue-800 flex items-center justify-center shadow-lg shadow-accent/20">
+            <span className="text-white font-bold font-mono tracking-tighter">AL</span>
+          </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Algorithm Laboratory</h1>
-            <p className="text-gray-500 mt-1">High-Fidelity Bubble Sort</p>
+            <h1 className="text-lg font-semibold tracking-tight text-text">Algorithm Laboratory</h1>
+            <p className="text-xs text-text-muted font-mono uppercase tracking-wider">Bubble Sort Edition</p>
           </div>
-          
-          <div className="flex gap-4 items-end bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-             <label className="flex flex-col text-sm text-gray-600">
-               Dataset Size:
-               <input 
-                 type="range" 
-                 min="5" 
-                 max="15" 
-                 value={arraySize}
-                 onChange={(e) => setArraySize(Number(e.target.value))}
-                 className="mt-3"
-               />
-               <span className="text-xs text-center">{arraySize} elements</span>
-             </label>
-             <button 
-               onClick={generateAndRun}
-               disabled={loading}
-               className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded shadow-sm disabled:opacity-50 h-[42px]"
-             >
-               {loading ? 'Running...' : 'Run'}
-             </button>
-          </div>
-        </header>
+        </div>
+        
+        <div className="flex items-center gap-6">
+           <div className="flex items-center gap-3 text-sm">
+             <span className="text-text-muted">Size</span>
+             <input 
+               type="range" 
+               min="5" 
+               max="15" 
+               value={arraySize}
+               onChange={(e) => setArraySize(Number(e.target.value))}
+               className="w-24 accent-accent"
+             />
+             <span className="font-mono text-text-muted w-4">{arraySize}</span>
+           </div>
+           
+           <button 
+             onClick={generateAndRun}
+             disabled={loading}
+             className="bg-text text-background hover:bg-white px-5 py-1.5 rounded-md text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+           >
+             {loading ? 'Compiling...' : 'Execute'}
+           </button>
+        </div>
+      </header>
 
-        <main className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">
-          <div className="col-span-2 flex flex-col gap-4">
+      {/* Main Workspace Area */}
+      <main className="flex-1 grid grid-cols-1 lg:grid-cols-3 overflow-hidden">
+        
+        {/* Left/Center: Visualizer & Controls */}
+        <div className="col-span-2 flex flex-col border-r border-border bg-background">
+          <div className="flex-1 p-8 overflow-hidden flex flex-col">
             <SortingVisualizer />
+          </div>
+          <div className="border-t border-border bg-surface">
             <PlayerControls />
           </div>
-          <div className="col-span-1 h-full">
-            <CodeViewer />
-          </div>
-        </main>
+        </div>
         
-      </div>
+        {/* Right: Code Viewer */}
+        <div className="col-span-1 bg-surface flex flex-col overflow-hidden">
+          <CodeViewer />
+        </div>
+        
+      </main>
+      
     </div>
   );
 }

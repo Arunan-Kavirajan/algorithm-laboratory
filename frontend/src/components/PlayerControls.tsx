@@ -24,63 +24,89 @@ export const PlayerControls: React.FC = () => {
 
     const isAtEnd = currentStepIndex >= events.length - 1;
     const isAtStart = currentStepIndex === 0;
+    const progress = events.length > 1 ? (currentStepIndex / (events.length - 1)) * 100 : 0;
 
     return (
-        <div className="flex items-center justify-between bg-white p-4 rounded-lg shadow-sm border border-gray-200 mt-4">
-            <div className="flex items-center gap-2">
-                <button 
-                    onClick={stepBackward} 
-                    disabled={isAtStart || isPlaying}
-                    className="p-2 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    <SkipBack size={20} className="text-gray-700" />
-                </button>
-                
-                {isPlaying ? (
-                    <button onClick={pause} className="p-2 rounded bg-red-100 hover:bg-red-200 text-red-700">
-                        <Pause size={24} />
-                    </button>
-                ) : (
-                    <button 
-                        onClick={play} 
-                        disabled={isAtEnd || events.length === 0}
-                        className="p-2 rounded bg-blue-100 hover:bg-blue-200 text-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <Play size={24} />
-                    </button>
-                )}
-
-                <button 
-                    onClick={stepForward} 
-                    disabled={isAtEnd || isPlaying}
-                    className="p-2 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    <SkipForward size={20} className="text-gray-700" />
-                </button>
-                
-                <button 
-                    onClick={() => usePlayerStore.getState().goToStep(0)} 
-                    disabled={isAtStart || events.length === 0}
-                    className="p-2 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed ml-2"
-                >
-                    <RotateCcw size={18} className="text-gray-700" />
-                </button>
+        <div className="px-6 py-4 flex flex-col gap-3">
+            {/* Scrubber */}
+            <div className="flex items-center gap-4">
+                <span className="text-xs font-mono text-text-muted w-8 text-right">
+                    {currentStepIndex}
+                </span>
+                <div className="flex-1 h-1.5 bg-border rounded-full overflow-hidden relative">
+                    <div 
+                        className="absolute top-0 left-0 h-full bg-accent transition-all duration-300 ease-out"
+                        style={{ width: `${progress}%` }}
+                    />
+                </div>
+                <span className="text-xs font-mono text-text-muted w-8">
+                    {events.length ? events.length - 1 : 0}
+                </span>
             </div>
 
-            <div className="flex items-center gap-4 text-sm text-gray-600">
-                <label className="flex items-center gap-2">
-                    Speed:
-                    <select 
-                        value={playbackSpeed} 
-                        onChange={(e) => setPlaybackSpeed(Number(e.target.value))}
-                        className="p-1 border rounded"
+            {/* Controls */}
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1">
+                    <button 
+                        onClick={() => usePlayerStore.getState().goToStep(0)} 
+                        disabled={isAtStart || events.length === 0}
+                        className="p-2 rounded-md hover:bg-surface-hover text-text-muted hover:text-text transition-colors disabled:opacity-30"
+                        title="Restart"
                     >
-                        <option value={1000}>Slow (1s)</option>
-                        <option value={500}>Normal (0.5s)</option>
-                        <option value={150}>Fast (0.15s)</option>
-                        <option value={50}>Very Fast (50ms)</option>
-                    </select>
-                </label>
+                        <RotateCcw size={16} />
+                    </button>
+                    
+                    <div className="w-px h-4 bg-border mx-2" />
+
+                    <button 
+                        onClick={stepBackward} 
+                        disabled={isAtStart || isPlaying}
+                        className="p-2 rounded-md hover:bg-surface-hover text-text-muted hover:text-text transition-colors disabled:opacity-30"
+                    >
+                        <SkipBack size={18} />
+                    </button>
+                    
+                    {isPlaying ? (
+                        <button 
+                            onClick={pause} 
+                            className="p-2 rounded-md bg-accent text-white shadow-md shadow-accent/20 hover:bg-accent-hover transition-colors"
+                        >
+                            <Pause size={18} fill="currentColor" />
+                        </button>
+                    ) : (
+                        <button 
+                            onClick={play} 
+                            disabled={isAtEnd || events.length === 0}
+                            className="p-2 rounded-md bg-accent text-white shadow-md shadow-accent/20 hover:bg-accent-hover transition-colors disabled:opacity-30 disabled:shadow-none"
+                        >
+                            <Play size={18} fill="currentColor" className="ml-0.5" />
+                        </button>
+                    )}
+
+                    <button 
+                        onClick={stepForward} 
+                        disabled={isAtEnd || isPlaying}
+                        className="p-2 rounded-md hover:bg-surface-hover text-text-muted hover:text-text transition-colors disabled:opacity-30"
+                    >
+                        <SkipForward size={18} />
+                    </button>
+                </div>
+
+                <div className="flex items-center gap-3 text-xs text-text-muted font-mono">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                        Speed
+                        <select 
+                            value={playbackSpeed} 
+                            onChange={(e) => setPlaybackSpeed(Number(e.target.value))}
+                            className="bg-background border border-border text-text rounded px-2 py-1 outline-none focus:border-accent"
+                        >
+                            <option value={1000}>1.0s</option>
+                            <option value={500}>0.5s</option>
+                            <option value={150}>0.15s</option>
+                            <option value={50}>50ms</option>
+                        </select>
+                    </label>
+                </div>
             </div>
         </div>
     );
