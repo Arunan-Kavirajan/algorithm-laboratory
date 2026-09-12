@@ -17,4 +17,7 @@ app.add_middleware(
 def health_check():
     return {"status": "ok", "time": time.time()}
 
+from app.api import execution
+
 # Include routers here later
+app.include_router(execution.router, prefix="/api")

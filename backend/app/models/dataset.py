@@ -1,1 +1,22 @@
-from pydantic import BaseModel`nfrom typing import Literal, List, Dict, Any, Union`n`nclass BaseDataset(BaseModel):`n    type: str`n`nclass ArrayDataset(BaseDataset):`n    type: Literal["ARRAY"] = "ARRAY"`n    values: List[int]`n`nclass Edge(BaseModel):`n    source: str`n    target: str`n    weight: float | None = None`n`nclass GraphDataset(BaseDataset):`n    type: Literal["GRAPH"] = "GRAPH"`n    nodes: List[str]`n    edges: List[Edge]`n    directed: bool = False`n`nDataset = Union[ArrayDataset, GraphDataset]`n
+from pydantic import BaseModel
+from typing import Literal, List, Dict, Any, Union, Optional
+
+class BaseDataset(BaseModel):
+    type: str
+
+class ArrayDataset(BaseDataset):
+    type: Literal["ARRAY"] = "ARRAY"
+    values: List[int]
+
+class Edge(BaseModel):
+    source: str
+    target: str
+    weight: Optional[float] = None
+
+class GraphDataset(BaseDataset):
+    type: Literal["GRAPH"] = "GRAPH"
+    nodes: List[str]
+    edges: List[Edge]
+    directed: bool = False
+
+Dataset = Union[ArrayDataset, GraphDataset]
