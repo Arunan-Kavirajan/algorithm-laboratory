@@ -1,15 +1,16 @@
 import { create } from 'zustand'
-import { ExecutionEvent, ExecutionSummary } from '../types'
+import type { ExecutionEvent, ExecutionSummary } from '../types'
 
 interface PlayerState {
     events: ExecutionEvent[];
     summary: ExecutionSummary | null;
+    sourceCode: string;
     currentStepIndex: number;
     isPlaying: boolean;
     playbackSpeed: number; // ms per step
     
     // Actions
-    setExecutionData: (events: ExecutionEvent[], summary: ExecutionSummary) => void;
+    setExecutionData: (events: ExecutionEvent[], summary: ExecutionSummary, sourceCode: string) => void;
     stepForward: () => void;
     stepBackward: () => void;
     goToStep: (step: number) => void;
@@ -22,11 +23,12 @@ interface PlayerState {
 export const usePlayerStore = create<PlayerState>((set, get) => ({
     events: [],
     summary: null,
+    sourceCode: "",
     currentStepIndex: 0,
     isPlaying: false,
     playbackSpeed: 500,
 
-    setExecutionData: (events, summary) => set({ events, summary, currentStepIndex: 0, isPlaying: false }),
+    setExecutionData: (events, summary, sourceCode) => set({ events, summary, sourceCode, currentStepIndex: 0, isPlaying: false }),
     
     stepForward: () => set((state) => ({
         currentStepIndex: Math.min(state.currentStepIndex + 1, state.events.length - 1)

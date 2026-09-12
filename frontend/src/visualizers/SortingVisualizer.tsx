@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { usePlayerStore } from '../store/usePlayerStore';
 
 export const SortingVisualizer: React.FC = () => {
@@ -16,39 +16,81 @@ export const SortingVisualizer: React.FC = () => {
     const currentEvent = events[currentStepIndex];
     const array: number[] = currentEvent.state;
     const activeElements = currentEvent.activeElements as number[];
-    const maxVal = Math.max(...array, 1);
+    const pointers = currentEvent.pointers;
+
+    // We can group pointers by their current index to display multiple pointers on the same block
+    const pointersByIndex: Record<number, string[]> = {};
+    Object.entries(pointers).forEach(([name, idx]) => {
+        if (!pointersByIndex[idx]) pointersByIndex[idx] = [];
+        pointersByIndex[idx].push(name);
+    });
 
     return (
-        <div className="flex flex-col gap-4 w-full h-96">
-            {/* The Visualization Canvas */}
-            <div className="flex-1 flex items-end justify-center gap-1 p-4 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                {array.map((value, index) => {
-                    const heightPercent = (value / maxVal) * 100;
-                    
-                    // Determine colors based on event type
-                    let bgColor = 'bg-blue-300';
-                    if (activeElements.includes(index)) {
-                        if (currentEvent.type === 'COMPARE') bgColor = 'bg-yellow-400';
-                        else if (currentEvent.type === 'SWAP') bgColor = 'bg-red-400';
-                        else if (currentEvent.type === 'NO_SWAP') bgColor = 'bg-green-400';
-                        else if (currentEvent.type === 'SORTED_ELEMENT') bgColor = 'bg-purple-500';
-                    }
+        <div className="flex flex-col gap-4 w-full h-full">
+            <div className="flex-1 flex flex-col items-center justify-center gap-8 p-8 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden relative min-h-[300px]">
+                
+                {/* Array Blocks */}
+                <div className="flex items-end justify-center gap-2">
+                    <AnimatePresence>
+                        {array.map((value, index) => {
+                            // Determine colors based on event type
+                            let borderColor = 'border-gray-300';
+                            let bgColor = 'bg-white';
+                            let textColor = 'text-gray-700';
 
-                    return (
-                        <motion.div
-                            layout
-                            key={value + "-" + index} // simple unique key for layout animations
-                            initial={{ height: 0 }}
-                            animate={{ height: `${heightPercent}%` }}
-                            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                            className={`w-8 rounded-t-sm ${bgColor} relative group`}
-                        >
-                            <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-semibold text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                                {value}
-                            </span>
-                        </motion.div>
-                    );
-                })}
+                            if (activeElements.includes(index)) {
+                                if (currentEvent.type === 'COMPARE') {
+                                    borderColor = 'border-yellow-400';
+                                    bgColor = 'bg-yellow-50';
+                                } else if (currentEvent.type === 'SWAP') {
+                                    borderColor = 'border-red-400';
+                                    bgColor = 'bg-red-50';
+                                } else if (currentEvent.type === 'NO_SWAP') {
+                                    borderColor = 'border-green-400';
+                                    bgColor = 'bg-green-50';
+                                } else if (currentEvent.type === 'SORTED_ELEMENT') {
+                                    borderColor = 'border-purple-400';
+                                    bgColor = 'bg-purple-100';
+                                    textColor = 'text-purple-900 font-bold';
+                                }
+                            }
+
+                            return (
+                                <div key={value + "-" + index} className="flex flex-col items-center gap-2 relative">
+                                    {/* The Block */}
+                                    <motion.div
+                                        layout
+                                        initial={{ opacity: 0, y: -20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, scale: 0.8 }}
+                                        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                                        className={`w-14 h-14 rounded-md flex items-center justify-center text-xl shadow-sm border-2 ${borderColor} ${bgColor} ${textColor}`}
+                                    >
+                                        {value}
+                                    </motion.div>
+                                    
+                                    {/* Index label */}
+                                    <span className="text-xs text-gray-400 font-mono">{index}</span>
+
+                                    {/* Pointers */}
+                                    {pointersByIndex[index] && (
+                                        <div className="absolute -bottom-8 flex flex-col items-center">
+                                            <div className="w-0 h-0 border-l-[6px] border-l-transparent border-b-[8px] border-b-blue-500 border-r-[6px] border-r-transparent mb-1"></div>
+                                            <div className="flex gap-1">
+                                                {pointersByIndex[index].map(p => (
+                                                    <span key={p} className="text-xs font-bold text-blue-600 bg-blue-100 px-1 rounded">
+                                                        {p}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </AnimatePresence>
+                </div>
+
             </div>
 
             {/* Explanation Panel */}

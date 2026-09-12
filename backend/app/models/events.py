@@ -11,6 +11,8 @@ class ExecutionEvent(BaseModel):
     step: int
     type: str
     description: str
+    line: Optional[int] = None
+    pointers: Dict[str, int] = {}
     state: Any
     activeElements: List[Union[int, str]] = []
     metrics: EventMetrics
@@ -21,5 +23,6 @@ class ExecutionSummary(BaseModel):
 
 class ExecutionResult(BaseModel):
     algorithmId: str
+    sourceCode: str
     summary: ExecutionSummary
     events: List[ExecutionEvent]

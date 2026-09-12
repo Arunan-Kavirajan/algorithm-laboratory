@@ -7,10 +7,12 @@ class ExecutionEngine:
         self.metrics = EventMetrics()
         self.step_counter = 0
 
-    def record_event(self, type: str, description: str, state: Any, active_elements: List[Union[int, str]] = None):
+    def record_event(self, type: str, description: str, state: Any, active_elements: List[Union[int, str]] = None, line: int = None, pointers: dict = None):
         """Records a new execution event."""
         if active_elements is None:
             active_elements = []
+        if pointers is None:
+            pointers = {}
 
         # We copy the state and metrics so they represent the exact point in time
         # This assumes state is deep copyable or we construct a new state object before calling this
@@ -18,6 +20,8 @@ class ExecutionEngine:
             step=self.step_counter,
             type=type,
             description=description,
+            line=line,
+            pointers=pointers,
             state=state,
             activeElements=active_elements,
             metrics=EventMetrics(**self.metrics.model_dump())

@@ -35,6 +35,8 @@ export interface ExecutionEvent {
     step: number;
     type: string;
     description: string;
+    line: number | null;
+    pointers: Record<string, number>;
     state: any; // Can be typed further depending on dataset type
     activeElements: (number | string)[];
     metrics: EventMetrics;
@@ -47,6 +49,7 @@ export interface ExecutionSummary {
 
 export interface ExecutionResult {
     algorithmId: string;
+    sourceCode: string;
     summary: ExecutionSummary;
     events: ExecutionEvent[];
 }

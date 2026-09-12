@@ -2,23 +2,14 @@ import { useState } from 'react';
 import axios from 'axios';
 import { SortingVisualizer } from './visualizers/SortingVisualizer';
 import { PlayerControls } from './components/PlayerControls';
+import { CodeViewer } from './components/CodeViewer';
 import { usePlayerStore } from './store/usePlayerStore';
-import { ExecutionResult } from './types';
-
-const ALGORITHMS = [
-  { id: 'bubble_sort', name: 'Bubble Sort' },
-  { id: 'selection_sort', name: 'Selection Sort' },
-  { id: 'insertion_sort', name: 'Insertion Sort' },
-  { id: 'merge_sort', name: 'Merge Sort' },
-  { id: 'quick_sort', name: 'Quick Sort' },
-  { id: 'heap_sort', name: 'Heap Sort' },
-];
+import type { ExecutionResult } from './types';
 
 function App() {
   const { setExecutionData } = usePlayerStore();
   const [loading, setLoading] = useState(false);
-  const [arraySize, setArraySize] = useState(15);
-  const [selectedAlgo, setSelectedAlgo] = useState('bubble_sort');
+  const [arraySize, setArraySize] = useState(10); // Default to smaller for block view
 
   const generateAndRun = async () => {
     setLoading(true);
@@ -28,10 +19,10 @@ function App() {
       const values = Array.from({ length: arraySize }, (_, i) => i + 1)
         .map(value => ({ value, sort: Math.random() }))
         .sort((a, b) => a.sort - b.sort)
-        .map(({ value }) => value * 5); // Scale up for visual height
+        .map(({ value }) => value * 5); 
       
       const payload = {
-        algorithmId: selectedAlgo,
+        algorithmId: 'bubble_sort',
         dataset: {
           type: "ARRAY",
           values: values
@@ -39,7 +30,7 @@ function App() {
       };
 
       const response = await axios.post<ExecutionResult>('http://localhost:8000/api/execute', payload);
-      setExecutionData(response.data.events, response.data.summary);
+      setExecutionData(response.data.events, response.data.summary, response.data.sourceCode);
     } catch (error) {
       console.error("Failed to execute algorithm:", error);
       alert("Failed to execute algorithm. Is the backend running?");
@@ -50,34 +41,21 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 p-8 font-sans">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-7xl mx-auto flex flex-col gap-6">
         
-        <header className="mb-8 flex items-center justify-between">
+        <header className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Algorithm Laboratory</h1>
-            <p className="text-gray-500 mt-1">Interactive algorithm visualizer and learning tool</p>
+            <p className="text-gray-500 mt-1">High-Fidelity Bubble Sort</p>
           </div>
           
           <div className="flex gap-4 items-end bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-             <label className="flex flex-col text-sm text-gray-600">
-               Algorithm:
-               <select 
-                 value={selectedAlgo} 
-                 onChange={e => setSelectedAlgo(e.target.value)}
-                 className="mt-1 p-2 border border-gray-300 rounded"
-               >
-                 {ALGORITHMS.map(algo => (
-                   <option key={algo.id} value={algo.id}>{algo.name}</option>
-                 ))}
-               </select>
-             </label>
-
              <label className="flex flex-col text-sm text-gray-600">
                Dataset Size:
                <input 
                  type="range" 
                  min="5" 
-                 max="50" 
+                 max="15" 
                  value={arraySize}
                  onChange={(e) => setArraySize(Number(e.target.value))}
                  className="mt-3"
@@ -94,9 +72,14 @@ function App() {
           </div>
         </header>
 
-        <main>
-          <SortingVisualizer />
-          <PlayerControls />
+        <main className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">
+          <div className="col-span-2 flex flex-col gap-4">
+            <SortingVisualizer />
+            <PlayerControls />
+          </div>
+          <div className="col-span-1 h-full">
+            <CodeViewer />
+          </div>
         </main>
         
       </div>
