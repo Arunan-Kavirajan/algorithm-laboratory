@@ -5,20 +5,33 @@ import { PlayerControls } from './components/PlayerControls';
 import { usePlayerStore } from './store/usePlayerStore';
 import { ExecutionResult } from './types';
 
+const ALGORITHMS = [
+  { id: 'bubble_sort', name: 'Bubble Sort' },
+  { id: 'selection_sort', name: 'Selection Sort' },
+  { id: 'insertion_sort', name: 'Insertion Sort' },
+  { id: 'merge_sort', name: 'Merge Sort' },
+  { id: 'quick_sort', name: 'Quick Sort' },
+  { id: 'heap_sort', name: 'Heap Sort' },
+];
+
 function App() {
   const { setExecutionData } = usePlayerStore();
   const [loading, setLoading] = useState(false);
   const [arraySize, setArraySize] = useState(15);
+  const [selectedAlgo, setSelectedAlgo] = useState('bubble_sort');
 
   const generateAndRun = async () => {
     setLoading(true);
     try {
-      // In a real app, you'd have a separate endpoint to generate datasets.
-      // For now, let's just generate a random array in the frontend to send.
-      const values = Array.from({ length: arraySize }, () => Math.floor(Math.random() * 90) + 10);
+      // Generate a dataset (unique values are better for Framer Motion keys)
+      // We shuffle an array of 1 to arraySize to avoid duplicate keys.
+      const values = Array.from({ length: arraySize }, (_, i) => i + 1)
+        .map(value => ({ value, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .map(({ value }) => value * 5); // Scale up for visual height
       
       const payload = {
-        algorithmId: "bubble_sort",
+        algorithmId: selectedAlgo,
         dataset: {
           type: "ARRAY",
           values: values
@@ -45,7 +58,20 @@ function App() {
             <p className="text-gray-500 mt-1">Interactive algorithm visualizer and learning tool</p>
           </div>
           
-          <div className="flex gap-4 items-end">
+          <div className="flex gap-4 items-end bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+             <label className="flex flex-col text-sm text-gray-600">
+               Algorithm:
+               <select 
+                 value={selectedAlgo} 
+                 onChange={e => setSelectedAlgo(e.target.value)}
+                 className="mt-1 p-2 border border-gray-300 rounded"
+               >
+                 {ALGORITHMS.map(algo => (
+                   <option key={algo.id} value={algo.id}>{algo.name}</option>
+                 ))}
+               </select>
+             </label>
+
              <label className="flex flex-col text-sm text-gray-600">
                Dataset Size:
                <input 
@@ -54,16 +80,16 @@ function App() {
                  max="50" 
                  value={arraySize}
                  onChange={(e) => setArraySize(Number(e.target.value))}
-                 className="mt-1"
+                 className="mt-3"
                />
                <span className="text-xs text-center">{arraySize} elements</span>
              </label>
              <button 
                onClick={generateAndRun}
                disabled={loading}
-               className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded shadow-sm disabled:opacity-50"
+               className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded shadow-sm disabled:opacity-50 h-[42px]"
              >
-               {loading ? 'Running...' : 'Generate & Run Bubble Sort'}
+               {loading ? 'Running...' : 'Run'}
              </button>
           </div>
         </header>
