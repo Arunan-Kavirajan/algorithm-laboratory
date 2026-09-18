@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+from typing import Optional
 from ..models.dataset import Dataset, ArrayDataset
 from ..models.events import ExecutionResult
 from ..algorithms.sorting.bubble_sort import bubble_sort
@@ -8,17 +9,19 @@ from ..algorithms.sorting.insertion_sort import insertion_sort
 from ..algorithms.sorting.merge_sort import merge_sort_algorithm
 from ..algorithms.sorting.quick_sort import quick_sort_algorithm
 from ..algorithms.sorting.heap_sort import heap_sort_algorithm
+from ..algorithms.searching.linear_search import linear_search_algorithm
 
 router = APIRouter()
 
 class ExecuteRequest(BaseModel):
     algorithmId: str
     dataset: Dataset
+    target: Optional[int] = None
 
 @router.post("/execute", response_model=ExecutionResult)
 def execute_algorithm(request: ExecuteRequest):
     if not isinstance(request.dataset, ArrayDataset):
-        raise HTTPException(status_code=400, detail="Sorting algorithms require an ArrayDataset")
+        raise HTTPException(status_code=400, detail="Algorithms require an ArrayDataset")
         
     if request.algorithmId == "bubble_sort":
         return bubble_sort(request.dataset)
@@ -32,5 +35,9 @@ def execute_algorithm(request: ExecuteRequest):
         return quick_sort_algorithm(request.dataset)
     elif request.algorithmId == "heap_sort":
         return heap_sort_algorithm(request.dataset)
+    elif request.algorithmId == "linear_search":
+        if request.target is None:
+            raise HTTPException(status_code=400, detail="Target is required for searching algorithms")
+        return linear_search_algorithm(request.dataset, request.target)
     else:
         raise HTTPException(status_code=404, detail="Algorithm not found")

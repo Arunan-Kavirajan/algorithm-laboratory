@@ -11,6 +11,9 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [arraySize, setArraySize] = useState(10); 
   const [activeAlgorithm, setActiveAlgorithm] = useState('bubble_sort');
+  const [searchTarget, setSearchTarget] = useState(25);
+
+  const isSearch = activeAlgorithm.includes('search');
 
   const generateAndRun = async () => {
     setLoading(true);
@@ -23,13 +26,17 @@ function App() {
             value: value * 5 
         })); 
       
-      const payload = {
+      const payload: any = {
         algorithmId: activeAlgorithm,
         dataset: {
           type: "ARRAY",
           values: values
         }
       };
+      
+      if (isSearch) {
+          payload.target = searchTarget;
+      }
 
       const response = await axios.post<ExecutionResult>('http://localhost:8000/api/execute', payload);
       setExecutionData(response.data.events, response.data.summary, response.data.sourceCode, response.data.algorithmId);
@@ -64,12 +71,24 @@ function App() {
                     <option value="merge_sort">Merge Sort</option>
                     <option value="quick_sort">Quick Sort</option>
                     <option value="heap_sort">Heap Sort</option>
+                    <option value="linear_search">Linear Search</option>
                 </select>
             </p>
           </div>
         </div>
         
         <div className="flex items-center gap-6">
+           {isSearch && (
+               <div className="flex items-center gap-2 text-sm bg-surface/50 px-3 py-1 rounded border border-border">
+                   <span className="text-text-muted">Target:</span>
+                   <input 
+                     type="number" 
+                     value={searchTarget}
+                     onChange={(e) => setSearchTarget(Number(e.target.value))}
+                     className="w-12 bg-transparent text-text font-mono outline-none text-center"
+                   />
+               </div>
+           )}
            <div className="flex items-center gap-3 text-sm">
              <span className="text-text-muted">Size</span>
              <input 

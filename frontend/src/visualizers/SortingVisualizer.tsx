@@ -21,9 +21,10 @@ export const SortingVisualizer: React.FC = () => {
     const activeElements = currentEvent.activeElements as number[];
     const pointers = currentEvent.pointers;
 
-    // Group pointers by index
     const pointersByIndex: Record<number, string[]> = {};
-    Object.entries(pointers).forEach(([name, idx]) => {
+    Object.entries(pointers).forEach(([name, val]) => {
+        if (name === 'target') return; // Do not render target as an array pointer
+        const idx = val as number;
         if (!pointersByIndex[idx]) pointersByIndex[idx] = [];
         pointersByIndex[idx].push(name);
     });
@@ -52,6 +53,15 @@ export const SortingVisualizer: React.FC = () => {
                     <span className="opacity-50 tracking-wider text-[10px]">SWAPS</span>
                     <span className="text-text font-semibold text-sm">{currentEvent.metrics.swaps}</span>
                 </div>
+                {pointers.target !== undefined && (
+                    <>
+                        <div className="w-px bg-border" />
+                        <div className="flex flex-col">
+                            <span className="text-accent tracking-wider text-[10px]">TARGET</span>
+                            <span className="text-accent font-bold text-sm">{pointers.target}</span>
+                        </div>
+                    </>
+                )}
             </div>
 
             {/* Central Content Area */}
@@ -87,6 +97,19 @@ export const SortingVisualizer: React.FC = () => {
                                     bgColor = 'bg-[#10b981]/20 backdrop-blur-md';
                                     textColor = 'text-[#10b981]';
                                     shadow = 'shadow-[0_0_25px_rgba(16,185,129,0.2)]';
+                                } else if (currentEvent.type === 'MATCH') {
+                                    borderColor = 'border-[#10b981]'; 
+                                    bgColor = 'bg-[#10b981]/30 backdrop-blur-md';
+                                    textColor = 'text-[#10b981]';
+                                    shadow = 'shadow-[0_0_40px_rgba(16,185,129,0.6)]';
+                                    scale = 1.2;
+                                    zIndex = 20;
+                                } else if (currentEvent.type === 'MISMATCH') {
+                                    borderColor = 'border-[#f43f5e]'; 
+                                    bgColor = 'bg-[#f43f5e]/20 backdrop-blur-md';
+                                    textColor = 'text-[#f43f5e]';
+                                    shadow = 'shadow-[0_0_20px_rgba(244,63,94,0.3)]';
+                                    scale = 0.95;
                                 } else if (currentEvent.type === 'SORTED_ELEMENT') {
                                     borderColor = 'border-[#3b82f6]/60'; 
                                     bgColor = 'bg-[#3b82f6]/10 backdrop-blur-sm';
