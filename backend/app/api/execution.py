@@ -4,6 +4,7 @@ from ..models.dataset import Dataset, ArrayDataset
 from ..models.events import ExecutionResult
 from ..algorithms.sorting.bubble_sort import bubble_sort
 from ..algorithms.sorting.selection_sort import selection_sort
+from ..algorithms.sorting.insertion_sort import insertion_sort
 
 router = APIRouter()
 
@@ -20,5 +21,7 @@ def execute_algorithm(request: ExecuteRequest):
         return bubble_sort(request.dataset)
     elif request.algorithmId == "selection_sort":
         return selection_sort(request.dataset)
+    elif request.algorithmId == "insertion_sort":
+        return insertion_sort(request.dataset)
     else:
         raise HTTPException(status_code=404, detail="Algorithm not found")

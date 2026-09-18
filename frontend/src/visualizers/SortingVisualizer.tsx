@@ -123,12 +123,17 @@ export const SortingVisualizer: React.FC = () => {
                                             <div className="flex gap-0.5 flex-wrap justify-center">
                                                 {pointersByIndex[index].map(p => {
                                                     const isMinIdx = p === 'min_idx';
+                                                    const isKey = p === 'key';
+                                                    
+                                                    let badgeColors = 'text-accent bg-accent/10 border-accent/30';
+                                                    if (isMinIdx) {
+                                                        badgeColors = 'text-emerald-400 bg-emerald-400/10 border-emerald-400/30';
+                                                    } else if (isKey) {
+                                                        badgeColors = 'text-purple-400 bg-purple-400/10 border-purple-400/30';
+                                                    }
+
                                                     return (
-                                                        <span key={p} className={`text-[9px] font-bold font-mono px-1 py-0 rounded border ${
-                                                            isMinIdx 
-                                                            ? 'text-emerald-400 bg-emerald-400/10 border-emerald-400/30' 
-                                                            : 'text-accent bg-accent/10 border-accent/30'
-                                                        }`}>
+                                                        <span key={p} className={`text-[9px] font-bold font-mono px-1 py-0 rounded border ${badgeColors}`}>
                                                             {p}
                                                         </span>
                                                     );
