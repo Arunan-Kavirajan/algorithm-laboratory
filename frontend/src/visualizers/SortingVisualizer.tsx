@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePlayerStore } from '../store/usePlayerStore';
-import { ArrayElement } from '../types';
+import type { ArrayElement } from '../types';
 
 export const SortingVisualizer: React.FC = () => {
     const { events, currentStepIndex } = usePlayerStore();
@@ -121,11 +121,18 @@ export const SortingVisualizer: React.FC = () => {
                                         <div className="absolute -bottom-8 flex flex-col items-center gap-0.5">
                                             <div className="w-0 h-0 border-l-[4px] border-l-transparent border-b-[5px] border-b-accent border-r-[4px] border-r-transparent animate-pulse"></div>
                                             <div className="flex gap-0.5 flex-wrap justify-center">
-                                                {pointersByIndex[index].map(p => (
-                                                    <span key={p} className="text-[9px] font-bold text-accent font-mono bg-accent/10 border border-accent/30 px-1 py-0 rounded">
-                                                        {p}
-                                                    </span>
-                                                ))}
+                                                {pointersByIndex[index].map(p => {
+                                                    const isMinIdx = p === 'min_idx';
+                                                    return (
+                                                        <span key={p} className={`text-[9px] font-bold font-mono px-1 py-0 rounded border ${
+                                                            isMinIdx 
+                                                            ? 'text-emerald-400 bg-emerald-400/10 border-emerald-400/30' 
+                                                            : 'text-accent bg-accent/10 border-accent/30'
+                                                        }`}>
+                                                            {p}
+                                                        </span>
+                                                    );
+                                                })}
                                             </div>
                                         </div>
                                     )}

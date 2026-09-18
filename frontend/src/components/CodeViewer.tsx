@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { usePlayerStore } from '../store/usePlayerStore';
 
 export const CodeViewer: React.FC = () => {
-    const { sourceCode, events, currentStepIndex } = usePlayerStore();
+    const { sourceCode, events, currentStepIndex, algorithmId } = usePlayerStore();
     const containerRef = useRef<HTMLDivElement>(null);
     const activeLineRef = useRef<HTMLDivElement>(null);
 
@@ -46,7 +46,7 @@ export const CodeViewer: React.FC = () => {
                     <div className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/50" />
                 </div>
                 <div className="text-xs font-mono text-text-muted bg-[#222] px-3 py-1 rounded border border-[#333]">
-                    bubble_sort.py
+                    {algorithmId ? `${algorithmId}.py` : 'source.py'}
                 </div>
             </div>
 

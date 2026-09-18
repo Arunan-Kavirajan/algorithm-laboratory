@@ -10,21 +10,21 @@ function App() {
   const { setExecutionData } = usePlayerStore();
   const [loading, setLoading] = useState(false);
   const [arraySize, setArraySize] = useState(10); 
+  const [activeAlgorithm, setActiveAlgorithm] = useState('bubble_sort');
 
   const generateAndRun = async () => {
     setLoading(true);
     try {
-      // Generate a dataset with stable IDs for Framer Motion to glide perfectly!
       const values = Array.from({ length: arraySize }, (_, i) => i + 1)
         .map(value => ({ value, sort: Math.random() }))
         .sort((a, b) => a.sort - b.sort)
         .map(({ value }, i) => ({ 
-            id: `block-${value}-${i}-${Math.random()}`, // ensure strictly unique ID
+            id: `block-${value}-${i}-${Math.random()}`,
             value: value * 5 
         })); 
       
       const payload = {
-        algorithmId: 'bubble_sort',
+        algorithmId: activeAlgorithm,
         dataset: {
           type: "ARRAY",
           values: values
@@ -32,7 +32,7 @@ function App() {
       };
 
       const response = await axios.post<ExecutionResult>('http://localhost:8000/api/execute', payload);
-      setExecutionData(response.data.events, response.data.summary, response.data.sourceCode);
+      setExecutionData(response.data.events, response.data.summary, response.data.sourceCode, response.data.algorithmId);
     } catch (error) {
       console.error("Failed to execute algorithm:", error);
       alert("Failed to execute algorithm. Is the backend running?");
@@ -52,7 +52,16 @@ function App() {
           </div>
           <div>
             <h1 className="text-lg font-semibold tracking-tight text-text">Algorithm Laboratory</h1>
-            <p className="text-xs text-text-muted font-mono uppercase tracking-wider">Bubble Sort Edition</p>
+            <p className="text-xs text-text-muted font-mono uppercase tracking-wider flex items-center gap-2">
+                <select 
+                    value={activeAlgorithm}
+                    onChange={(e) => setActiveAlgorithm(e.target.value)}
+                    className="bg-background border border-border text-accent rounded px-2 py-0.5 outline-none focus:border-accent"
+                >
+                    <option value="bubble_sort">Bubble Sort</option>
+                    <option value="selection_sort">Selection Sort</option>
+                </select>
+            </p>
           </div>
         </div>
         

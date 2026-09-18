@@ -5,12 +5,13 @@ interface PlayerState {
     events: ExecutionEvent[];
     summary: ExecutionSummary | null;
     sourceCode: string;
+    algorithmId: string;
     currentStepIndex: number;
     isPlaying: boolean;
     playbackSpeed: number; // ms per step
     
     // Actions
-    setExecutionData: (events: ExecutionEvent[], summary: ExecutionSummary, sourceCode: string) => void;
+    setExecutionData: (events: ExecutionEvent[], summary: ExecutionSummary, sourceCode: string, algorithmId: string) => void;
     stepForward: () => void;
     stepBackward: () => void;
     goToStep: (step: number) => void;
@@ -24,11 +25,12 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
     events: [],
     summary: null,
     sourceCode: "",
+    algorithmId: "",
     currentStepIndex: 0,
     isPlaying: false,
     playbackSpeed: 500,
 
-    setExecutionData: (events, summary, sourceCode) => set({ events, summary, sourceCode, currentStepIndex: 0, isPlaying: false }),
+    setExecutionData: (events, summary, sourceCode, algorithmId) => set({ events, summary, sourceCode, algorithmId, currentStepIndex: 0, isPlaying: false }),
     
     stepForward: () => set((state) => ({
         currentStepIndex: Math.min(state.currentStepIndex + 1, state.events.length - 1)
