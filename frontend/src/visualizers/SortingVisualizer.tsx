@@ -55,7 +55,7 @@ export const SortingVisualizer: React.FC = () => {
             </div>
 
             {/* Central Content Area */}
-            <div className="flex-1 flex flex-col items-center justify-start sm:justify-center p-8 pt-24 pb-24 z-10 w-full overflow-y-auto custom-scrollbar">
+            <div className="flex-1 flex flex-col items-center justify-start sm:justify-center p-8 pt-32 pb-8 z-10 w-full overflow-y-auto custom-scrollbar">
                 
                 {/* Linear Array */}
                 <div className="flex items-end justify-center w-full max-w-4xl gap-1 sm:gap-2 flex-shrink-0">
@@ -203,11 +203,11 @@ export const SortingVisualizer: React.FC = () => {
                         exit={{ opacity: 0, height: 0 }}
                         className="w-full flex-shrink-0 border-t border-border/40 mt-8"
                     >
-                        <div className="w-full flex flex-col items-center pt-8 pb-16">
+                        <div className="w-full flex flex-col items-center pt-8 pb-4">
                             <span className="text-[10px] font-mono text-text-muted/60 uppercase tracking-wider mb-8">
                                 Binary Heap Representation
                             </span>
-                            <div className="relative w-full max-w-2xl h-[280px]">
+                            <div className="relative w-full max-w-2xl" style={{ height: (array.length > 0 ? Math.floor(Math.log2(array.length)) : 0) * 70 + 60 }}>
                                 {/* SVG Edges */}
                                 <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible z-0">
                                     <defs>
