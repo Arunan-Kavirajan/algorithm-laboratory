@@ -61,6 +61,7 @@ function App() {
                     <option value="bubble_sort">Bubble Sort</option>
                     <option value="selection_sort">Selection Sort</option>
                     <option value="insertion_sort">Insertion Sort</option>
+                    <option value="merge_sort">Merge Sort</option>
                 </select>
             </p>
           </div>

@@ -124,12 +124,17 @@ export const SortingVisualizer: React.FC = () => {
                                                 {pointersByIndex[index].map(p => {
                                                     const isMinIdx = p === 'min_idx';
                                                     const isKey = p === 'key';
+                                                    const isMid = p === 'mid';
                                                     
                                                     let badgeColors = 'text-accent bg-accent/10 border-accent/30';
                                                     if (isMinIdx) {
                                                         badgeColors = 'text-emerald-400 bg-emerald-400/10 border-emerald-400/30';
                                                     } else if (isKey) {
                                                         badgeColors = 'text-purple-400 bg-purple-400/10 border-purple-400/30';
+                                                    } else if (isMid) {
+                                                        badgeColors = 'text-amber-400 bg-amber-400/10 border-amber-400/30';
+                                                    } else if (p === 'left' || p === 'right') {
+                                                        badgeColors = 'text-slate-400 bg-slate-400/10 border-slate-400/30';
                                                     }
 
                                                     return (
@@ -146,6 +151,39 @@ export const SortingVisualizer: React.FC = () => {
                         })}
                     </AnimatePresence>
                 </div>
+                
+                {/* Auxiliary Buffer (temp) Shelf */}
+                <AnimatePresence>
+                    {currentEvent.auxiliary && currentEvent.auxiliary.length > 0 && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 20 }}
+                            className="flex flex-col items-center mt-12 pt-6 border-t border-border/40 w-full max-w-2xl"
+                        >
+                            <span className="text-[10px] font-mono text-text-muted/60 uppercase tracking-wider mb-3">
+                                Auxiliary Buffer (temp)
+                            </span>
+                            <div className="flex items-center justify-center gap-1.5 p-3 bg-surface/40 rounded-xl border border-dashed border-border/60 min-h-[64px] min-w-[200px] flex-wrap shadow-inner">
+                                <AnimatePresence mode="popLayout">
+                                    {currentEvent.auxiliary.map((item, idx) => (
+                                        <motion.div
+                                            key={item.id}
+                                            layout
+                                            initial={{ opacity: 0, scale: 0.5, y: -20 }}
+                                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                                            exit={{ opacity: 0, scale: 0.5 }}
+                                            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                                            className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center text-xs sm:text-sm font-mono font-bold border-2 border-accent/40 bg-accent/10 text-accent shadow-sm"
+                                        >
+                                            {item.value}
+                                        </motion.div>
+                                    ))}
+                                </AnimatePresence>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
 
             {/* Event Description Toast */}

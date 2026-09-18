@@ -7,7 +7,7 @@ class ExecutionEngine:
         self.metrics = EventMetrics()
         self.step_counter = 0
 
-    def record_event(self, type: str, description: str, state: Any, active_elements: List[Union[int, str]] = None, line: int = None, pointers: dict = None):
+    def record_event(self, type: str, description: str, state: Any, active_elements: List[Union[int, str]] = None, line: int = None, pointers: dict = None, auxiliary: List[Any] = None):
         """Records a new execution event."""
         if active_elements is None:
             active_elements = []
@@ -23,6 +23,7 @@ class ExecutionEngine:
             line=line,
             pointers=pointers,
             state=state,
+            auxiliary=auxiliary,
             activeElements=active_elements,
             metrics=EventMetrics(**self.metrics.model_dump())
         ))

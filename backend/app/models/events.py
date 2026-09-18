@@ -14,6 +14,7 @@ class ExecutionEvent(BaseModel):
     line: Optional[int] = None
     pointers: Dict[str, int] = {}
     state: Any
+    auxiliary: Optional[List[Any]] = None
     activeElements: List[Union[int, str]] = []
     metrics: EventMetrics
 

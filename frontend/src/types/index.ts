@@ -43,6 +43,7 @@ export interface ExecutionEvent {
     line: number | null;
     pointers: Record<string, number>;
     state: any; // Can be typed further depending on dataset type
+    auxiliary?: ArrayElement[];
     activeElements: (number | string)[];
     metrics: EventMetrics;
 }
