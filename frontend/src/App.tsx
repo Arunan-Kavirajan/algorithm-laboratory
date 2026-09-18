@@ -14,17 +14,22 @@ function App() {
   const [searchTarget, setSearchTarget] = useState(25);
 
   const isSearch = activeAlgorithm.includes('search');
+  const requiresSorted = activeAlgorithm === 'binary_search';
 
   const generateAndRun = async () => {
     setLoading(true);
     try {
-      const values = Array.from({ length: arraySize }, (_, i) => i + 1)
-        .map(value => ({ value, sort: Math.random() }))
-        .sort((a, b) => a.sort - b.sort)
-        .map(({ value }, i) => ({ 
-            id: `block-${value}-${i}-${Math.random()}`,
-            value: value * 5 
-        })); 
+      let rawValues = Array.from({ length: arraySize }, (_, i) => i + 1)
+        .map(value => ({ value, sort: Math.random() }));
+        
+      if (!requiresSorted) {
+        rawValues.sort((a, b) => a.sort - b.sort);
+      }
+      
+      const values = rawValues.map(({ value }, i) => ({ 
+          id: `block-${value}-${i}-${Math.random()}`,
+          value: value * 5 
+      }));
       
       const payload: any = {
         algorithmId: activeAlgorithm,
@@ -72,6 +77,7 @@ function App() {
                     <option value="quick_sort">Quick Sort</option>
                     <option value="heap_sort">Heap Sort</option>
                     <option value="linear_search">Linear Search</option>
+                    <option value="binary_search">Binary Search</option>
                 </select>
             </p>
           </div>
@@ -79,13 +85,17 @@ function App() {
         
         <div className="flex items-center gap-6">
            {isSearch && (
-               <div className="flex items-center gap-2 text-sm bg-surface/50 px-3 py-1 rounded border border-border">
-                   <span className="text-text-muted">Target:</span>
+               <div className="flex items-center gap-2 text-sm bg-surface/50 px-3 py-1.5 rounded-lg border border-border focus-within:border-accent focus-within:ring-1 focus-within:ring-accent/50 transition-all shadow-sm">
+                   <svg className="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                   </svg>
+                   <span className="text-text-muted font-medium">Target</span>
+                   <div className="w-px h-4 bg-border mx-1" />
                    <input 
                      type="number" 
                      value={searchTarget}
                      onChange={(e) => setSearchTarget(Number(e.target.value))}
-                     className="w-12 bg-transparent text-text font-mono outline-none text-center"
+                     className="w-12 bg-transparent text-text font-mono font-bold outline-none text-center appearance-none"
                    />
                </div>
            )}

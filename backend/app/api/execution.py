@@ -39,5 +39,10 @@ def execute_algorithm(request: ExecuteRequest):
         if request.target is None:
             raise HTTPException(status_code=400, detail="Target is required for searching algorithms")
         return linear_search_algorithm(request.dataset, request.target)
+    elif request.algorithmId == "binary_search":
+        if request.target is None:
+            raise HTTPException(status_code=400, detail="Target is required for searching algorithms")
+        from ..algorithms.searching.binary_search import binary_search_algorithm
+        return binary_search_algorithm(request.dataset, request.target)
     else:
         raise HTTPException(status_code=404, detail="Algorithm not found")
