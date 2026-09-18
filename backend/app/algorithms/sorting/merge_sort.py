@@ -1,4 +1,5 @@
 import time
+import random
 from typing import List
 from ...engine.execution import ExecutionEngine
 from ...models.dataset import ArrayDataset
@@ -49,16 +50,7 @@ def merge_sort_algorithm(dataset: ArrayDataset) -> ExecutionResult:
     def do_merge_sort(left, right):
         engine.record_event(
             type="INFO",
-            description=f"merge_sort(arr, {left}, {right}) called",
-            state=[a.copy() for a in arr],
-            active_elements=[],
-            line=1,
-            pointers={"left": left, "right": right}
-        )
-        
-        engine.record_event(
-            type="INFO",
-            description=f"Checking if left ({left}) < right ({right})",
+            description=f"Our goal is to sort the slice from index {left} to {right}. First, we check if it has more than one element.",
             state=[a.copy() for a in arr],
             active_elements=[],
             line=2,
@@ -69,7 +61,7 @@ def merge_sort_algorithm(dataset: ArrayDataset) -> ExecutionResult:
             mid = (left + right) // 2
             engine.record_event(
                 type="INFO",
-                description=f"Calculated mid = {mid}",
+                description=f"It does! We split it down the middle at index {mid}.",
                 state=[a.copy() for a in arr],
                 active_elements=[left, mid, right],
                 line=3,
@@ -78,7 +70,7 @@ def merge_sort_algorithm(dataset: ArrayDataset) -> ExecutionResult:
             
             engine.record_event(
                 type="INFO",
-                description=f"Recursively sorting left half [{left}..{mid}]",
+                description=f"Step 1: Recursively sort the LEFT half (indices {left} to {mid}).",
                 state=[a.copy() for a in arr],
                 active_elements=list(range(left, mid + 1)),
                 line=4,
@@ -88,7 +80,7 @@ def merge_sort_algorithm(dataset: ArrayDataset) -> ExecutionResult:
             
             engine.record_event(
                 type="INFO",
-                description=f"Recursively sorting right half [{mid + 1}..{right}]",
+                description=f"Step 2: Recursively sort the RIGHT half (indices {mid + 1} to {right}).",
                 state=[a.copy() for a in arr],
                 active_elements=list(range(mid + 1, right + 1)),
                 line=5,
@@ -98,7 +90,7 @@ def merge_sort_algorithm(dataset: ArrayDataset) -> ExecutionResult:
             
             engine.record_event(
                 type="INFO",
-                description=f"Merging sorted halves [{left}..{mid}] and [{mid + 1}..{right}]",
+                description=f"Step 3: Both halves are sorted! Now we MERGE them back together in order.",
                 state=[a.copy() for a in arr],
                 active_elements=list(range(left, right + 1)),
                 line=6,
@@ -108,7 +100,7 @@ def merge_sort_algorithm(dataset: ArrayDataset) -> ExecutionResult:
         else:
             engine.record_event(
                 type="INFO",
-                description=f"Base case reached for single element {left}.",
+                description=f"This slice only has one element (at index {left}). A single element is already sorted!",
                 state=[a.copy() for a in arr],
                 active_elements=[left],
                 line=2,
@@ -121,7 +113,7 @@ def merge_sort_algorithm(dataset: ArrayDataset) -> ExecutionResult:
         
         engine.record_event(
             type="INFO",
-            description=f"Initializing temp array and pointers i={i}, j={j}",
+            description=f"We create an empty auxiliary buffer (temp) to collect elements, and point 'i' to the left half and 'j' to the right half.",
             state=[a.copy() for a in arr],
             active_elements=[],
             line=9,
@@ -133,10 +125,14 @@ def merge_sort_algorithm(dataset: ArrayDataset) -> ExecutionResult:
             engine.increment_metric("comparisons")
             engine.record_event(
                 type="COMPARE",
-                description=f"Comparing arr[{i}] ({arr[i]['value']}) and arr[{j}] ({arr[j]['value']})",
+                description=random.choice([
+                    f"Comparing L:{arr[i]['value']} vs R:{arr[j]['value']}.",
+                    f"Which is smaller: {arr[i]['value']} or {arr[j]['value']}?",
+                    f"Checking front of left and right halves."
+                ]),
                 state=[a.copy() for a in arr],
                 active_elements=[i, j],
-                line=11,
+                line=12,
                 pointers={"left": left, "mid": mid, "right": right, "i": i, "j": j},
                 auxiliary=[t.copy() for t in temp]
             )
@@ -145,7 +141,11 @@ def merge_sort_algorithm(dataset: ArrayDataset) -> ExecutionResult:
                 temp.append(arr[i])
                 engine.record_event(
                     type="INFO",
-                    description=f"Selected {arr[i]['value']} from left half into temp",
+                    description=random.choice([
+                        f"Left is smaller ({arr[i]['value']}). To buffer!",
+                        f"Taking {arr[i]['value']} from the left.",
+                        f"Moving {arr[i]['value']} to temp."
+                    ]),
                     state=[a.copy() for a in arr],
                     active_elements=[i],
                     line=13,
@@ -155,7 +155,7 @@ def merge_sort_algorithm(dataset: ArrayDataset) -> ExecutionResult:
                 i += 1
                 engine.record_event(
                     type="INFO",
-                    description="Advanced left pointer i",
+                    description="We shift the left pointer 'i' forward.",
                     state=[a.copy() for a in arr],
                     active_elements=[],
                     line=14,
@@ -166,7 +166,11 @@ def merge_sort_algorithm(dataset: ArrayDataset) -> ExecutionResult:
                 temp.append(arr[j])
                 engine.record_event(
                     type="INFO",
-                    description=f"Selected {arr[j]['value']} from right half into temp",
+                    description=random.choice([
+                        f"Right is smaller ({arr[j]['value']}). To buffer!",
+                        f"Taking {arr[j]['value']} from the right.",
+                        f"Moving {arr[j]['value']} to temp."
+                    ]),
                     state=[a.copy() for a in arr],
                     active_elements=[j],
                     line=16,
@@ -176,7 +180,7 @@ def merge_sort_algorithm(dataset: ArrayDataset) -> ExecutionResult:
                 j += 1
                 engine.record_event(
                     type="INFO",
-                    description="Advanced right pointer j",
+                    description="We shift the right pointer 'j' forward.",
                     state=[a.copy() for a in arr],
                     active_elements=[],
                     line=17,
@@ -188,7 +192,7 @@ def merge_sort_algorithm(dataset: ArrayDataset) -> ExecutionResult:
             temp.append(arr[i])
             engine.record_event(
                 type="INFO",
-                description=f"Flushing remaining left half element {arr[i]['value']} into temp",
+                description=f"The right half is empty! We sweep the remaining left element ({arr[i]['value']}) directly into the buffer.",
                 state=[a.copy() for a in arr],
                 active_elements=[i],
                 line=19,
@@ -201,10 +205,10 @@ def merge_sort_algorithm(dataset: ArrayDataset) -> ExecutionResult:
             temp.append(arr[j])
             engine.record_event(
                 type="INFO",
-                description=f"Flushing remaining right half element {arr[j]['value']} into temp",
+                description=f"The left half is empty! We sweep the remaining right element ({arr[j]['value']}) directly into the buffer.",
                 state=[a.copy() for a in arr],
                 active_elements=[j],
-                line=21,
+                line=22,
                 pointers={"left": left, "mid": mid, "right": right, "i": i, "j": j},
                 auxiliary=[t.copy() for t in temp]
             )
@@ -212,33 +216,31 @@ def merge_sort_algorithm(dataset: ArrayDataset) -> ExecutionResult:
 
         engine.record_event(
             type="INFO",
-            description="Temp array is fully merged. Writing back to main array.",
+            description="The buffer is now fully sorted! We get ready to write it back into the main array.",
             state=[a.copy() for a in arr],
             active_elements=[],
-            line=22,
+            line=24, # updated line number
             pointers={"left": left, "mid": mid, "right": right},
             auxiliary=[t.copy() for t in temp]
         )
 
         for k in range(len(temp)):
             arr[left + k] = temp[k]
-            engine.increment_metric("swaps") # Track write-backs as "swaps" or operations
+            engine.increment_metric("swaps")
             
         engine.record_event(
             type="SWAP",
-            description=f"Copied merged elements back into main array [{left}..{right}]",
+            description=f"Success! We copied the sorted buffer back into the main array.",
             state=[a.copy() for a in arr],
             active_elements=list(range(left, right + 1)),
-            line=23,
+            line=25, # updated line number
             pointers={"left": left, "mid": mid, "right": right},
-            auxiliary=[] # Empty auxiliary after write back
+            auxiliary=[] 
         )
         
-        # We don't mark as SORTED_ELEMENT just yet unless it's the final merge, 
-        # but to keep visualizer clean, we can emit a generic info event.
         engine.record_event(
             type="INFO",
-            description=f"Merge for [{left}..{right}] complete.",
+            description=f"The slice from index {left} to {right} is now sorted.",
             state=[a.copy() for a in arr],
             active_elements=[],
             line=8,

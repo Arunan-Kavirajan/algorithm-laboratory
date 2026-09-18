@@ -62,6 +62,7 @@ function App() {
                     <option value="selection_sort">Selection Sort</option>
                     <option value="insertion_sort">Insertion Sort</option>
                     <option value="merge_sort">Merge Sort</option>
+                    <option value="quick_sort">Quick Sort</option>
                 </select>
             </p>
           </div>

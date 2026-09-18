@@ -6,6 +6,7 @@ from ..algorithms.sorting.bubble_sort import bubble_sort
 from ..algorithms.sorting.selection_sort import selection_sort
 from ..algorithms.sorting.insertion_sort import insertion_sort
 from ..algorithms.sorting.merge_sort import merge_sort_algorithm
+from ..algorithms.sorting.quick_sort import quick_sort_algorithm
 
 router = APIRouter()
 
@@ -26,5 +27,7 @@ def execute_algorithm(request: ExecuteRequest):
         return insertion_sort(request.dataset)
     elif request.algorithmId == "merge_sort":
         return merge_sort_algorithm(request.dataset)
+    elif request.algorithmId == "quick_sort":
+        return quick_sort_algorithm(request.dataset)
     else:
         raise HTTPException(status_code=404, detail="Algorithm not found")

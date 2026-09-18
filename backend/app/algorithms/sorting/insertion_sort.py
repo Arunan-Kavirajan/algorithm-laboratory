@@ -1,4 +1,5 @@
 import time
+import random
 from typing import List
 from ...engine.execution import ExecutionEngine
 from ...models.dataset import ArrayDataset
@@ -22,7 +23,7 @@ def insertion_sort(dataset: ArrayDataset) -> ExecutionResult:
 
     engine.record_event(
         type="START",
-        description="Starting Insertion Sort",
+        description="Let's sort this array using Insertion Sort! Think of it like sorting a hand of playing cards.",
         state=[a.copy() for a in arr],
         active_elements=[],
         line=1
@@ -30,16 +31,15 @@ def insertion_sort(dataset: ArrayDataset) -> ExecutionResult:
 
     engine.record_event(
         type="INFO",
-        description=f"Array length n = {n}",
+        description=f"We have {n} cards to sort.",
         state=[a.copy() for a in arr],
         active_elements=[],
         line=2
     )
     
-    # Mark the first element as trivially sorted
     engine.record_event(
         type="SORTED_ELEMENT",
-        description=f"Element {arr[0]['value']} is trivially sorted as a single-element partition.",
+        description=f"The first card ({arr[0]['value']}) is already 'sorted' because it's the only one in our hand so far!",
         state=[a.copy() for a in arr],
         active_elements=[0],
         line=3
@@ -48,7 +48,7 @@ def insertion_sort(dataset: ArrayDataset) -> ExecutionResult:
     for i in range(1, n):
         engine.record_event(
             type="INFO",
-            description=f"Starting pass {i}. Expanding sorted partition to include index {i}.",
+            description=f"Let's pick up the next card at index {i} and insert it into our sorted hand on the left.",
             state=[a.copy() for a in arr],
             active_elements=[],
             line=3,
@@ -58,7 +58,7 @@ def insertion_sort(dataset: ArrayDataset) -> ExecutionResult:
         j = i
         engine.record_event(
             type="INFO",
-            description=f"Active element to insert is {arr[j]['value']}.",
+            description=f"Our active card is {arr[j]['value']}.",
             state=[a.copy() for a in arr],
             active_elements=[j],
             line=4,
@@ -69,7 +69,11 @@ def insertion_sort(dataset: ArrayDataset) -> ExecutionResult:
             engine.increment_metric("comparisons")
             engine.record_event(
                 type="COMPARE",
-                description=f"Comparing {arr[j]['value']} with its left neighbor {arr[j-1]['value']}.",
+                description=random.choice([
+                    f"Comparing active {arr[j]['value']} with left {arr[j-1]['value']}.",
+                    f"Does {arr[j]['value']} need to move left?",
+                    f"Checking if {arr[j-1]['value']} > {arr[j]['value']}."
+                ]),
                 state=[a.copy() for a in arr],
                 active_elements=[j, j-1],
                 line=5,
@@ -81,16 +85,20 @@ def insertion_sort(dataset: ArrayDataset) -> ExecutionResult:
                 engine.increment_metric("swaps")
                 engine.record_event(
                     type="SWAP",
-                    description=f"Swapped because {arr[j-1]['value']} < {arr[j]['value']}.",
+                    description=random.choice([
+                        f"Yes! Sliding {arr[j-1]['value']} left.",
+                        f"{arr[j]['value']} is larger, swapping them.",
+                        f"Moving active card leftward."
+                    ]),
                     state=[a.copy() for a in arr],
                     active_elements=[j, j-1],
                     line=6,
-                    pointers={"i": i, "j": j-1, "key": j-1} # After swap, key is at j-1
+                    pointers={"i": i, "j": j-1, "key": j-1}
                 )
                 j -= 1
                 engine.record_event(
                     type="INFO",
-                    description=f"Decremented j to {j}.",
+                    description=f"We keep tracking our active card as it moves backward.",
                     state=[a.copy() for a in arr],
                     active_elements=[],
                     line=7,
@@ -99,18 +107,21 @@ def insertion_sort(dataset: ArrayDataset) -> ExecutionResult:
             else:
                 engine.record_event(
                     type="NO_SWAP",
-                    description=f"{arr[j]['value']} >= {arr[j-1]['value']}. Element has found its sorted position.",
+                    description=random.choice([
+                        f"Found its spot! {arr[j]['value']} >= {arr[j-1]['value']}.",
+                        f"Stops here. Left is smaller.",
+                        f"Done moving this card."
+                    ]),
                     state=[a.copy() for a in arr],
                     active_elements=[j, j-1],
-                    line=5, # Stay on IF to show it exited the loop
+                    line=5,
                     pointers={"i": i, "j": j, "key": j}
                 )
                 break
                 
-        # Mark all elements up to i as sorted
         engine.record_event(
             type="SORTED_ELEMENT",
-            description=f"Sorted partition now extends to index {i}.",
+            description=f"Our sorted hand now contains {i + 1} cards.",
             state=[a.copy() for a in arr],
             active_elements=list(range(0, i+1)),
             line=3,

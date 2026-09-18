@@ -125,6 +125,8 @@ export const SortingVisualizer: React.FC = () => {
                                                     const isMinIdx = p === 'min_idx';
                                                     const isKey = p === 'key';
                                                     const isMid = p === 'mid';
+                                                    const isPivot = p === 'pivot';
+                                                    const isIj = p === 'i' || p === 'j';
                                                     
                                                     let badgeColors = 'text-accent bg-accent/10 border-accent/30';
                                                     if (isMinIdx) {
@@ -133,6 +135,10 @@ export const SortingVisualizer: React.FC = () => {
                                                         badgeColors = 'text-purple-400 bg-purple-400/10 border-purple-400/30';
                                                     } else if (isMid) {
                                                         badgeColors = 'text-amber-400 bg-amber-400/10 border-amber-400/30';
+                                                    } else if (isPivot) {
+                                                        badgeColors = 'text-rose-400 bg-rose-400/10 border-rose-400/30 shadow-[0_0_15px_rgba(251,113,133,0.3)] font-bold';
+                                                    } else if (isIj) {
+                                                        badgeColors = 'text-blue-400 bg-blue-400/10 border-blue-400/30';
                                                     } else if (p === 'left' || p === 'right') {
                                                         badgeColors = 'text-slate-400 bg-slate-400/10 border-slate-400/30';
                                                     }
@@ -188,22 +194,17 @@ export const SortingVisualizer: React.FC = () => {
 
             {/* Event Description Toast */}
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 max-w-md w-full z-20">
-                <AnimatePresence mode="wait">
-                    <motion.div 
-                        key={currentStepIndex}
-                        initial={{ opacity: 0, y: 15, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                        transition={{ duration: 0.15 }}
-                        className="bg-surface/90 backdrop-blur-md border border-border px-5 py-3 rounded-xl shadow-2xl flex items-center gap-4"
-                    >
-                        <div className="relative flex h-3 w-3">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-3 w-3 bg-accent"></span>
-                        </div>
-                        <p className="text-sm text-text font-medium leading-tight">{currentEvent.description}</p>
-                    </motion.div>
-                </AnimatePresence>
+                <motion.div 
+                    initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    className="bg-surface/90 backdrop-blur-md border border-border px-5 py-3 rounded-xl shadow-2xl flex items-center gap-4"
+                >
+                    <div className="relative flex h-3 w-3 shrink-0">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-accent"></span>
+                    </div>
+                    <p className="text-sm text-text font-medium leading-tight transition-all duration-75">{currentEvent.description}</p>
+                </motion.div>
             </div>
             
         </div>

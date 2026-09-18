@@ -1,4 +1,5 @@
 import time
+import random
 from typing import List
 from ...engine.execution import ExecutionEngine
 from ...models.dataset import ArrayDataset
@@ -24,7 +25,7 @@ def selection_sort(dataset: ArrayDataset) -> ExecutionResult:
 
     engine.record_event(
         type="START",
-        description="Starting Selection Sort",
+        description="Let's sort this array using Selection Sort!",
         state=[a.copy() for a in arr],
         active_elements=[],
         line=1
@@ -32,7 +33,7 @@ def selection_sort(dataset: ArrayDataset) -> ExecutionResult:
 
     engine.record_event(
         type="INFO",
-        description=f"Array length n = {n}",
+        description=f"The array has {n} elements. We'll search for the smallest element {n} times.",
         state=[a.copy() for a in arr],
         active_elements=[],
         line=2
@@ -41,7 +42,7 @@ def selection_sort(dataset: ArrayDataset) -> ExecutionResult:
     for i in range(n):
         engine.record_event(
             type="INFO",
-            description=f"Starting pass {i}, placing next smallest element at index {i}",
+            description=f"Looking for the absolute smallest remaining element to place at index {i}.",
             state=[a.copy() for a in arr],
             active_elements=[],
             line=3,
@@ -51,7 +52,7 @@ def selection_sort(dataset: ArrayDataset) -> ExecutionResult:
         min_idx = i
         engine.record_event(
             type="INFO",
-            description=f"Assume current minimum is at index {min_idx} (value: {arr[min_idx]['value']})",
+            description=f"Let's assume ({arr[min_idx]['value']}) is the smallest for now.",
             state=[a.copy() for a in arr],
             active_elements=[min_idx],
             line=4,
@@ -63,7 +64,11 @@ def selection_sort(dataset: ArrayDataset) -> ExecutionResult:
             
             engine.record_event(
                 type="COMPARE",
-                description=f"Comparing current min ({arr[min_idx]['value']}) with candidate ({arr[j]['value']})",
+                description=random.choice([
+                    f"Is {arr[j]['value']} < {arr[min_idx]['value']}?",
+                    f"Checking if {arr[j]['value']} is a new minimum.",
+                    f"Comparing candidate {arr[j]['value']} against min {arr[min_idx]['value']}."
+                ]),
                 state=[a.copy() for a in arr],
                 active_elements=[j, min_idx],
                 line=6,
@@ -75,7 +80,11 @@ def selection_sort(dataset: ArrayDataset) -> ExecutionResult:
                 
                 engine.record_event(
                     type="INFO",
-                    description=f"Found new minimum: {arr[min_idx]['value']} at index {min_idx}",
+                    description=random.choice([
+                        f"Yes! {arr[min_idx]['value']} is the new minimum.",
+                        f"Found a smaller element: {arr[min_idx]['value']}.",
+                        f"Updating minimum to {arr[min_idx]['value']}."
+                    ]),
                     state=[a.copy() for a in arr],
                     active_elements=[min_idx],
                     line=7,
@@ -84,16 +93,20 @@ def selection_sort(dataset: ArrayDataset) -> ExecutionResult:
             else:
                 engine.record_event(
                     type="NO_SWAP",
-                    description=f"Candidate {arr[j]['value']} is not smaller than {arr[min_idx]['value']}",
+                    description=random.choice([
+                        f"No, {arr[min_idx]['value']} is still smaller.",
+                        f"{arr[j]['value']} is larger. Keep scanning.",
+                        f"Not the minimum."
+                    ]),
                     state=[a.copy() for a in arr],
                     active_elements=[j, min_idx],
-                    line=6, # Stay on IF to show it didn't enter block
+                    line=6,
                     pointers={"i": i, "j": j, "min_idx": min_idx}
                 )
                 
         engine.record_event(
             type="INFO",
-            description=f"Scan complete. Minimum is {arr[min_idx]['value']} at index {min_idx}. Checking if swap needed.",
+            description=f"Scan complete! The absolute smallest is {arr[min_idx]['value']}.",
             state=[a.copy() for a in arr],
             active_elements=[min_idx, i],
             line=8,
@@ -105,25 +118,29 @@ def selection_sort(dataset: ArrayDataset) -> ExecutionResult:
             engine.increment_metric("swaps")
             engine.record_event(
                 type="SWAP",
-                description=f"Swapped minimum ({arr[i]['value']}) into correct position {i}",
+                description=random.choice([
+                    f"Swapping {arr[min_idx]['value']} with {arr[i]['value']}.",
+                    f"Moving minimum {arr[i]['value']} to the sorted boundary.",
+                    f"Placing {arr[i]['value']} in its final spot."
+                ]),
                 state=[a.copy() for a in arr],
                 active_elements=[i, min_idx],
                 line=9,
-                pointers={"i": i, "min_idx": i} # After swap, the minimum element is now at index i
+                pointers={"i": i, "min_idx": i}
             )
         else:
             engine.record_event(
                 type="INFO",
-                description=f"Element {arr[i]['value']} is already the minimum, no swap needed.",
+                description=f"{arr[i]['value']} is already in place! No swap needed.",
                 state=[a.copy() for a in arr],
                 active_elements=[i],
-                line=8, # IF evaluated false
+                line=8,
                 pointers={"i": i, "min_idx": min_idx}
             )
             
         engine.record_event(
             type="SORTED_ELEMENT",
-            description=f"Element {arr[i]['value']} is now sorted.",
+            description=f"{arr[i]['value']} is now locked into its final sorted position!",
             state=[a.copy() for a in arr],
             active_elements=[i],
             line=3,
