@@ -1,42 +1,76 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { SortingVisualizer } from './visualizers/SortingVisualizer';
+import { GraphVisualizer } from './visualizers/GraphVisualizer';
 import { PlayerControls } from './components/PlayerControls';
 import { CodeViewer } from './components/CodeViewer';
 import { usePlayerStore } from './store/usePlayerStore';
 import type { ExecutionResult } from './types';
 
 function App() {
-  const { setExecutionData } = usePlayerStore();
+  const { setExecutionData, algorithmId: currentRunningAlgorithm } = usePlayerStore();
   const [loading, setLoading] = useState(false);
   const [arraySize, setArraySize] = useState(10); 
   const [activeAlgorithm, setActiveAlgorithm] = useState('bubble_sort');
   const [searchTarget, setSearchTarget] = useState(25);
 
-  const isSearch = activeAlgorithm.includes('search');
+  const isSearch = activeAlgorithm.includes('search') || activeAlgorithm === 'bfs';
   const requiresSorted = activeAlgorithm === 'binary_search';
+  const isGraphRunning = currentRunningAlgorithm === 'bfs';
 
   const generateAndRun = async () => {
     setLoading(true);
     try {
-      let rawValues = Array.from({ length: arraySize }, (_, i) => i + 1)
-        .map(value => ({ value, sort: Math.random() }));
-        
-      if (!requiresSorted) {
-        rawValues.sort((a, b) => a.sort - b.sort);
+      let dataset: any;
+
+      if (activeAlgorithm === 'bfs') {
+          const nodes = [];
+          const edges = [];
+          for (let i = 0; i < arraySize; i++) {
+              const level = Math.floor(Math.log2(i + 1));
+              const levelWidth = Math.pow(2, level);
+              const indexInLevel = i - (levelWidth - 1);
+              const x = (indexInLevel + 0.5) / levelWidth * 100;
+              const y = level * 25 + 15; // Percentages for Y
+              
+              nodes.push({
+                  id: `node-${i}`,
+                  value: (i + 1) * 5,
+                  x,
+                  y
+              });
+              
+              const leftChild = 2 * i + 1;
+              const rightChild = 2 * i + 2;
+              if (leftChild < arraySize) edges.push({ source: `node-${i}`, target: `node-${leftChild}` });
+              if (rightChild < arraySize) edges.push({ source: `node-${i}`, target: `node-${rightChild}` });
+          }
+          
+          // Let's add a few random edges to make it a generic graph, not strictly a tree!
+          if (arraySize > 5) edges.push({ source: 'node-2', target: 'node-3' });
+          if (arraySize > 8) edges.push({ source: 'node-4', target: 'node-6' });
+          if (arraySize > 12) edges.push({ source: 'node-7', target: 'node-10' });
+
+          dataset = { type: "GRAPH", nodes, edges };
+      } else {
+          let rawValues = Array.from({ length: arraySize }, (_, i) => i + 1)
+            .map(value => ({ value, sort: Math.random() }));
+            
+          if (!requiresSorted) {
+            rawValues.sort((a, b) => a.sort - b.sort);
+          }
+          
+          const values = rawValues.map(({ value }, i) => ({ 
+              id: `block-${value}-${i}-${Math.random()}`,
+              value: value * 5 
+          }));
+          
+          dataset = { type: "ARRAY", values };
       }
-      
-      const values = rawValues.map(({ value }, i) => ({ 
-          id: `block-${value}-${i}-${Math.random()}`,
-          value: value * 5 
-      }));
       
       const payload: any = {
         algorithmId: activeAlgorithm,
-        dataset: {
-          type: "ARRAY",
-          values: values
-        }
+        dataset: dataset
       };
       
       if (isSearch) {
@@ -78,6 +112,7 @@ function App() {
                     <option value="heap_sort">Heap Sort</option>
                     <option value="linear_search">Linear Search</option>
                     <option value="binary_search">Binary Search</option>
+                    <option value="bfs">Breadth-First Search (BFS)</option>
                 </select>
             </p>
           </div>
@@ -128,7 +163,7 @@ function App() {
         {/* Left/Center: Visualizer & Controls */}
         <div className="col-span-2 flex flex-col border-r border-border bg-background">
           <div className="flex-1 p-8 overflow-hidden flex flex-col">
-            <SortingVisualizer />
+            {isGraphRunning ? <GraphVisualizer /> : <SortingVisualizer />}
           </div>
           <div className="border-t border-border bg-surface">
             <PlayerControls />

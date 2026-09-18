@@ -4,23 +4,27 @@ from typing import Literal, List, Dict, Any, Union, Optional
 class BaseDataset(BaseModel):
     type: str
 
-class ArrayElement(BaseModel):
+class ArrayItem(BaseModel):
     id: str
     value: int
 
 class ArrayDataset(BaseDataset):
-    type: Literal["ARRAY"] = "ARRAY"
-    values: List[ArrayElement]
+    type: str = "ARRAY"
+    values: List[ArrayItem]
 
-class Edge(BaseModel):
+class GraphNode(BaseModel):
+    id: str
+    value: int
+    x: float
+    y: float
+
+class GraphEdge(BaseModel):
     source: str
     target: str
-    weight: Optional[float] = None
 
 class GraphDataset(BaseDataset):
-    type: Literal["GRAPH"] = "GRAPH"
-    nodes: List[str]
-    edges: List[Edge]
-    directed: bool = False
+    type: str = "GRAPH"
+    nodes: List[GraphNode]
+    edges: List[GraphEdge]
 
 Dataset = Union[ArrayDataset, GraphDataset]

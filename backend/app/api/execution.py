@@ -20,8 +20,12 @@ class ExecuteRequest(BaseModel):
 
 @router.post("/execute", response_model=ExecutionResult)
 def execute_algorithm(request: ExecuteRequest):
-    if not isinstance(request.dataset, ArrayDataset):
-        raise HTTPException(status_code=400, detail="Algorithms require an ArrayDataset")
+    is_graph_algo = request.algorithmId in ["bfs"]
+    
+    if is_graph_algo and request.dataset.type != "GRAPH":
+        raise HTTPException(status_code=400, detail="Algorithm requires a GraphDataset")
+    if not is_graph_algo and request.dataset.type != "ARRAY":
+        raise HTTPException(status_code=400, detail="Algorithm requires an ArrayDataset")
         
     if request.algorithmId == "bubble_sort":
         return bubble_sort(request.dataset)
@@ -44,5 +48,10 @@ def execute_algorithm(request: ExecuteRequest):
             raise HTTPException(status_code=400, detail="Target is required for searching algorithms")
         from ..algorithms.searching.binary_search import binary_search_algorithm
         return binary_search_algorithm(request.dataset, request.target)
+    elif request.algorithmId == "bfs":
+        if request.target is None:
+            raise HTTPException(status_code=400, detail="Target is required for searching algorithms")
+        from ..algorithms.searching.bfs import bfs_algorithm
+        return bfs_algorithm(request.dataset, request.target)
     else:
         raise HTTPException(status_code=404, detail="Algorithm not found")
