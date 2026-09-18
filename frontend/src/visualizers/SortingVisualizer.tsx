@@ -126,7 +126,8 @@ export const SortingVisualizer: React.FC = () => {
                                                     const isKey = p === 'key';
                                                     const isMid = p === 'mid';
                                                     const isPivot = p === 'pivot';
-                                                    const isIj = p === 'i' || p === 'j';
+                                                    const isLargest = p === 'largest';
+                                                    const isIj = p === 'i' || p === 'j' || p === 'curr';
                                                     
                                                     let badgeColors = 'text-accent bg-accent/10 border-accent/30';
                                                     if (isMinIdx) {
@@ -137,6 +138,8 @@ export const SortingVisualizer: React.FC = () => {
                                                         badgeColors = 'text-amber-400 bg-amber-400/10 border-amber-400/30';
                                                     } else if (isPivot) {
                                                         badgeColors = 'text-rose-400 bg-rose-400/10 border-rose-400/30 shadow-[0_0_15px_rgba(251,113,133,0.3)] font-bold';
+                                                    } else if (isLargest) {
+                                                        badgeColors = 'text-cyan-400 bg-cyan-400/10 border-cyan-400/30 shadow-[0_0_15px_rgba(34,211,238,0.3)] font-bold';
                                                     } else if (isIj) {
                                                         badgeColors = 'text-blue-400 bg-blue-400/10 border-blue-400/30';
                                                     } else if (p === 'left' || p === 'right') {
