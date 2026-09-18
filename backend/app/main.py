@@ -17,7 +17,23 @@ app.add_middleware(
 def health_check():
     return {"status": "ok", "time": time.time()}
 
-from app.api import execution
+from .api import execution
 
 # Include routers here later
 app.include_router(execution.router, prefix="/api")
+
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
+
+# Define the absolute path to the frontend dist folder
+dist_path = os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "dist")
+
+# Only mount the static files if the dist folder exists (so local dev doesn't crash)
+if os.path.isdir(dist_path):
+    app.mount("/assets", StaticFiles(directory=os.path.join(dist_path, "assets")), name="assets")
+    
+    # Catch-all route to serve the SPA index.html for any other route
+    @app.get("/{catchall:path}")
+    def serve_react_app(catchall: str):
+        return FileResponse(os.path.join(dist_path, "index.html"))
