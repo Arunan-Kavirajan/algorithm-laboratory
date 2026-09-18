@@ -4,9 +4,14 @@ export interface BaseDataset {
     type: DatasetType;
 }
 
+export interface ArrayElement {
+    id: string;
+    value: number;
+}
+
 export interface ArrayDataset extends BaseDataset {
     type: "ARRAY";
-    values: number[];
+    values: ArrayElement[];
 }
 
 export interface Edge {

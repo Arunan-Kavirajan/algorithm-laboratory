@@ -18,7 +18,8 @@ BUBBLE_SORT_CODE = """def bubble_sort(arr):
 
 def bubble_sort(dataset: ArrayDataset) -> ExecutionResult:
     engine = ExecutionEngine()
-    arr = dataset.values.copy()
+    # Convert Pydantic models to dicts for easy JSON serialization in state
+    arr = [item.model_dump() for item in dataset.values]
     n = len(arr)
     
     start_time = time.perf_counter()
@@ -26,7 +27,7 @@ def bubble_sort(dataset: ArrayDataset) -> ExecutionResult:
     engine.record_event(
         type="START",
         description="Starting Bubble Sort",
-        state=arr.copy(),
+        state=[a.copy() for a in arr],
         active_elements=[],
         line=1
     )
@@ -34,7 +35,7 @@ def bubble_sort(dataset: ArrayDataset) -> ExecutionResult:
     engine.record_event(
         type="INFO",
         description=f"Array length n = {n}",
-        state=arr.copy(),
+        state=[a.copy() for a in arr],
         active_elements=[],
         line=2
     )
@@ -44,7 +45,7 @@ def bubble_sort(dataset: ArrayDataset) -> ExecutionResult:
         engine.record_event(
             type="INFO",
             description=f"Outer loop i = {i}, initialized swapped = False",
-            state=arr.copy(),
+            state=[a.copy() for a in arr],
             active_elements=[],
             line=4,
             pointers={"i": i}
@@ -55,14 +56,14 @@ def bubble_sort(dataset: ArrayDataset) -> ExecutionResult:
             
             engine.record_event(
                 type="COMPARE",
-                description=f"Comparing arr[{j}] ({arr[j]}) and arr[{j+1}] ({arr[j+1]})",
-                state=arr.copy(),
+                description=f"Comparing arr[{j}] ({arr[j]['value']}) and arr[{j+1}] ({arr[j+1]['value']})",
+                state=[a.copy() for a in arr],
                 active_elements=[j, j+1],
                 line=6,
                 pointers={"i": i, "j": j}
             )
 
-            if arr[j] > arr[j + 1]:
+            if arr[j]['value'] > arr[j + 1]['value']:
                 # Swap elements
                 arr[j], arr[j + 1] = arr[j + 1], arr[j]
                 swapped = True
@@ -70,8 +71,8 @@ def bubble_sort(dataset: ArrayDataset) -> ExecutionResult:
                 
                 engine.record_event(
                     type="SWAP",
-                    description=f"Swapped because {arr[j+1]} > {arr[j]}",
-                    state=arr.copy(),
+                    description=f"Swapped because {arr[j+1]['value']} < {arr[j]['value']}",
+                    state=[a.copy() for a in arr],
                     active_elements=[j, j+1],
                     line=7,
                     pointers={"i": i, "j": j}
@@ -79,7 +80,7 @@ def bubble_sort(dataset: ArrayDataset) -> ExecutionResult:
                 engine.record_event(
                     type="INFO",
                     description="Set swapped = True",
-                    state=arr.copy(),
+                    state=[a.copy() for a in arr],
                     active_elements=[],
                     line=8,
                     pointers={"i": i, "j": j}
@@ -87,18 +88,18 @@ def bubble_sort(dataset: ArrayDataset) -> ExecutionResult:
             else:
                 engine.record_event(
                     type="NO_SWAP",
-                    description=f"No swap needed. {arr[j]} <= {arr[j+1]}",
-                    state=arr.copy(),
+                    description=f"No swap needed. {arr[j]['value']} <= {arr[j+1]['value']}",
+                    state=[a.copy() for a in arr],
                     active_elements=[j, j+1],
-                    line=6, # We stay on the IF line to show it evaluated false
+                    line=6,
                     pointers={"i": i, "j": j}
                 )
                 
         # The element at n-i-1 is now sorted
         engine.record_event(
             type="SORTED_ELEMENT",
-            description=f"Element {arr[n - i - 1]} is in its final position",
-            state=arr.copy(),
+            description=f"Element {arr[n - i - 1]['value']} is in its final position",
+            state=[a.copy() for a in arr],
             active_elements=[n - i - 1],
             line=3,
             pointers={"i": i}
@@ -107,7 +108,7 @@ def bubble_sort(dataset: ArrayDataset) -> ExecutionResult:
         engine.record_event(
             type="INFO",
             description="Checking if any swaps occurred in this pass",
-            state=arr.copy(),
+            state=[a.copy() for a in arr],
             active_elements=[],
             line=9,
             pointers={"i": i}
@@ -117,7 +118,7 @@ def bubble_sort(dataset: ArrayDataset) -> ExecutionResult:
             engine.record_event(
                 type="COMPLETE",
                 description="No swaps occurred, array is sorted. Breaking early.",
-                state=arr.copy(),
+                state=[a.copy() for a in arr],
                 active_elements=[],
                 line=10,
                 pointers={"i": i}
@@ -132,7 +133,7 @@ def bubble_sort(dataset: ArrayDataset) -> ExecutionResult:
         engine.record_event(
             type="COMPLETE",
             description="Bubble Sort completed",
-            state=arr.copy(),
+            state=[a.copy() for a in arr],
             active_elements=[],
             line=None
         )

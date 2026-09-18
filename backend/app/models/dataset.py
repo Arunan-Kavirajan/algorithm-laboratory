@@ -4,9 +4,13 @@ from typing import Literal, List, Dict, Any, Union, Optional
 class BaseDataset(BaseModel):
     type: str
 
+class ArrayElement(BaseModel):
+    id: str
+    value: int
+
 class ArrayDataset(BaseDataset):
     type: Literal["ARRAY"] = "ARRAY"
-    values: List[int]
+    values: List[ArrayElement]
 
 class Edge(BaseModel):
     source: str

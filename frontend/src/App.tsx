@@ -14,10 +14,14 @@ function App() {
   const generateAndRun = async () => {
     setLoading(true);
     try {
+      // Generate a dataset with stable IDs for Framer Motion to glide perfectly!
       const values = Array.from({ length: arraySize }, (_, i) => i + 1)
         .map(value => ({ value, sort: Math.random() }))
         .sort((a, b) => a.sort - b.sort)
-        .map(({ value }) => value * 5); 
+        .map(({ value }, i) => ({ 
+            id: `block-${value}-${i}-${Math.random()}`, // ensure strictly unique ID
+            value: value * 5 
+        })); 
       
       const payload = {
         algorithmId: 'bubble_sort',
