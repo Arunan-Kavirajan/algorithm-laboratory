@@ -4,7 +4,7 @@ import { usePlayerStore } from '../store/usePlayerStore';
 import type { ArrayElement } from '../types';
 
 export const SortingVisualizer: React.FC = () => {
-    const { events, currentStepIndex } = usePlayerStore();
+    const { events, currentStepIndex, algorithmId } = usePlayerStore();
 
     if (events.length === 0) {
         return (
@@ -194,6 +194,104 @@ export const SortingVisualizer: React.FC = () => {
                     )}
                 </AnimatePresence>
             </div>
+
+            {/* Binary Heap Tree Visualization */}
+            <AnimatePresence>
+                {algorithmId === 'heap_sort' && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="w-full flex-shrink-0 border-t border-border/40 mt-8"
+                    >
+                        <div className="w-full flex flex-col items-center pt-8 pb-16">
+                            <span className="text-[10px] font-mono text-text-muted/60 uppercase tracking-wider mb-8">
+                                Binary Heap Representation
+                            </span>
+                            <div className="relative w-full max-w-2xl h-[280px]">
+                                {/* SVG Edges */}
+                                <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible">
+                                    {array.map((item, i) => {
+                                        if (i === 0) return null;
+                                        const parentIdx = Math.floor((i - 1) / 2);
+                                        
+                                        const getCoords = (idx: number) => {
+                                            const level = Math.floor(Math.log2(idx + 1));
+                                            const levelWidth = Math.pow(2, level);
+                                            const indexInLevel = idx - (levelWidth - 1);
+                                            const x = (indexInLevel + 0.5) / levelWidth * 100;
+                                            const y = level * 70 + 20; // 20 is half node height
+                                            return { x, y };
+                                        };
+                                        
+                                        const child = getCoords(i);
+                                        const parent = getCoords(parentIdx);
+                                        
+                                        const isActiveEdge = activeElements.includes(i) && activeElements.includes(parentIdx);
+                                        const strokeColor = isActiveEdge ? "var(--color-accent, #38bdf8)" : "var(--color-border, #334155)";
+                                        const strokeWidth = isActiveEdge ? "3" : "2";
+                                        const strokeOpacity = isActiveEdge ? "0.8" : "0.3";
+                                        
+                                        return (
+                                            <line 
+                                                key={`edge-${item.id}`} 
+                                                x1={`${parent.x}%`} 
+                                                y1={parent.y} 
+                                                x2={`${child.x}%`} 
+                                                y2={child.y} 
+                                                stroke={strokeColor}
+                                                strokeWidth={strokeWidth}
+                                                opacity={strokeOpacity}
+                                                className="transition-all duration-300"
+                                            />
+                                        );
+                                    })}
+                                </svg>
+                                
+                                {/* Tree Nodes */}
+                                {array.map((item, i) => {
+                                    const level = Math.floor(Math.log2(i + 1));
+                                    const levelWidth = Math.pow(2, level);
+                                    const indexInLevel = i - (levelWidth - 1);
+                                    const leftPercent = (indexInLevel + 0.5) / levelWidth * 100;
+                                    const topPx = level * 70;
+                                    
+                                    const isActive = activeElements.includes(i);
+                                    const isSorted = currentEvent.type === 'SORTED_ELEMENT' && activeElements.includes(i);
+                                    
+                                    let borderColor = 'border-border/60';
+                                    let bgColor = 'bg-surface';
+                                    let textColor = 'text-text';
+                                    let shadow = 'shadow-sm';
+                                    
+                                    if (isSorted) {
+                                        borderColor = 'border-emerald-500/50';
+                                        bgColor = 'bg-emerald-500/10';
+                                        textColor = 'text-emerald-400';
+                                        shadow = 'shadow-[0_0_15px_rgba(16,185,129,0.2)]';
+                                    } else if (isActive) {
+                                        borderColor = 'border-accent';
+                                        bgColor = 'bg-accent/10';
+                                        textColor = 'text-accent';
+                                        shadow = 'shadow-[0_0_15px_rgba(56,189,248,0.2)]';
+                                    }
+
+                                    return (
+                                        <motion.div
+                                            key={`tree-${item.id}`}
+                                            animate={{ left: `${leftPercent}%`, top: topPx, x: '-50%' }}
+                                            transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                                            className={`absolute w-10 h-10 rounded-full flex items-center justify-center font-mono font-bold text-sm border-2 ${borderColor} ${bgColor} ${textColor} ${shadow} transition-colors duration-200 z-10`}
+                                        >
+                                            {item.value}
+                                        </motion.div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Event Description Toast */}
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 max-w-md w-full z-20">
