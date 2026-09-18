@@ -12,7 +12,7 @@ class ExecutionEvent(BaseModel):
     type: str
     description: str
     line: Optional[int] = None
-    pointers: Dict[str, int] = {}
+    pointers: Dict[str, Union[int, str]] = {}
     state: Any
     auxiliary: Optional[List[Any]] = None
     activeElements: List[Union[int, str]] = []

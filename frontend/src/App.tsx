@@ -77,7 +77,7 @@ function App() {
           payload.target = searchTarget;
       }
 
-      const response = await axios.post<ExecutionResult>('http://localhost:8000/api/execute', payload);
+      const response = await axios.post<ExecutionResult>('/api/execute', payload);
       setExecutionData(response.data.events, response.data.summary, response.data.sourceCode, response.data.algorithmId);
     } catch (error) {
       console.error("Failed to execute algorithm:", error);
