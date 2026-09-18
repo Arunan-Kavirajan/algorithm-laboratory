@@ -14,6 +14,7 @@ app.add_middleware(
 )
 
 @app.get("/api/health")
+@app.head("/api/health")
 def health_check():
     return {"status": "ok", "time": time.time()}
 
@@ -35,5 +36,6 @@ if os.path.isdir(dist_path):
     
     # Catch-all route to serve the SPA index.html for any other route
     @app.get("/{catchall:path}")
+    @app.head("/{catchall:path}")
     def serve_react_app(catchall: str):
         return FileResponse(os.path.join(dist_path, "index.html"))
