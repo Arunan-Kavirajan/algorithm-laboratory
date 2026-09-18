@@ -54,9 +54,11 @@ export const SortingVisualizer: React.FC = () => {
                 </div>
             </div>
 
-            {/* Central Array Visualization */}
-            <div className="flex-1 flex flex-col items-center justify-center p-8 z-10">
-                <div className="flex items-end justify-center w-full max-w-4xl gap-1 sm:gap-2">
+            {/* Central Content Area */}
+            <div className="flex-1 flex flex-col items-center justify-start sm:justify-center p-8 pt-24 pb-24 z-10 w-full overflow-y-auto custom-scrollbar">
+                
+                {/* Linear Array */}
+                <div className="flex items-end justify-center w-full max-w-4xl gap-1 sm:gap-2 flex-shrink-0">
                     <AnimatePresence mode="popLayout">
                         {array.map((item, index) => {
                             // Default styling (inactive)
@@ -175,7 +177,7 @@ export const SortingVisualizer: React.FC = () => {
                             </span>
                             <div className="flex items-center justify-center gap-1.5 p-3 bg-surface/40 rounded-xl border border-dashed border-border/60 min-h-[64px] min-w-[200px] flex-wrap shadow-inner">
                                 <AnimatePresence mode="popLayout">
-                                    {currentEvent.auxiliary.map((item, idx) => (
+                                    {currentEvent.auxiliary.map((item) => (
                                         <motion.div
                                             key={item.id}
                                             layout
@@ -193,9 +195,6 @@ export const SortingVisualizer: React.FC = () => {
                         </motion.div>
                     )}
                 </AnimatePresence>
-            </div>
-
-            {/* Binary Heap Tree Visualization */}
             <AnimatePresence>
                 {algorithmId === 'heap_sort' && (
                     <motion.div
@@ -210,42 +209,62 @@ export const SortingVisualizer: React.FC = () => {
                             </span>
                             <div className="relative w-full max-w-2xl h-[280px]">
                                 {/* SVG Edges */}
-                                <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible">
-                                    {array.map((item, i) => {
-                                        if (i === 0) return null;
-                                        const parentIdx = Math.floor((i - 1) / 2);
-                                        
-                                        const getCoords = (idx: number) => {
-                                            const level = Math.floor(Math.log2(idx + 1));
-                                            const levelWidth = Math.pow(2, level);
-                                            const indexInLevel = idx - (levelWidth - 1);
-                                            const x = (indexInLevel + 0.5) / levelWidth * 100;
-                                            const y = level * 70 + 20; // 20 is half node height
-                                            return { x, y };
-                                        };
-                                        
-                                        const child = getCoords(i);
-                                        const parent = getCoords(parentIdx);
-                                        
-                                        const isActiveEdge = activeElements.includes(i) && activeElements.includes(parentIdx);
-                                        const strokeColor = isActiveEdge ? "var(--color-accent, #38bdf8)" : "var(--color-border, #334155)";
-                                        const strokeWidth = isActiveEdge ? "3" : "2";
-                                        const strokeOpacity = isActiveEdge ? "0.8" : "0.3";
-                                        
-                                        return (
-                                            <line 
-                                                key={`edge-${item.id}`} 
-                                                x1={`${parent.x}%`} 
-                                                y1={parent.y} 
-                                                x2={`${child.x}%`} 
-                                                y2={child.y} 
-                                                stroke={strokeColor}
-                                                strokeWidth={strokeWidth}
-                                                opacity={strokeOpacity}
-                                                className="transition-all duration-300"
-                                            />
-                                        );
-                                    })}
+                                <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible z-0">
+                                    <defs>
+                                        <mask id="node-mask">
+                                            {/* Everything white is visible, black is hidden */}
+                                            <rect width="100%" height="100%" fill="white" />
+                                            {array.map((item, i) => {
+                                                const level = Math.floor(Math.log2(i + 1));
+                                                const levelWidth = Math.pow(2, level);
+                                                const indexInLevel = i - (levelWidth - 1);
+                                                const x = (indexInLevel + 0.5) / levelWidth * 100;
+                                                const y = level * 70 + 20;
+                                                // Node radius is 20px, we mask out slightly more (22px) for a clean gap
+                                                return <circle key={`mask-${item.id}`} cx={`${x}%`} cy={y} r="24" fill="black" />
+                                            })}
+                                        </mask>
+                                        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                                            <feGaussianBlur stdDeviation="3" result="blur" />
+                                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                        </filter>
+                                    </defs>
+                                    
+                                    <g mask="url(#node-mask)">
+                                        {array.map((item, i) => {
+                                            if (i === 0) return null;
+                                            const parentIdx = Math.floor((i - 1) / 2);
+                                            
+                                            const getCoords = (idx: number) => {
+                                                const level = Math.floor(Math.log2(idx + 1));
+                                                const levelWidth = Math.pow(2, level);
+                                                const indexInLevel = idx - (levelWidth - 1);
+                                                const x = (indexInLevel + 0.5) / levelWidth * 100;
+                                                const y = level * 70 + 20; // 20 is half node height
+                                                return { x, y };
+                                            };
+                                            
+                                            const child = getCoords(i);
+                                            const parent = getCoords(parentIdx);
+                                            
+                                            const isActiveEdge = activeElements.includes(i) && activeElements.includes(parentIdx);
+                                            
+                                            return (
+                                                <line 
+                                                    key={`edge-${item.id}`} 
+                                                    x1={`${parent.x}%`} 
+                                                    y1={parent.y} 
+                                                    x2={`${child.x}%`} 
+                                                    y2={child.y} 
+                                                    stroke={isActiveEdge ? "#38bdf8" : "#64748b"}
+                                                    strokeWidth={isActiveEdge ? "3" : "2"}
+                                                    opacity={isActiveEdge ? "1" : "0.4"}
+                                                    filter={isActiveEdge ? "url(#glow)" : "none"}
+                                                    className="transition-all duration-300"
+                                                />
+                                            );
+                                        })}
+                                    </g>
                                 </svg>
                                 
                                 {/* Tree Nodes */}
@@ -292,6 +311,7 @@ export const SortingVisualizer: React.FC = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
+            </div>
 
             {/* Event Description Toast */}
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 max-w-md w-full z-20">

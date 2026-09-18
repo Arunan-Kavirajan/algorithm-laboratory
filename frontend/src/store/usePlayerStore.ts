@@ -21,7 +21,7 @@ interface PlayerState {
     reset: () => void;
 }
 
-export const usePlayerStore = create<PlayerState>((set, get) => ({
+export const usePlayerStore = create<PlayerState>((set) => ({
     events: [],
     summary: null,
     sourceCode: "",
