@@ -14,7 +14,7 @@ export const GraphVisualizer: React.FC = () => {
         );
     }
 
-    const { nodes = [], edges = [] } = currentEvent.state as any;
+    const { nodes = [], edges = [], distances = {} } = currentEvent.state as any;
     const activeElements = currentEvent.activeElements as string[];
     const pointers = currentEvent.pointers;
     const queue = currentEvent.auxiliary || [];
@@ -193,9 +193,9 @@ export const GraphVisualizer: React.FC = () => {
                                         N{node.id.split('-')[1]}
                                     </div>
                                     {node.value}
-                                    {pointers?.distances?.[node.id] !== undefined && (
+                                    {distances[node.id] !== undefined && (
                                         <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] font-mono text-[#10b981] font-bold bg-background/80 px-1 rounded">
-                                            Cost: {pointers.distances[node.id] === 999 ? '∞' : pointers.distances[node.id]}
+                                            Cost: {distances[node.id] === 999 ? '∞' : distances[node.id]}
                                         </div>
                                     )}
                                 </div>
@@ -243,9 +243,9 @@ export const GraphVisualizer: React.FC = () => {
                                                 N{node.id.split('-')[1]}
                                             </div>
                                             {node.value}
-                                            {pointers?.distances?.[node.id] !== undefined && (
+                                            {distances[node.id] !== undefined && (
                                                 <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[9px] font-mono text-[#10b981] font-bold">
-                                                    Cost: {pointers.distances[node.id] === 999 ? '∞' : pointers.distances[node.id]}
+                                                    Cost: {distances[node.id] === 999 ? '∞' : distances[node.id]}
                                                 </div>
                                             )}
                                         </motion.div>

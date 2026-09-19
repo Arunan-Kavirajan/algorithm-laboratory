@@ -54,7 +54,8 @@ def dijkstra_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
     def get_state():
         return {
             "nodes": [n.model_dump() for n in dataset.nodes],
-            "edges": [e.model_dump() for e in dataset.edges]
+            "edges": [e.model_dump() for e in dataset.edges],
+            "distances": distances.copy()
         }
         
     start_node = dataset.nodes[0].id
@@ -62,6 +63,7 @@ def dijkstra_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
 
     distances = {node.id: 999 for node in dataset.nodes} # Use 999 instead of float('inf') for JSON serialization
     distances[start_node] = 0
+    start_node_name = start_node.replace('node-', 'Node ')
 
     engine.record_event(
         type="START",
@@ -69,7 +71,7 @@ def dijkstra_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
         state=get_state(),
         active_elements=[],
         line=1,
-        pointers={"target": target, "distances": distances.copy()}
+        pointers={"target": target}
     )
     
     # pq stores (distance, node_id)
@@ -86,7 +88,7 @@ def dijkstra_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
         state=get_state(),
         active_elements=[start_node],
         line=5,
-        pointers={"target": target, "distances": distances.copy()},
+        pointers={"target": target},
         auxiliary=get_pq_nodes()
     )
     
@@ -112,7 +114,7 @@ def dijkstra_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
             state=get_state(),
             active_elements=[curr],
             line=9,
-            pointers={"target": target, "curr": curr, "distances": distances.copy()},
+            pointers={"target": target, "curr": curr},
             auxiliary=get_pq_nodes()
         )
         
@@ -129,7 +131,7 @@ def dijkstra_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
                 state=get_state(),
                 active_elements=[curr],
                 line=16,
-                pointers={"target": target, "curr": curr, "distances": distances.copy()},
+                pointers={"target": target, "curr": curr},
                 auxiliary=get_pq_nodes()
             )
             found_id = curr
@@ -146,7 +148,7 @@ def dijkstra_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
                 state=get_state(),
                 active_elements=[curr],
                 line=18,
-                pointers={"target": target, "curr": curr, "distances": distances.copy()},
+                pointers={"target": target, "curr": curr},
                 auxiliary=get_pq_nodes()
             )
             
@@ -162,7 +164,7 @@ def dijkstra_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
                 state=get_state(),
                 active_elements=[curr] + [nbr[0] for nbr in neighbors],
                 line=19,
-                pointers={"target": target, "curr": curr, "distances": distances.copy()},
+                pointers={"target": target, "curr": curr},
                 auxiliary=get_pq_nodes()
             )
             
@@ -186,7 +188,7 @@ def dijkstra_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
                     state=get_state(),
                     active_elements=[curr, nbr],
                     line=23,
-                    pointers={"target": target, "curr": curr, "neighbor": nbr, "distances": distances.copy()},
+                    pointers={"target": target, "curr": curr, "neighbor": nbr},
                     auxiliary=get_pq_nodes()
                 )
 
@@ -197,7 +199,7 @@ def dijkstra_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
             state=get_state(),
             active_elements=[],
             line=26,
-            pointers={"target": target, "distances": distances.copy()},
+            pointers={"target": target},
             auxiliary=[]
         )
     else:
@@ -207,7 +209,7 @@ def dijkstra_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
             state=get_state(),
             active_elements=[found_id],
             line=None,
-            pointers={"target": target, "distances": distances.copy()},
+            pointers={"target": target},
             auxiliary=[]
         )
         
