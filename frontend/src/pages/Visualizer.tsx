@@ -30,15 +30,15 @@ export function Visualizer() {
           const edges = [];
           const getWeight = () => activeAlgorithm === 'dijkstra' ? Math.floor(Math.random() * 9) + 1 : undefined;
           const totalLevels = Math.floor(Math.log2(arraySize)) + 1;
-          // Distribute levels evenly across 5-90% vertical space
-          const yStep = totalLevels > 1 ? 85 / (totalLevels - 1) : 0;
+          // Distribute levels evenly across 0-100% vertical space to maximize spread
+          const yStep = totalLevels > 1 ? 100 / (totalLevels - 1) : 0;
           for (let i = 0; i < arraySize; i++) {
             const level = Math.floor(Math.log2(i + 1));
             const levelWidth = Math.pow(2, level);
             const indexInLevel = i - (levelWidth - 1);
-            // Spread nodes across 4-96% horizontal, 5% top margin
+            // Spread nodes across 4-96% horizontal, 0-100% vertical
             const x = ((indexInLevel + 0.5) / levelWidth) * 92 + 4;
-            const y = level * yStep + 5;
+            const y = level * yStep;
             nodes.push({
               id: `node-${i}`,
               value: i,

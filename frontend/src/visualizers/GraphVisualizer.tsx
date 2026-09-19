@@ -82,7 +82,7 @@ export const GraphVisualizer: React.FC = () => {
                         </div>
                     </div>
                 )}
-                <div className="absolute top-24 left-0 right-0 bottom-8">
+                <div className="absolute top-24 left-0 right-0 bottom-4">
                     {/* SVG Edges Layer */}
                     <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
                         <defs>
