@@ -1,7 +1,19 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import ReactMarkdown from 'react-markdown';
+// @ts-ignore
+import remarkGfm from 'remark-gfm';
+
+// Load all markdown files as raw strings
+const markdownFiles = import.meta.glob('../content/guides/*.md', { as: 'raw', eager: true });
 
 export function Guides() {
     const [activeAlgorithm, setActiveAlgorithm] = useState('bubble_sort');
+
+    // Get the corresponding markdown string
+    const markdownContent = useMemo(() => {
+        const path = `../content/guides/${activeAlgorithm}.md`;
+        return markdownFiles[path] || '# Guide not found\n\nThe guide for this algorithm is currently being generated...';
+    }, [activeAlgorithm]);
 
     return (
         <div className="flex-1 flex flex-col font-sans h-full relative">
@@ -32,9 +44,11 @@ export function Guides() {
                 </div>
             </header>
 
-            <main className="flex-1 overflow-auto p-8 max-w-4xl mx-auto w-full">
-                <div className="text-text-muted italic">
-                    I will generate the markdown guides for each of these in the next step!
+            <main className="flex-1 overflow-auto p-8 lg:p-12">
+                <div className="max-w-3xl mx-auto prose prose-invert prose-emerald">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {markdownContent}
+                    </ReactMarkdown>
                 </div>
             </main>
         </div>
