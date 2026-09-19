@@ -22,9 +22,7 @@ export function Layout() {
       >
         <div className="p-5 border-b border-border flex items-center justify-between">
             <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded bg-gradient-to-br from-accent to-blue-800 flex items-center justify-center shadow-lg shadow-accent/20">
-                    <span className="text-white font-bold font-mono tracking-tighter text-sm">AL</span>
-                </div>
+                <img src="/icon-mark-dark.svg" alt="AL Logo" className="w-8 h-8 drop-shadow-md" />
                 <h2 className="text-sm font-bold tracking-tight text-text">Navigation</h2>
             </div>
             <button onClick={() => setIsSidebarOpen(false)} className="text-text-muted hover:text-text transition-colors rounded-lg p-1 hover:bg-surface-hover">
@@ -67,12 +65,7 @@ export function Layout() {
           </button>
           
           <div className="flex items-center gap-3 border-l border-border pl-4">
-            <div className="w-8 h-8 rounded bg-gradient-to-br from-accent to-blue-800 flex items-center justify-center shadow-lg shadow-accent/20">
-              <span className="text-white font-bold font-mono tracking-tighter">AL</span>
-            </div>
-            <div>
-              <h1 className="text-lg font-semibold tracking-tight text-text">Algorithm Laboratory</h1>
-            </div>
+            <img src="/logo-horizontal-dark.svg" alt="Algorithm Laboratory" className="h-7" />
           </div>
       </header>
       

@@ -1,0 +1,46 @@
+<svg viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Algorithm Laboratory — Learn algorithms by watching them work">
+  <title>Algorithm Laboratory</title>
+
+  <defs>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <circle cx="1.2" cy="1.2" r="1.2" fill="#F4F2F8" opacity="0.06"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="630" fill="#16131F"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- large decorative traversal path, right side -->
+  <circle cx="900" cy="380" r="270" fill="none" stroke="#2A2640" stroke-width="1.4" opacity="0.6"/>
+  <circle cx="1145" cy="170" r="42" fill="none" stroke="#2FE0C2" stroke-width="2" opacity="0.35"/>
+
+  <g stroke-linecap="round" fill="none">
+    <line x1="705" y1="575" x2="855" y2="470" stroke="#3A3450" stroke-width="12"/>
+    <line x1="855" y1="470" x2="1005" y2="335" stroke="#3A3450" stroke-width="12"/>
+    <line x1="1005" y1="335" x2="1145" y2="170" stroke="#2FE0C2" stroke-width="12" opacity="0.5"/>
+    <line x1="855" y1="470" x2="945" y2="572" stroke="#3A3450" stroke-width="7" opacity="0.5"/>
+  </g>
+  <circle cx="705" cy="575" r="17" fill="#3A3450"/>
+  <circle cx="855" cy="470" r="20" fill="#5E5878"/>
+  <circle cx="945" cy="572" r="10" fill="#3A3450" opacity="0.5"/>
+  <circle cx="1005" cy="335" r="23" fill="#F4F2F8"/>
+  <circle cx="1145" cy="170" r="29" fill="#2FE0C2"/>
+
+  <!-- icon mark, upper left -->
+  <g transform="translate(90,80) scale(0.95)">
+    <circle cx="60" cy="60" r="55" fill="none" stroke="#34304A" stroke-width="1.6" opacity="0.85"/>
+    <circle cx="88" cy="34" r="16" fill="none" stroke="#2FE0C2" stroke-width="2" opacity="0.4"/>
+    <g stroke-linecap="round" fill="none">
+      <line x1="28" y1="90" x2="48" y2="72" stroke="#34304A" stroke-width="6.5"/>
+      <line x1="48" y1="72" x2="68" y2="54" stroke="#34304A" stroke-width="6.5"/>
+      <line x1="68" y1="54" x2="88" y2="34" stroke="#2FE0C2" stroke-width="6.5" opacity="0.45"/>
+    </g>
+    <circle cx="28" cy="90" r="8" fill="#46405C"/>
+    <circle cx="48" cy="72" r="9" fill="#8B85A0"/>
+    <circle cx="68" cy="54" r="10" fill="#F4F2F8"/>
+    <circle cx="88" cy="34" r="12" fill="#2FE0C2"/>
+  </g>
+
+  <text x="90" y="330" font-family="'Space Grotesk','Inter','Helvetica Neue',Arial,sans-serif" font-weight="700" font-size="68" letter-spacing="-1" fill="#F4F2F8">Algorithm Laboratory</text>
+  <text x="92" y="384" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-weight="400" font-size="30" fill="#9C96AC">Learn algorithms by watching them work</text>
+</svg>

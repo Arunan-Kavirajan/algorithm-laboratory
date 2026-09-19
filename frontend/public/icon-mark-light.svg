@@ -1,0 +1,17 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Algorithm Laboratory symbol">
+  <title>Algorithm Laboratory</title>
+
+  <circle cx="60" cy="60" r="55" fill="none" stroke="#D8D5E0" stroke-width="1.6" opacity="0.85"/>
+  <circle cx="88" cy="34" r="16" fill="none" stroke="#12B79C" stroke-width="2" opacity="0.4"/>
+
+  <g stroke-linecap="round" fill="none">
+    <line x1="28" y1="90" x2="48" y2="72" stroke="#D8D5E0" stroke-width="6.5"/>
+    <line x1="48" y1="72" x2="68" y2="54" stroke="#D8D5E0" stroke-width="6.5"/>
+    <line x1="68" y1="54" x2="88" y2="34" stroke="#12B79C" stroke-width="6.5" opacity="0.45"/>
+  </g>
+
+  <circle cx="28" cy="90" r="8" fill="#B7B3C4"/>
+  <circle cx="48" cy="72" r="9" fill="#7A7490"/>
+  <circle cx="68" cy="54" r="10" fill="#16131F"/>
+  <circle cx="88" cy="34" r="12" fill="#12B79C"/>
+</svg>
