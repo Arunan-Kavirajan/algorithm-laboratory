@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 
 export interface CustomNode {
     id: string;
-    value: string;
+    value: number;
     x: number;
     y: number;
 }
@@ -18,7 +18,7 @@ interface InteractiveCanvasProps {
     edges: CustomEdge[];
     onNodesChange: (nodes: CustomNode[]) => void;
     onEdgesChange: (edges: CustomEdge[]) => void;
-    activeMode: 'ADD_NODE' | 'ADD_EDGE' | 'MOVE_NODE';
+    activeMode: 'ADD_NODE' | 'ADD_EDGE' | 'REMOVE_NODE';
     isDijkstra: boolean;
 }
 
@@ -28,7 +28,13 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
     const canvasRef = useRef<HTMLDivElement>(null);
     const [dragStartNode, setDragStartNode] = useState<string | null>(null);
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-    const [nodeCounter, setNodeCounter] = useState(1);
+
+    // Derive the next node counter safely from existing nodes
+    const getNextNodeId = () => {
+        if (nodes.length === 0) return 1;
+        const maxId = Math.max(...nodes.map(n => parseInt(n.id.split('-')[1]) || 0));
+        return maxId + 1;
+    };
 
     const handleMouseMove = (e: React.MouseEvent) => {
         if (!canvasRef.current) return;
@@ -48,20 +54,24 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
         const x = ((e.clientX - rect.left) / rect.width) * 100;
         const y = ((e.clientY - rect.top) / rect.height) * 100;
 
+        const nextId = getNextNodeId();
         const newNode: CustomNode = {
-            id: `node-${nodeCounter}`,
-            value: `${nodeCounter}`,
+            id: `node-${nextId}`,
+            value: nextId,
             x,
             y
         };
         onNodesChange([...nodes, newNode]);
-        setNodeCounter(prev => prev + 1);
     };
 
     const handleNodeMouseDown = (nodeId: string, e: React.MouseEvent) => {
         e.stopPropagation();
         if (activeMode === 'ADD_EDGE') {
             setDragStartNode(nodeId);
+        } else if (activeMode === 'REMOVE_NODE') {
+            // Remove node and any edges connected to it
+            onNodesChange(nodes.filter(n => n.id !== nodeId));
+            onEdgesChange(edges.filter(edge => edge.source !== nodeId && edge.target !== nodeId));
         }
     };
 
@@ -95,7 +105,7 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
     return (
         <div 
             ref={canvasRef}
-            className="flex-1 w-full h-full relative overflow-hidden bg-background rounded-xl border border-border shadow-inner cursor-crosshair"
+            className={`flex-1 w-full h-full relative overflow-hidden bg-background rounded-xl border border-border shadow-inner ${activeMode === 'ADD_NODE' ? 'cursor-crosshair' : ''}`}
             onMouseMove={handleMouseMove}
             onClick={handleCanvasClick}
             onMouseUp={() => setDragStartNode(null)}
@@ -152,20 +162,26 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
                 )}
             </svg>
 
-            {nodes.map(node => (
-                <div
-                    key={node.id}
-                    className={`canvas-node absolute -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center font-mono text-sm border-2 border-border bg-surface/80 backdrop-blur-sm text-text-muted shadow-sm transition-colors ${activeMode === 'ADD_EDGE' ? 'cursor-pointer hover:border-accent hover:text-accent' : ''}`}
-                    style={{ left: `${node.x}%`, top: `${node.y}%` }}
-                    onMouseDown={(e) => handleNodeMouseDown(node.id, e)}
-                    onMouseUp={(e) => handleNodeMouseUp(node.id, e)}
-                >
-                    <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-mono text-text-muted/60 uppercase tracking-widest bg-background/80 px-1 rounded">
-                        N{node.id.split('-')[1]}
+            {nodes.map(node => {
+                let hoverClasses = '';
+                if (activeMode === 'ADD_EDGE') hoverClasses = 'cursor-pointer hover:border-accent hover:text-accent';
+                if (activeMode === 'REMOVE_NODE') hoverClasses = 'cursor-pointer hover:border-red-500 hover:text-red-500 hover:bg-red-500/10';
+
+                return (
+                    <div
+                        key={node.id}
+                        className={`canvas-node absolute -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center font-mono text-sm border-2 border-border bg-surface/80 backdrop-blur-sm text-text-muted shadow-sm transition-colors ${hoverClasses}`}
+                        style={{ left: `${node.x}%`, top: `${node.y}%` }}
+                        onMouseDown={(e) => handleNodeMouseDown(node.id, e)}
+                        onMouseUp={(e) => handleNodeMouseUp(node.id, e)}
+                    >
+                        <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-mono text-text-muted/60 uppercase tracking-widest bg-background/80 px-1 rounded">
+                            N{node.id.split('-')[1]}
+                        </div>
+                        {node.value}
                     </div>
-                    {node.value}
-                </div>
-            ))}
+                );
+            })}
         </div>
     );
 };

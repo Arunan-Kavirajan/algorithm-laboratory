@@ -8,13 +8,15 @@ import { InteractiveCanvas } from '../components/InteractiveCanvas';
 import type { CustomNode, CustomEdge } from '../components/InteractiveCanvas';
 import type { ExecutionResult } from '../types';
 
-type BuildMode = 'ADD_NODE' | 'ADD_EDGE';
+type BuildMode = 'ADD_NODE' | 'ADD_EDGE' | 'REMOVE_NODE';
 
 export function Playground() {
     const [isBuilding, setIsBuilding] = useState(true);
     const [loading, setLoading] = useState(false);
     const [activeAlgorithm, setActiveAlgorithm] = useState('dijkstra');
-    const [searchTarget, setSearchTarget] = useState<string>('node-2');
+    
+    // We start without a target until they place nodes
+    const [searchTarget, setSearchTarget] = useState<string>('');
     
     const [nodes, setNodes] = useState<CustomNode[]>([]);
     const [edges, setEdges] = useState<CustomEdge[]>([]);
@@ -37,7 +39,13 @@ export function Playground() {
                 dataset: dataset
             };
             
-            payload.target = searchTarget;
+            if (searchTarget) {
+                payload.target = searchTarget;
+            } else if (nodes.length > 1) {
+                payload.target = nodes[1].id;
+            } else {
+                payload.target = nodes[0].id;
+            }
 
             const response = await axios.post<ExecutionResult>('/api/execute', payload);
             setExecutionData(response.data.events, response.data.summary, response.data.sourceCode, response.data.algorithmId);
@@ -58,7 +66,8 @@ export function Playground() {
     const handleClearCanvas = () => {
         setNodes([]);
         setEdges([]);
-        setSearchTarget('node-2');
+        setSearchTarget('');
+        setActiveMode('ADD_NODE');
     };
 
     return (
@@ -97,12 +106,18 @@ export function Playground() {
                             >
                                 + Edge
                             </button>
+                            <button 
+                                onClick={() => setActiveMode('REMOVE_NODE')}
+                                className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${activeMode === 'REMOVE_NODE' ? 'bg-red-500 text-white' : 'text-text-muted hover:text-red-400 hover:bg-surface-hover'}`}
+                            >
+                                - Del
+                            </button>
                             <div className="w-px h-4 bg-border mx-1" />
                             <button 
                                 onClick={handleClearCanvas}
                                 className="px-3 py-1.5 text-xs font-semibold rounded-md text-red-400 hover:bg-red-400/10 transition-colors"
                             >
-                                Clear
+                                Clear All
                             </button>
                         </div>
 
@@ -112,7 +127,7 @@ export function Playground() {
                             <select 
                                 value={searchTarget}
                                 onChange={(e) => setSearchTarget(e.target.value)}
-                                className="bg-transparent text-text font-mono font-bold outline-none cursor-pointer"
+                                className="bg-transparent text-text font-mono font-bold outline-none cursor-pointer min-w-16"
                             >
                                 {nodes.length === 0 && <option value="">---</option>}
                                 {nodes.map(n => (
@@ -135,7 +150,7 @@ export function Playground() {
                             onClick={handleReset}
                             className="bg-surface-hover text-text hover:bg-border px-5 py-1.5 rounded-md text-sm font-medium transition-all shadow-sm"
                         >
-                            Back to Builder
+                            ← Back to Builder
                         </button>
                     </div>
                 )}
