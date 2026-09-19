@@ -91,18 +91,36 @@ export const GraphVisualizer: React.FC = () => {
                             const isEdgeActive = activeElements.includes(source.id) && activeElements.includes(target.id);
                             
                             return (
-                                <motion.line
-                                    key={`edge-${source.id}-${target.id}-${i}`}
-                                    x1={`${source.x}%`}
-                                    y1={`${source.y}%`}
-                                    x2={`${target.x}%`}
-                                    y2={`${target.y}%`}
-                                    stroke={isEdgeActive ? "#3b82f6" : "rgba(255,255,255,0.1)"}
-                                    strokeWidth={isEdgeActive ? 3 : 2}
-                                    mask="url(#graph-node-mask)"
-                                    filter={isEdgeActive ? "url(#edge-glow)" : ""}
-                                    className="transition-colors duration-300"
-                                />
+                                <g key={`edge-${source.id}-${target.id}-${i}`}>
+                                    <motion.line
+                                        x1={`${source.x}%`}
+                                        y1={`${source.y}%`}
+                                        x2={`${target.x}%`}
+                                        y2={`${target.y}%`}
+                                        stroke={isEdgeActive ? "#3b82f6" : "rgba(255,255,255,0.1)"}
+                                        strokeWidth={isEdgeActive ? 3 : 2}
+                                        mask="url(#graph-node-mask)"
+                                        filter={isEdgeActive ? "url(#edge-glow)" : ""}
+                                        className="transition-colors duration-300"
+                                    />
+
+                                    {edge.weight !== undefined && (
+                                        <text
+                                            x={`${(source.x + target.x) / 2}%`}
+                                            y={`${(source.y + target.y) / 2}%`}
+                                            fill={isEdgeActive ? "#3b82f6" : "#64748b"}
+                                            fontSize="10"
+                                            fontFamily="monospace"
+                                            fontWeight="bold"
+                                            textAnchor="middle"
+                                            dominantBaseline="middle"
+                                            className="transition-colors duration-300"
+                                            style={{ textShadow: "0px 0px 4px #0f172a, 0px 0px 4px #0f172a" }}
+                                        >
+                                            {edge.weight}
+                                        </text>
+                                    )}
+                                </g>
                             );
                         })}
                     </svg>
@@ -171,11 +189,15 @@ export const GraphVisualizer: React.FC = () => {
                                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
                             >
                                 <div className={`w-12 h-12 rounded-full flex items-center justify-center font-mono text-sm border-2 ${borderColor} ${bgColor} ${textColor} ${shadow} transition-all duration-300 relative`}>
-                                    {/* Node ID Label */}
                                     <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-mono text-text-muted/60 uppercase tracking-widest bg-background/80 px-1 rounded">
                                         N{node.id.split('-')[1]}
                                     </div>
                                     {node.value}
+                                    {pointers?.distances?.[node.id] !== undefined && (
+                                        <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] font-mono text-[#10b981] font-bold bg-background/80 px-1 rounded">
+                                            Cost: {pointers.distances[node.id] === 999 ? '∞' : pointers.distances[node.id]}
+                                        </div>
+                                    )}
                                 </div>
                                 
                                 {/* Pointer Badges */}
@@ -201,7 +223,7 @@ export const GraphVisualizer: React.FC = () => {
                 <div className="w-full max-w-3xl">
                     <div className="flex flex-col">
                         <span className="text-[10px] font-mono text-text-muted/60 uppercase tracking-wider mb-2 pl-2">
-                            {algorithmId === 'dfs' ? 'DFS Stack (LIFO)' : 'BFS Queue (FIFO)'}
+                            {algorithmId === 'dijkstra' ? 'Priority Queue (Min-Heap)' : algorithmId === 'dfs' ? 'DFS Stack (LIFO)' : 'BFS Queue (FIFO)'}
                         </span>
                         <div className="flex items-center gap-2 p-3 bg-surface/60 rounded-xl border border-dashed border-border/60 min-h-[72px] shadow-inner backdrop-blur-md overflow-x-auto custom-scrollbar">
                             <AnimatePresence mode="popLayout">
@@ -221,6 +243,11 @@ export const GraphVisualizer: React.FC = () => {
                                                 N{node.id.split('-')[1]}
                                             </div>
                                             {node.value}
+                                            {pointers?.distances?.[node.id] !== undefined && (
+                                                <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[9px] font-mono text-[#10b981] font-bold">
+                                                    Cost: {pointers.distances[node.id] === 999 ? '∞' : pointers.distances[node.id]}
+                                                </div>
+                                            )}
                                         </motion.div>
                                     );
                                 })}
@@ -230,7 +257,7 @@ export const GraphVisualizer: React.FC = () => {
                                         animate={{ opacity: 1 }}
                                         className="text-text-muted/40 font-mono text-sm mx-auto"
                                     >
-                                        {algorithmId === 'dfs' ? 'Empty Stack' : 'Empty Queue'}
+                                        {algorithmId === 'dijkstra' ? 'Empty Priority Queue' : algorithmId === 'dfs' ? 'Empty Stack' : 'Empty Queue'}
                                     </motion.span>
                                 )}
                             </AnimatePresence>

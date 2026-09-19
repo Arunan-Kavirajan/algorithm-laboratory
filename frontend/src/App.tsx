@@ -14,16 +14,16 @@ function App() {
   const [activeAlgorithm, setActiveAlgorithm] = useState('bubble_sort');
   const [searchTarget, setSearchTarget] = useState(25);
 
-  const isSearch = activeAlgorithm.includes('search') || activeAlgorithm === 'bfs' || activeAlgorithm === 'dfs';
+  const isSearch = activeAlgorithm.includes('search') || activeAlgorithm === 'bfs' || activeAlgorithm === 'dfs' || activeAlgorithm === 'dijkstra';
   const requiresSorted = activeAlgorithm === 'binary_search';
-  const isGraphRunning = currentRunningAlgorithm === 'bfs' || currentRunningAlgorithm === 'dfs';
+  const isGraphRunning = currentRunningAlgorithm === 'bfs' || currentRunningAlgorithm === 'dfs' || currentRunningAlgorithm === 'dijkstra';
 
   const generateAndRun = async () => {
     setLoading(true);
     try {
       let dataset: any;
 
-      if (activeAlgorithm === 'bfs' || activeAlgorithm === 'dfs') {
+      if (activeAlgorithm === 'bfs' || activeAlgorithm === 'dfs' || activeAlgorithm === 'dijkstra') {
           const nodes = [];
           const edges = [];
           for (let i = 0; i < arraySize; i++) {
@@ -42,19 +42,19 @@ function App() {
               
               const leftChild = 2 * i + 1;
               const rightChild = 2 * i + 2;
-              if (leftChild < arraySize) edges.push({ source: `node-${i}`, target: `node-${leftChild}` });
-              if (rightChild < arraySize) edges.push({ source: `node-${i}`, target: `node-${rightChild}` });
+              if (leftChild < arraySize) edges.push({ source: `node-${i}`, target: `node-${leftChild}`, weight: Math.floor(Math.random() * 9) + 1 });
+              if (rightChild < arraySize) edges.push({ source: `node-${i}`, target: `node-${rightChild}`, weight: Math.floor(Math.random() * 9) + 1 });
           }
           
           // Let's add a few random edges to make it a generic graph, not strictly a tree!
-          if (arraySize > 4) edges.push({ source: 'node-1', target: 'node-4' });
-          if (arraySize > 5) edges.push({ source: 'node-2', target: 'node-3' });
-          if (arraySize > 7) edges.push({ source: 'node-3', target: 'node-7' });
-          if (arraySize > 8) edges.push({ source: 'node-4', target: 'node-6' });
-          if (arraySize > 10) edges.push({ source: 'node-5', target: 'node-9' });
-          if (arraySize > 12) edges.push({ source: 'node-7', target: 'node-10' });
-          if (arraySize > 13) edges.push({ source: 'node-8', target: 'node-12' });
-          if (arraySize > 14) edges.push({ source: 'node-11', target: 'node-14' });
+          if (arraySize > 4) edges.push({ source: 'node-1', target: 'node-4', weight: Math.floor(Math.random() * 9) + 1 });
+          if (arraySize > 5) edges.push({ source: 'node-2', target: 'node-3', weight: Math.floor(Math.random() * 9) + 1 });
+          if (arraySize > 7) edges.push({ source: 'node-3', target: 'node-7', weight: Math.floor(Math.random() * 9) + 1 });
+          if (arraySize > 8) edges.push({ source: 'node-4', target: 'node-6', weight: Math.floor(Math.random() * 9) + 1 });
+          if (arraySize > 10) edges.push({ source: 'node-5', target: 'node-9', weight: Math.floor(Math.random() * 9) + 1 });
+          if (arraySize > 12) edges.push({ source: 'node-7', target: 'node-10', weight: Math.floor(Math.random() * 9) + 1 });
+          if (arraySize > 13) edges.push({ source: 'node-8', target: 'node-12', weight: Math.floor(Math.random() * 9) + 1 });
+          if (arraySize > 14) edges.push({ source: 'node-11', target: 'node-14', weight: Math.floor(Math.random() * 9) + 1 });
 
           dataset = { type: "GRAPH", nodes, edges };
       } else {

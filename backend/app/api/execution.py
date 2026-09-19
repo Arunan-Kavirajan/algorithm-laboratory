@@ -20,7 +20,7 @@ class ExecuteRequest(BaseModel):
 
 @router.post("/execute", response_model=ExecutionResult)
 def execute_algorithm(request: ExecuteRequest):
-    is_graph_algo = request.algorithmId in ["bfs", "dfs"]
+    is_graph_algo = request.algorithmId in ["bfs", "dfs", "dijkstra"]
     
     if is_graph_algo and request.dataset.type != "GRAPH":
         raise HTTPException(status_code=400, detail="Algorithm requires a GraphDataset")
@@ -58,5 +58,10 @@ def execute_algorithm(request: ExecuteRequest):
             raise HTTPException(status_code=400, detail="Target is required for searching algorithms")
         from ..algorithms.searching.dfs import dfs_algorithm
         return dfs_algorithm(request.dataset, request.target)
+    elif request.algorithmId == "dijkstra":
+        if request.target is None:
+            raise HTTPException(status_code=400, detail="Target is required for searching algorithms")
+        from ..algorithms.searching.dijkstra import dijkstra_algorithm
+        return dijkstra_algorithm(request.dataset, request.target)
     else:
         raise HTTPException(status_code=404, detail="Algorithm not found")

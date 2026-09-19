@@ -21,6 +21,7 @@ class GraphNode(BaseModel):
 class GraphEdge(BaseModel):
     source: str
     target: str
+    weight: Optional[int] = 1
 
 class GraphDataset(BaseDataset):
     type: str = "GRAPH"
