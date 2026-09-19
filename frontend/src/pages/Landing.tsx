@@ -202,53 +202,39 @@ export function Landing() {
 
       {/* FOOTER */}
       <footer className="w-full border-t border-border/50 relative z-10 bg-background/80 backdrop-blur-sm mt-auto">
-        <div className="max-w-5xl mx-auto px-6 py-8 md:py-12">
+        <div className="max-w-5xl mx-auto px-6 py-6 md:py-8">
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
-            {/* Left */}
-            <div className="flex flex-col">
-              <div className="text-[10px] text-text-muted font-mono tracking-widest uppercase mb-4 flex items-center gap-3">
-                <div className="w-6 h-px bg-border" />
-                LAB.AUTHOR // 001
+          <div className="flex flex-col md:flex-row justify-between gap-6 mb-6">
+            
+            {/* Left Side */}
+            <div className="flex flex-col gap-1">
+              <div className="text-text font-bold text-sm">
+                Algorithm Laboratory
               </div>
-              <div className="text-text font-bold uppercase tracking-widest text-sm mb-4">
+              <div className="text-text-secondary text-sm">
                 Built by Arunan Kavirajan
               </div>
-              <div className="flex gap-6 font-mono text-xs text-text-secondary">
-                <a href="https://www.linkedin.com/in/arunan-kavirajan" target="_blank" rel="noreferrer" className="hover:text-accent transition-colors">
-                  LinkedIn
-                </a>
-                <a href="https://github.com/Arunan-Kavirajan" target="_blank" rel="noreferrer" className="hover:text-accent transition-colors">
-                  GitHub
-                </a>
+              <div className="flex gap-2 text-sm text-text-muted mt-1">
+                <a href="https://www.linkedin.com/in/arunan-kavirajan" target="_blank" rel="noreferrer" className="hover:text-accent transition-colors">LinkedIn</a>
+                <span className="opacity-50">·</span>
+                <a href="https://github.com/Arunan-Kavirajan" target="_blank" rel="noreferrer" className="hover:text-accent transition-colors">GitHub</a>
               </div>
             </div>
-
-            {/* Right */}
-            <div className="flex flex-col md:items-end">
-              <div className="text-[10px] text-text-muted font-mono tracking-widest uppercase mb-4 flex items-center gap-3">
-                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-                SYSTEM.MAINTAINER
-                <div className="w-6 h-px bg-border md:hidden" />
-              </div>
-              <div className="text-text font-bold uppercase tracking-widest text-sm mb-4">
+            
+            {/* Right Side */}
+            <div className="flex flex-col gap-1 md:text-right mt-4 md:mt-0">
+              <div className="text-text font-bold text-sm">
                 Found a bug?
               </div>
-              <div className="font-mono text-xs text-text-secondary">
-                <a href="mailto:arunan.kavirajan@gmail.com" className="hover:text-accent transition-colors">
-                  arunan.kavirajan@gmail.com
-                </a>
+              <div className="text-sm text-text-secondary">
+                <a href="mailto:arunan.kavirajan@gmail.com" className="hover:text-accent transition-colors">arunan.kavirajan@gmail.com</a>
               </div>
             </div>
+            
           </div>
           
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-[10px] font-mono text-text-muted tracking-widest uppercase border-t border-border/50 pt-8">
-            <div>
-              © 2026 Arunan Kavirajan. All rights reserved.
-            </div>
-            <div>
-              Algorithm Laboratory
-            </div>
+          <div className="border-t border-border/50 pt-6 text-[10px] font-mono text-text-muted tracking-widest uppercase">
+            © 2026 Algorithm Laboratory. All rights reserved.
           </div>
           
         </div>
