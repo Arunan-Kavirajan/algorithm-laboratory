@@ -13,10 +13,12 @@ from ..algorithms.searching.linear_search import linear_search_algorithm
 
 router = APIRouter()
 
+from typing import Optional, Union
+
 class ExecuteRequest(BaseModel):
     algorithmId: str
     dataset: Dataset
-    target: Optional[int] = None
+    target: Optional[Union[int, str]] = None
 
 @router.post("/execute", response_model=ExecutionResult)
 def execute_algorithm(request: ExecuteRequest):

@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
+import { Modal } from './Modal';
 
 export interface CustomNode {
     id: string;
@@ -30,6 +31,9 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
     const [dragTargetNode, setDragTargetNode] = useState<string | null>(null);
+    
+    // Custom Modal state
+    const [pendingEdge, setPendingEdge] = useState<{source: string, target: string} | null>(null);
 
     // Derive the next node counter safely from existing nodes
     const getNextNodeId = () => {
@@ -85,23 +89,30 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
             );
             
             if (!exists) {
-                let weight = 1;
                 if (isDijkstra) {
-                    const val = prompt('Enter edge weight (e.g., 5):', '1');
-                    if (val !== null && !isNaN(Number(val))) {
-                        weight = Number(val);
-                    }
+                    setPendingEdge({ source: dragStartNode, target: dragTargetNode });
+                } else {
+                    onEdgesChange([...edges, {
+                        source: dragStartNode,
+                        target: dragTargetNode
+                    }]);
                 }
-                
-                onEdgesChange([...edges, {
-                    source: dragStartNode,
-                    target: dragTargetNode,
-                    weight: isDijkstra ? weight : undefined
-                }]);
             }
         }
         setDragStartNode(null);
         setDragTargetNode(null);
+    };
+
+    const handleWeightConfirm = (val?: string) => {
+        if (pendingEdge && val) {
+            const weight = !isNaN(Number(val)) ? Number(val) : 1;
+            onEdgesChange([...edges, {
+                source: pendingEdge.source,
+                target: pendingEdge.target,
+                weight
+            }]);
+        }
+        setPendingEdge(null);
     };
 
     return (
@@ -185,6 +196,16 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
                     </div>
                 );
             })}
+            
+            <Modal 
+                isOpen={!!pendingEdge}
+                type="prompt"
+                title="Edge Weight"
+                message="Enter a weight for this path:"
+                defaultValue="1"
+                onClose={() => setPendingEdge(null)}
+                onConfirm={handleWeightConfirm}
+            />
         </div>
     );
 };

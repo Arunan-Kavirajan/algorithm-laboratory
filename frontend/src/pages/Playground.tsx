@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { usePlayerStore } from '../store/usePlayerStore';
 import { GraphVisualizer } from '../visualizers/GraphVisualizer';
 import { PlayerControls } from '../components/PlayerControls';
 import { CodeViewer } from '../components/CodeViewer';
 import { InteractiveCanvas } from '../components/InteractiveCanvas';
+import { Modal } from '../components/Modal';
 import type { CustomNode, CustomEdge } from '../components/InteractiveCanvas';
 import type { ExecutionResult } from '../types';
+import { ChevronDown } from 'lucide-react';
 
 type BuildMode = 'ADD_NODE' | 'ADD_EDGE' | 'REMOVE_NODE';
 
@@ -17,16 +19,30 @@ export function Playground() {
     
     // We start without a target until they place nodes
     const [searchTarget, setSearchTarget] = useState<string>('');
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     
     const [nodes, setNodes] = useState<CustomNode[]>([]);
     const [edges, setEdges] = useState<CustomEdge[]>([]);
     const [activeMode, setActiveMode] = useState<BuildMode>('ADD_NODE');
 
+    const [alertMessage, setAlertMessage] = useState<string | null>(null);
+
     const { setExecutionData, reset } = usePlayerStore();
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const generateAndRun = async () => {
         if (nodes.length === 0) {
-            alert('Please add at least one node to the canvas.');
+            setAlertMessage('Please add at least one node to the canvas.');
             return;
         }
 
@@ -52,7 +68,7 @@ export function Playground() {
             setIsBuilding(false);
         } catch (error) {
             console.error("Failed to execute algorithm:", error);
-            alert("Failed to execute algorithm. Is the backend running?");
+            setAlertMessage("Failed to execute algorithm. Ensure you have properly connected your graph.");
         } finally {
             setLoading(false);
         }
@@ -76,18 +92,19 @@ export function Playground() {
                 <div className="flex items-center gap-4">
                     <div className="flex flex-col">
                         <h2 className="text-sm font-semibold tracking-tight text-text">Playground Mode</h2>
-                        <p className="text-xs text-text-muted font-mono uppercase tracking-wider flex items-center gap-2 mt-1">
+                        <div className="text-xs text-text-muted font-mono uppercase tracking-wider flex items-center gap-2 mt-1 relative">
                             <select 
                                 value={activeAlgorithm}
                                 onChange={(e) => setActiveAlgorithm(e.target.value)}
-                                className="bg-background border border-border text-accent rounded px-2 py-0.5 outline-none focus:border-accent disabled:opacity-50"
+                                className="bg-background border border-border text-accent rounded px-2 py-0.5 outline-none focus:border-accent disabled:opacity-50 appearance-none pr-8 cursor-pointer"
                                 disabled={!isBuilding}
                             >
                                 <option value="bfs">Breadth-First Search (BFS)</option>
                                 <option value="dfs">Depth-First Search (DFS)</option>
                                 <option value="dijkstra">Dijkstra's Shortest Path</option>
                             </select>
-                        </p>
+                            <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-accent" />
+                        </div>
                     </div>
                 </div>
 
@@ -121,19 +138,41 @@ export function Playground() {
                             </button>
                         </div>
 
-                        <div className="flex items-center gap-2 text-sm bg-surface/50 px-3 py-1.5 rounded-lg border border-border focus-within:border-accent transition-all">
+                        {/* Custom Dropdown for Target Node */}
+                        <div className="flex items-center gap-2 text-sm bg-surface/50 px-3 py-1.5 rounded-lg border border-border focus-within:border-accent transition-all relative" ref={dropdownRef}>
                             <span className="text-text-muted font-medium text-xs uppercase tracking-widest">Target Node</span>
                             <div className="w-px h-4 bg-border mx-1" />
-                            <select 
-                                value={searchTarget}
-                                onChange={(e) => setSearchTarget(e.target.value)}
-                                className="bg-transparent text-text font-mono font-bold outline-none cursor-pointer min-w-16"
+                            
+                            <div 
+                                className="flex items-center gap-2 cursor-pointer text-text font-mono font-bold min-w-16 justify-between"
+                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                             >
-                                {nodes.length === 0 && <option value="">---</option>}
-                                {nodes.map(n => (
-                                    <option key={n.id} value={n.id}>{n.id}</option>
-                                ))}
-                            </select>
+                                <span>{searchTarget || '---'}</span>
+                                <ChevronDown size={14} className="text-text-muted" />
+                            </div>
+
+                            {isDropdownOpen && (
+                                <div className="absolute top-full right-0 mt-2 w-40 bg-surface border border-border rounded-lg shadow-xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
+                                    <div className="max-h-48 overflow-y-auto">
+                                        {nodes.length === 0 ? (
+                                            <div className="px-4 py-2 text-xs text-text-muted italic">No nodes placed</div>
+                                        ) : (
+                                            nodes.map(n => (
+                                                <button
+                                                    key={n.id}
+                                                    className={`w-full text-left px-4 py-2 text-sm font-mono font-bold transition-colors ${searchTarget === n.id ? 'bg-accent/10 text-accent' : 'text-text hover:bg-surface-hover'}`}
+                                                    onClick={() => {
+                                                        setSearchTarget(n.id);
+                                                        setIsDropdownOpen(false);
+                                                    }}
+                                                >
+                                                    {n.id}
+                                                </button>
+                                            ))
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                         
                         <button 
@@ -184,6 +223,13 @@ export function Playground() {
                     <CodeViewer />
                 </div>
             </main>
+
+            <Modal 
+                isOpen={!!alertMessage}
+                title="Notice"
+                message={alertMessage || ''}
+                onClose={() => setAlertMessage(null)}
+            />
         </div>
     );
 }
