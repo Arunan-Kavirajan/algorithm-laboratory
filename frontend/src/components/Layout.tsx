@@ -4,7 +4,7 @@ import { Activity, BookOpen, Shapes, Sun, Moon, Menu, X } from 'lucide-react';
 import { useThemeStore } from '../store/useThemeStore';
 
 const navItems = [
-  { path: '/', label: 'Visualizer', icon: Activity },
+  { path: '/visualizer', label: 'Visualizer', icon: Activity },
   { path: '/guides', label: 'Guides', icon: BookOpen },
   { path: '/playground', label: 'Playground', icon: Shapes },
 ];
