@@ -105,20 +105,28 @@ export const GraphVisualizer: React.FC = () => {
                                     />
 
                                     {edge.weight != null && (
-                                        <text
-                                            x={`${(source.x + target.x) / 2}%`}
-                                            y={`${(source.y + target.y) / 2}%`}
-                                            fill={isEdgeActive ? "#3b82f6" : "#64748b"}
-                                            fontSize="10"
-                                            fontFamily="monospace"
-                                            fontWeight="bold"
-                                            textAnchor="middle"
-                                            dominantBaseline="middle"
-                                            className="transition-colors duration-300"
-                                            style={{ textShadow: "0px 0px 4px #0f172a, 0px 0px 4px #0f172a" }}
-                                        >
-                                            {edge.weight}
-                                        </text>
+                                        <g>
+                                            <circle
+                                                cx={`${(source.x + target.x) / 2}%`}
+                                                cy={`${(source.y + target.y) / 2}%`}
+                                                r="8"
+                                                fill="#0f172a"
+                                                className="transition-colors duration-300"
+                                            />
+                                            <text
+                                                x={`${(source.x + target.x) / 2}%`}
+                                                y={`${(source.y + target.y) / 2}%`}
+                                                fill={isEdgeActive ? "#3b82f6" : "#94a3b8"}
+                                                fontSize="10"
+                                                fontFamily="monospace"
+                                                fontWeight="bold"
+                                                textAnchor="middle"
+                                                dominantBaseline="central"
+                                                className="transition-colors duration-300"
+                                            >
+                                                {edge.weight}
+                                            </text>
+                                        </g>
                                     )}
                                 </g>
                             );
@@ -194,8 +202,8 @@ export const GraphVisualizer: React.FC = () => {
                                     </div>
                                     {node.value}
                                     {distances[node.id] !== undefined && (
-                                        <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] font-mono text-[#10b981] font-bold bg-background/80 px-1 rounded">
-                                            Cost: {distances[node.id] === 999 ? '∞' : distances[node.id]}
+                                        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/30">
+                                            {distances[node.id] === 999 ? '∞' : `d=${distances[node.id]}`}
                                         </div>
                                     )}
                                 </div>
@@ -244,8 +252,8 @@ export const GraphVisualizer: React.FC = () => {
                                             </div>
                                             {node.value}
                                             {distances[node.id] !== undefined && (
-                                                <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[9px] font-mono text-[#10b981] font-bold">
-                                                    Cost: {distances[node.id] === 999 ? '∞' : distances[node.id]}
+                                                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 text-[8px] font-mono font-bold px-1 py-0.5 rounded-full whitespace-nowrap bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/30">
+                                                    {distances[node.id] === 999 ? '∞' : `d=${distances[node.id]}`}
                                                 </div>
                                             )}
                                         </motion.div>
