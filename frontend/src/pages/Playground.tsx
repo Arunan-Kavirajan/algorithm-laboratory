@@ -56,11 +56,12 @@ export function Playground() {
             };
             
             if (searchTarget) {
-                payload.target = searchTarget;
+                const targetNode = nodes.find(n => n.id === searchTarget);
+                payload.target = targetNode ? targetNode.value : (nodes.length > 1 ? nodes[1].value : nodes[0].value);
             } else if (nodes.length > 1) {
-                payload.target = nodes[1].id;
+                payload.target = nodes[1].value;
             } else {
-                payload.target = nodes[0].id;
+                payload.target = nodes[0].value;
             }
 
             const response = await axios.post<ExecutionResult>('/api/execute', payload);
