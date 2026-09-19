@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Activity, BookOpen, Shapes, Sun, Moon, Menu, X } from 'lucide-react';
+import { Activity, BookOpen, Shapes, Sun, Moon, Menu, X, Zap } from 'lucide-react';
 import { useThemeStore } from '../store/useThemeStore';
 
 const navItems = [
   { path: '/visualizer', label: 'Visualizer', icon: Activity },
+  { path: '/compare', label: 'Benchmark', icon: Zap },
   { path: '/guides', label: 'Guides', icon: BookOpen },
   { path: '/playground', label: 'Playground', icon: Shapes },
 ];
