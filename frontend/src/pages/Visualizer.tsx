@@ -140,8 +140,10 @@ export function Visualizer() {
         {/* Left/Center: Visualizer & Controls */}
         <div className="col-span-2 flex flex-col border-r border-border/60 bg-background relative">
           <div className="absolute inset-0 dot-grid pointer-events-none" />
-          <div className="flex-1 p-8 overflow-hidden flex flex-col relative z-[1]">
-            {isGraphRunning ? <GraphVisualizer /> : <SortingVisualizer />}
+          <div className="flex-1 p-4 lg:p-8 overflow-y-auto custom-scrollbar flex flex-col relative z-[1]">
+            <div className="min-h-[650px] flex-1 flex flex-col">
+              {isGraphRunning ? <GraphVisualizer /> : <SortingVisualizer />}
+            </div>
           </div>
           <div className="border-t border-border/60 bg-surface/50 backdrop-blur-sm relative z-[1]">
             <PlayerControls />
