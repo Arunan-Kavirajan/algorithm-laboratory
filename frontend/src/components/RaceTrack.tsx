@@ -58,7 +58,7 @@ export const RaceTrack: React.FC<RaceTrackProps> = ({ title, algorithmId, events
             </div>
 
             {/* Array Container */}
-            <div className="flex-1 flex items-end justify-center gap-[2px] p-6 relative">
+            <div className="flex-1 relative mx-6 mb-6 mt-4 border-b border-border/50">
                 {array.map((item, idx) => {
                     const isActive = activeElements.includes(idx);
                     const isSorted = currentEvent.type === 'SORTED_ELEMENT' && activeElements.includes(idx);
@@ -85,12 +85,18 @@ export const RaceTrack: React.FC<RaceTrackProps> = ({ title, algorithmId, events
                     const maxVal = Math.max(...array.map(a => a.value), 10);
                     const heightPercent = Math.max(10, (item.value / maxVal) * 100);
 
+                    // Calculate precise absolute positioning
+                    const widthPercent = 100 / array.length;
+                    const leftPercent = idx * widthPercent;
+                    const itemWidth = `calc(${widthPercent}% - 2px)`; // 2px gap
+
                     return (
                         <motion.div 
-                            layout
                             key={item.id}
-                            className={`flex flex-col justify-end items-center rounded-t-[2px] border-t-2 ${borderColor} ${bgColor} transition-colors duration-200`}
-                            style={{ height: `${heightPercent}%`, width: `${Math.min(32, 100 / array.length)}%` }}
+                            animate={{ left: `${leftPercent}%`, height: `${heightPercent}%` }}
+                            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                            className={`absolute bottom-0 flex flex-col justify-end items-center rounded-t-[2px] border-t-2 ${borderColor} ${bgColor} transition-colors duration-200`}
+                            style={{ width: itemWidth }}
                         >
                             {array.length <= 25 && (
                                 <span className={`text-[9px] font-mono mb-1 ${textColor} transition-colors`}>{item.value}</span>
@@ -100,10 +106,9 @@ export const RaceTrack: React.FC<RaceTrackProps> = ({ title, algorithmId, events
                 })}
             </div>
             
-            {/* Action Bar */}
-            <div className="h-10 border-t border-border bg-surface-raised px-4 flex items-center justify-between text-[11px] font-mono">
-                <span className="text-text-muted">{isFinished ? 'EXECUTION COMPLETE' : 'CURRENT OPERATION'}</span>
-                <span className="text-accent font-bold truncate max-w-[60%] text-right">{currentEvent.description}</span>
+            {/* Status Bar */}
+            <div className={`h-8 border-t border-border flex items-center justify-center text-[10px] font-mono font-bold tracking-widest uppercase transition-colors ${isFinished ? 'bg-accent/10 text-accent' : 'bg-surface-raised text-text-muted'}`}>
+                {isFinished ? 'ALGORITHM FINISHED' : 'RACING...'}
             </div>
         </div>
     );

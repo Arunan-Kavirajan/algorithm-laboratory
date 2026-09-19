@@ -2,15 +2,25 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { AlgorithmSelector } from '../components/AlgorithmSelector';
 import { RaceTrack } from '../components/RaceTrack';
-import { Play, RotateCcw, Loader2, Trophy } from 'lucide-react';
+import { Play, Pause, RotateCcw, Loader2, Trophy, FastForward, Info } from 'lucide-react';
 import type { ExecutionResult, ExecutionEvent } from '../types';
 
 const SORTING_ALGORITHMS = ['bubble_sort', 'selection_sort', 'insertion_sort', 'merge_sort', 'quick_sort', 'heap_sort'];
+
+const ALGORITHM_DATA: Record<string, { time: string, space: string, name: string }> = {
+    'bubble_sort': { name: 'Bubble Sort', time: 'O(n²)', space: 'O(1)' },
+    'selection_sort': { name: 'Selection Sort', time: 'O(n²)', space: 'O(1)' },
+    'insertion_sort': { name: 'Insertion Sort', time: 'O(n²)', space: 'O(1)' },
+    'merge_sort': { name: 'Merge Sort', time: 'O(n log n)', space: 'O(n)' },
+    'quick_sort': { name: 'Quick Sort', time: 'O(n log n)', space: 'O(log n)' },
+    'heap_sort': { name: 'Heap Sort', time: 'O(n log n)', space: 'O(1)' },
+};
 
 export function Benchmark() {
     const [algorithmA, setAlgorithmA] = useState('quick_sort');
     const [algorithmB, setAlgorithmB] = useState('bubble_sort');
     const [arraySize, setArraySize] = useState(25);
+    const [playbackSpeed, setPlaybackSpeed] = useState(80); // 1 to 100
     
     const [loading, setLoading] = useState(false);
     const [eventsA, setEventsA] = useState<ExecutionEvent[]>([]);
@@ -28,6 +38,9 @@ export function Benchmark() {
             if (timerRef.current) clearInterval(timerRef.current);
             return;
         }
+
+        // speed: 1 to 100. delay: 500ms to 10ms.
+        const delay = Math.max(10, 500 - ((playbackSpeed - 1) * (490 / 99)));
 
         timerRef.current = window.setInterval(() => {
             let finishedA = false;
@@ -52,12 +65,12 @@ export function Benchmark() {
             if (finishedA && finishedB) {
                 setIsPlaying(false);
             }
-        }, 150); // fast playback for racing
+        }, delay);
 
         return () => {
             if (timerRef.current) clearInterval(timerRef.current);
         };
-    }, [isPlaying, eventsA.length, eventsB.length]);
+    }, [isPlaying, eventsA.length, eventsB.length, playbackSpeed]);
 
     const generateAndRace = async () => {
         setLoading(true);
@@ -93,13 +106,20 @@ export function Benchmark() {
     const isFinishedA = eventsA.length > 0 && stepA >= eventsA.length - 1;
     const isFinishedB = eventsB.length > 0 && stepB >= eventsB.length - 1;
     const bothFinished = isFinishedA && isFinishedB;
+    const hasData = eventsA.length > 0 && eventsB.length > 0;
 
-    let winnerId = null;
+    let winnerId: 'A' | 'B' | 'TIE' | null = null;
     if (bothFinished) {
         if (eventsA.length < eventsB.length) winnerId = 'A';
         else if (eventsB.length < eventsA.length) winnerId = 'B';
         else winnerId = 'TIE';
     }
+
+    const resetRace = () => {
+        setIsPlaying(false);
+        setStepA(0);
+        setStepB(0);
+    };
 
     return (
         <div className="flex-1 flex flex-col h-full relative overflow-hidden bg-background">
@@ -109,32 +129,63 @@ export function Benchmark() {
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-3 border-r border-border/50 pr-4">
                         <Trophy size={16} className="text-accent" />
-                        <span className="font-display font-bold text-text uppercase tracking-wider text-sm">Algorithmic Racing</span>
+                        <span className="font-display font-bold text-text uppercase tracking-wider text-sm hidden md:block">Algorithmic Racing</span>
                     </div>
 
                     <div className="flex items-center gap-2.5 text-sm ml-2">
-                        <span className="text-text-muted text-xs font-medium uppercase tracking-wider">Array Size</span>
+                        <span className="text-text-muted text-[10px] font-bold uppercase tracking-widest hidden sm:inline">Size</span>
                         <input
                             type="range"
                             min="10"
-                            max="50"
+                            max="75"
                             value={arraySize}
                             onChange={(e) => setArraySize(Number(e.target.value))}
-                            className="w-24 accent-accent"
+                            className="w-16 md:w-24 accent-accent"
                             disabled={isPlaying || loading}
                         />
                         <span className="font-mono text-text-muted text-xs w-4">{arraySize}</span>
                     </div>
+
+                    <div className="flex items-center gap-2.5 text-sm ml-2 border-l border-border/50 pl-4">
+                        <FastForward size={14} className="text-text-muted hidden sm:block" />
+                        <span className="text-text-muted text-[10px] font-bold uppercase tracking-widest hidden sm:inline">Speed</span>
+                        <input
+                            type="range"
+                            min="1"
+                            max="100"
+                            value={playbackSpeed}
+                            onChange={(e) => setPlaybackSpeed(Number(e.target.value))}
+                            className="w-16 md:w-24 accent-accent"
+                        />
+                    </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
+                    {hasData && (
+                        <div className="flex items-center gap-2 mr-4 border-r border-border/50 pr-4">
+                            <button
+                                onClick={() => setIsPlaying(!isPlaying)}
+                                className="w-8 h-8 flex items-center justify-center rounded-full bg-surface-raised hover:bg-surface-hover text-text transition-colors border border-border"
+                            >
+                                {isPlaying ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" className="ml-0.5" />}
+                            </button>
+                            <button
+                                onClick={resetRace}
+                                className="w-8 h-8 flex items-center justify-center rounded-full bg-surface-raised hover:bg-surface-hover text-text transition-colors border border-border"
+                                title="Reset to Start"
+                            >
+                                <RotateCcw size={14} />
+                            </button>
+                        </div>
+                    )}
+
                     <button
                         onClick={generateAndRace}
-                        disabled={loading || isPlaying}
+                        disabled={loading}
                         className="flex items-center gap-2 bg-text hover:bg-text/90 text-background px-6 py-1.5 rounded-lg text-sm font-semibold transition-all disabled:opacity-50 uppercase tracking-wider"
                     >
                         {loading ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} fill="currentColor" />}
-                        {loading ? 'Compiling...' : 'Start Race'}
+                        {loading ? 'Compiling...' : (hasData ? 'New Race' : 'Start Race')}
                     </button>
                 </div>
             </header>
@@ -144,9 +195,15 @@ export function Benchmark() {
                 <div className="absolute inset-0 dot-grid pointer-events-none opacity-50" />
                 
                 {/* Track A */}
-                <div className="flex-1 flex flex-col gap-4 relative z-10">
+                <div className="flex-1 flex flex-col gap-4 relative z-10 min-w-0">
                     <div className="flex items-center justify-between">
-                        <span className="text-xs font-mono text-text-muted tracking-widest uppercase">Track A</span>
+                        <div className="flex items-center gap-3">
+                            <span className="text-xs font-mono font-bold text-accent tracking-widest uppercase">Track A</span>
+                            <div className="flex gap-2 text-[10px] font-mono opacity-70">
+                                <span className="bg-surface-raised px-2 py-0.5 rounded border border-border-subtle">⏱ {ALGORITHM_DATA[algorithmA]?.time}</span>
+                                <span className="bg-surface-raised px-2 py-0.5 rounded border border-border-subtle">💾 {ALGORITHM_DATA[algorithmA]?.space}</span>
+                            </div>
+                        </div>
                         <AlgorithmSelector 
                             value={algorithmA} 
                             onChange={setAlgorithmA}
@@ -170,9 +227,15 @@ export function Benchmark() {
                 </div>
 
                 {/* Track B */}
-                <div className="flex-1 flex flex-col gap-4 relative z-10">
+                <div className="flex-1 flex flex-col gap-4 relative z-10 min-w-0">
                     <div className="flex items-center justify-between">
-                        <span className="text-xs font-mono text-text-muted tracking-widest uppercase">Track B</span>
+                        <div className="flex items-center gap-3">
+                            <span className="text-xs font-mono font-bold text-accent tracking-widest uppercase">Track B</span>
+                            <div className="flex gap-2 text-[10px] font-mono opacity-70">
+                                <span className="bg-surface-raised px-2 py-0.5 rounded border border-border-subtle">⏱ {ALGORITHM_DATA[algorithmB]?.time}</span>
+                                <span className="bg-surface-raised px-2 py-0.5 rounded border border-border-subtle">💾 {ALGORITHM_DATA[algorithmB]?.space}</span>
+                            </div>
+                        </div>
                         <AlgorithmSelector 
                             value={algorithmB} 
                             onChange={setAlgorithmB}
@@ -189,32 +252,45 @@ export function Benchmark() {
                 </div>
             </main>
             
-            {/* Post-Race Summary */}
+            {/* Post-Race Detailed Summary */}
             {bothFinished && (
-                <div className="border-t border-border bg-surface/80 backdrop-blur-sm p-4 flex justify-center z-20">
-                    <div className="flex items-center gap-6">
-                        <span className="text-sm font-bold text-text uppercase tracking-widest">Race Results:</span>
-                        <div className="flex gap-8 text-xs font-mono">
-                            <span className={winnerId === 'A' ? 'text-accent' : 'text-text-muted'}>
-                                Track A: {eventsA.length} steps
-                            </span>
-                            <span className={winnerId === 'B' ? 'text-accent' : 'text-text-muted'}>
-                                Track B: {eventsB.length} steps
-                            </span>
-                            <span className="text-text-secondary font-sans border-l border-border pl-8">
-                                {winnerId === 'TIE' ? 'It is a tie!' : `Track ${winnerId} is ${Math.abs(eventsA.length - eventsB.length)} steps faster.`}
-                            </span>
+                <div className="border-t border-border bg-surface/95 backdrop-blur-md p-6 flex flex-col items-center z-20 shadow-[0_-10px_30px_rgba(0,0,0,0.2)]">
+                    <div className="flex items-center gap-2 mb-4 text-accent font-bold uppercase tracking-widest text-sm">
+                        <Info size={16} /> Race Analysis Complete
+                    </div>
+                    
+                    <div className="grid grid-cols-3 gap-12 w-full max-w-3xl text-sm border border-border/50 rounded-xl bg-background overflow-hidden shadow-inner">
+                        <div className={`p-4 flex flex-col gap-3 ${winnerId === 'A' ? 'bg-accent/5' : ''}`}>
+                            <span className="font-bold font-display uppercase tracking-wider border-b border-border/50 pb-2 text-center text-accent">Track A</span>
+                            <div className="flex justify-between font-mono text-xs"><span className="text-text-muted">Total Steps:</span> <span>{eventsA.length}</span></div>
+                            <div className="flex justify-between font-mono text-xs"><span className="text-text-muted">Comparisons:</span> <span>{eventsA[eventsA.length-1].metrics.comparisons}</span></div>
+                            <div className="flex justify-between font-mono text-xs"><span className="text-text-muted">Swaps/Writes:</span> <span>{eventsA[eventsA.length-1].metrics.swaps}</span></div>
+                            <div className="flex justify-between font-mono text-xs"><span className="text-text-muted">Time (Avg):</span> <span>{ALGORITHM_DATA[algorithmA].time}</span></div>
                         </div>
-                        <button 
-                            onClick={() => {
-                                setStepA(0);
-                                setStepB(0);
-                                setIsPlaying(true);
-                            }}
-                            className="ml-4 flex items-center gap-2 text-xs font-mono text-text-muted hover:text-text transition-colors"
-                        >
-                            <RotateCcw size={14} /> Replay
-                        </button>
+                        
+                        <div className="p-4 flex flex-col justify-center items-center text-center gap-2 bg-surface-raised border-x border-border/50">
+                            <span className="text-xs font-mono text-text-muted uppercase tracking-widest">Conclusion</span>
+                            <span className="font-bold text-text">
+                                {winnerId === 'TIE' ? 'It is an exact tie.' : `Track ${winnerId} won the race.`}
+                            </span>
+                            <span className="text-[11px] text-text-secondary mt-1">
+                                {winnerId === 'TIE' ? 'Both algorithms performed identically on this dataset.' : `Track ${winnerId} was more efficient, requiring ${Math.abs(eventsA.length - eventsB.length)} fewer steps to sort the exact same dataset.`}
+                            </span>
+                            <button 
+                                onClick={resetRace}
+                                className="mt-2 flex items-center justify-center gap-2 text-[10px] font-bold font-mono bg-text text-background hover:bg-accent px-4 py-1.5 rounded uppercase tracking-wider transition-colors w-full"
+                            >
+                                <RotateCcw size={12} /> Play Again
+                            </button>
+                        </div>
+
+                        <div className={`p-4 flex flex-col gap-3 ${winnerId === 'B' ? 'bg-accent/5' : ''}`}>
+                            <span className="font-bold font-display uppercase tracking-wider border-b border-border/50 pb-2 text-center text-accent">Track B</span>
+                            <div className="flex justify-between font-mono text-xs"><span className="text-text-muted">Total Steps:</span> <span>{eventsB.length}</span></div>
+                            <div className="flex justify-between font-mono text-xs"><span className="text-text-muted">Comparisons:</span> <span>{eventsB[eventsB.length-1].metrics.comparisons}</span></div>
+                            <div className="flex justify-between font-mono text-xs"><span className="text-text-muted">Swaps/Writes:</span> <span>{eventsB[eventsB.length-1].metrics.swaps}</span></div>
+                            <div className="flex justify-between font-mono text-xs"><span className="text-text-muted">Time (Avg):</span> <span>{ALGORITHM_DATA[algorithmB].time}</span></div>
+                        </div>
                     </div>
                 </div>
             )}
