@@ -202,19 +202,16 @@ export function Landing() {
 
       {/* FOOTER */}
       <footer className="w-full border-t border-border/50 relative z-10 bg-background/80 backdrop-blur-sm mt-auto">
-        <div className="max-w-5xl mx-auto px-6 py-4 md:py-5">
+        <div className="max-w-5xl mx-auto px-6 py-3 md:py-4">
           
-          <div className="flex flex-col md:flex-row justify-between gap-4 mb-4">
+          <div className="flex flex-col md:flex-row justify-between gap-3 mb-3">
             
             {/* Left Side */}
             <div className="flex flex-col gap-1">
-              <div className="text-text font-bold text-sm">
-                Algorithm Laboratory
-              </div>
               <div className="text-text-secondary text-sm">
                 Built by Arunan Kavirajan
               </div>
-              <div className="flex gap-2 text-sm text-text-muted mt-1">
+              <div className="flex gap-2 text-sm text-text-muted">
                 <a href="https://www.linkedin.com/in/arunan-kavirajan" target="_blank" rel="noreferrer" className="hover:text-accent transition-colors">LinkedIn</a>
                 <span className="opacity-50">·</span>
                 <a href="https://github.com/Arunan-Kavirajan" target="_blank" rel="noreferrer" className="hover:text-accent transition-colors">GitHub</a>
@@ -222,7 +219,7 @@ export function Landing() {
             </div>
             
             {/* Right Side */}
-            <div className="flex flex-col gap-1 md:text-right mt-2 md:mt-0">
+            <div className="flex flex-col gap-1 md:text-right mt-1 md:mt-0">
               <div className="text-text font-bold text-sm">
                 Found a bug?
               </div>
@@ -233,7 +230,7 @@ export function Landing() {
             
           </div>
           
-          <div className="border-t border-border/50 pt-3 text-[10px] font-mono text-text-muted tracking-widest uppercase">
+          <div className="border-t border-border/50 pt-2 text-[10px] font-mono text-text-muted tracking-widest uppercase">
             © 2026 Algorithm Laboratory. All rights reserved.
           </div>
           
