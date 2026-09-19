@@ -66,6 +66,19 @@ export const GraphVisualizer: React.FC = () => {
 
             {/* Central Graph Area */}
             <div className="flex-1 relative w-full h-full z-10 overflow-hidden">
+                {algorithmId === 'dijkstra' && (
+                    <div className="absolute top-6 right-6 flex flex-col gap-3 p-4 bg-surface/90 backdrop-blur-md border border-border/60 rounded-xl shadow-lg z-30">
+                        <div className="text-[10px] font-mono text-text-muted/80 uppercase tracking-widest mb-1">Dijkstra's Legend</div>
+                        <div className="flex items-center gap-3">
+                            <div className="w-5 h-5 rounded-full bg-[#0f172a] flex items-center justify-center text-[10px] font-mono font-bold text-[#94a3b8] shrink-0 shadow-sm">5</div>
+                            <span className="text-xs font-mono text-text-muted">Edge Weight (Path Cost)</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <div className="px-1.5 py-0.5 rounded-full bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/30 text-[9px] font-mono font-bold shrink-0 shadow-sm">d=12</div>
+                            <span className="text-xs font-mono text-text-muted">Total Shortest Distance</span>
+                        </div>
+                    </div>
+                )}
                 <div className="absolute inset-0 p-8 pt-24 pb-8">
                     {/* SVG Edges Layer */}
                     <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
