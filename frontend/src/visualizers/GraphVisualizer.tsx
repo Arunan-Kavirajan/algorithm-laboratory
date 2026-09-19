@@ -104,7 +104,7 @@ export const GraphVisualizer: React.FC = () => {
                                         className="transition-colors duration-300"
                                     />
 
-                                    {edge.weight !== undefined && (
+                                    {edge.weight != null && (
                                         <text
                                             x={`${(source.x + target.x) / 2}%`}
                                             y={`${(source.y + target.y) / 2}%`}

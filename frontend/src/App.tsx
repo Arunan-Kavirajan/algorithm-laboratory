@@ -120,6 +120,7 @@ function App() {
                     <option value="binary_search">Binary Search</option>
                     <option value="bfs">Breadth-First Search (BFS)</option>
                     <option value="dfs">Depth-First Search (DFS)</option>
+                    <option value="dijkstra">Dijkstra's Shortest Path</option>
                 </select>
             </p>
           </div>
