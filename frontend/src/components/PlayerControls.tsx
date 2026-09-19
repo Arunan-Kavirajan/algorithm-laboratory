@@ -28,18 +28,48 @@ export const PlayerControls: React.FC = () => {
 
     return (
         <div className="px-6 py-4 flex flex-col gap-3">
-            {/* Scrubber */}
-            <div className="flex items-center gap-4">
-                <span className="text-xs font-mono text-text-muted w-8 text-right">
+            {/* Interactive Timeline Scrubber */}
+            <div className="flex items-center gap-4 group">
+                <span className="text-xs font-mono text-text-muted w-8 text-right select-none">
                     {currentStepIndex}
                 </span>
-                <div className="flex-1 h-1.5 bg-border rounded-full overflow-hidden relative">
+                
+                <div className="flex-1 relative flex items-center h-4 cursor-pointer">
+                    {/* The visual track and filled progress (looks prettier than default browser ranges) */}
+                    <div className="absolute left-0 right-0 h-1.5 bg-border rounded-full overflow-hidden pointer-events-none">
+                        <div 
+                            className={`absolute top-0 left-0 h-full bg-accent ${isPlaying ? 'transition-all duration-300 ease-linear' : ''}`}
+                            style={{ width: `${progress}%` }}
+                        />
+                    </div>
+                    
+                    {/* The invisible interactive slider overlaid perfectly on top */}
+                    <input 
+                        type="range"
+                        min="0"
+                        max={events.length > 0 ? events.length - 1 : 0}
+                        value={currentStepIndex}
+                        onChange={(e) => {
+                            if (isPlaying) pause();
+                            usePlayerStore.getState().goToStep(Number(e.target.value));
+                        }}
+                        disabled={events.length === 0}
+                        className="absolute inset-0 w-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10"
+                        title="Drag to time travel"
+                    />
+                    
+                    {/* Custom thumb visible on hover */}
                     <div 
-                        className="absolute top-0 left-0 h-full bg-accent transition-all duration-300 ease-out"
-                        style={{ width: `${progress}%` }}
+                        className="absolute h-3 w-3 bg-white rounded-full shadow-md shadow-accent/50 pointer-events-none transition-transform scale-0 group-hover:scale-100"
+                        style={{ 
+                            left: `calc(${progress}% - 6px)`,
+                            top: '50%',
+                            transform: 'translateY(-50%)'
+                        }}
                     />
                 </div>
-                <span className="text-xs font-mono text-text-muted w-8">
+
+                <span className="text-xs font-mono text-text-muted w-8 select-none">
                     {events.length ? events.length - 1 : 0}
                 </span>
             </div>
