@@ -34,10 +34,9 @@ export const GraphVisualizer: React.FC = () => {
         pointersById[nodeId].push(name);
     });
 
-    // Scale node positions to prevent overflow while preserving aspect ratio and topology
-    // X mapped from 0-100 to 6-94%, Y mapped from 0-100 to 8-92%
-    const scaleX = (val: number) => 6 + (val * 0.88);
-    const scaleY = (val: number) => 8 + (val * 0.84);
+    // Node positions are now well-distributed from the source, just pass through
+    const scaleX = (val: number) => val;
+    const scaleY = (val: number) => val;
 
     return (
         <div className="flex-1 flex flex-col relative rounded-xl overflow-hidden shadow-inner bg-background relative border border-border h-full">
