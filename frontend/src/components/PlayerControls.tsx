@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
-import { Play, Pause, SkipForward, SkipBack, RotateCcw } from 'lucide-react';
+import { Play, Pause, SkipForward, SkipBack, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 import { usePlayerStore } from '../store/usePlayerStore';
 
 export const PlayerControls: React.FC = () => {
     const { 
         isPlaying, play, pause, stepForward, stepBackward, 
-        currentStepIndex, events, playbackSpeed, setPlaybackSpeed 
+        currentStepIndex, events, playbackSpeed, setPlaybackSpeed,
+        isMuted, toggleMute
     } = usePlayerStore();
 
     useEffect(() => {
@@ -123,6 +124,13 @@ export const PlayerControls: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-3 text-xs text-text-muted font-mono">
+                    <button 
+                        onClick={toggleMute}
+                        className={`p-1.5 rounded hover:bg-surface-hover transition-colors ${isMuted ? 'text-text-muted opacity-50' : 'text-accent'}`}
+                        title={isMuted ? "Unmute Audio" : "Mute Audio"}
+                    >
+                        {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+                    </button>
                     <label className="flex items-center gap-2 cursor-pointer">
                         Speed
                         <select 

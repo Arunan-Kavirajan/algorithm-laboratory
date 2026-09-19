@@ -1,10 +1,41 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePlayerStore } from '../store/usePlayerStore';
+import { audio } from '../utils/audio';
 import type { ArrayElement } from '../types';
 
 export const SortingVisualizer: React.FC = () => {
-    const { events, currentStepIndex, algorithmId } = usePlayerStore();
+    const { events, currentStepIndex, algorithmId, isPlaying, isMuted } = usePlayerStore();
+    const prevStepRef = useRef(currentStepIndex);
+
+    useEffect(() => {
+        // Initialize audio engine on first unmute
+        if (!isMuted) {
+            audio.init();
+        }
+    }, [isMuted]);
+
+    useEffect(() => {
+        // Only play sound if advancing forward while playing (not scrubbing backwards)
+        if (isPlaying && !isMuted && events.length > 0 && currentStepIndex > prevStepRef.current) {
+            const ev = events[currentStepIndex];
+            const activeElements = ev.activeElements as number[];
+            
+            // Find max value for pitch mapping
+            const maxValue = Math.max(...ev.state.map((e: any) => e.value));
+            
+            // Map event type to sound type
+            const soundType = ev.type === 'SWAP' ? 'swap' : 'compare';
+
+            // Play tone for each active element (usually 2 for swaps/compares)
+            activeElements.forEach(idx => {
+                if (ev.state[idx]) {
+                    audio.playTone(ev.state[idx].value, maxValue, soundType);
+                }
+            });
+        }
+        prevStepRef.current = currentStepIndex;
+    }, [currentStepIndex, isPlaying, isMuted, events]);
 
     if (events.length === 0) {
         return (

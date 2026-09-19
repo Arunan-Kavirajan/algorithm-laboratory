@@ -9,6 +9,7 @@ interface PlayerState {
     currentStepIndex: number;
     isPlaying: boolean;
     playbackSpeed: number; // ms per step
+    isMuted: boolean;
     
     // Actions
     setExecutionData: (events: ExecutionEvent[], summary: ExecutionSummary, sourceCode: string, algorithmId: string) => void;
@@ -18,6 +19,7 @@ interface PlayerState {
     play: () => void;
     pause: () => void;
     setPlaybackSpeed: (speed: number) => void;
+    toggleMute: () => void;
     reset: () => void;
 }
 
@@ -29,6 +31,7 @@ export const usePlayerStore = create<PlayerState>((set) => ({
     currentStepIndex: 0,
     isPlaying: false,
     playbackSpeed: 500,
+    isMuted: true,
 
     setExecutionData: (events, summary, sourceCode, algorithmId) => set({ events, summary, sourceCode, algorithmId, currentStepIndex: 0, isPlaying: true }),
     
@@ -49,6 +52,8 @@ export const usePlayerStore = create<PlayerState>((set) => ({
     pause: () => set({ isPlaying: false }),
     
     setPlaybackSpeed: (speed) => set({ playbackSpeed: speed }),
+
+    toggleMute: () => set((state) => ({ isMuted: !state.isMuted })),
     
     reset: () => set({ events: [], summary: null, currentStepIndex: 0, isPlaying: true })
 }))
