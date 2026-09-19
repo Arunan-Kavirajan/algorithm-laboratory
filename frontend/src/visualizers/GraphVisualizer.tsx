@@ -34,10 +34,10 @@ export const GraphVisualizer: React.FC = () => {
         pointersById[nodeId].push(name);
     });
 
-    // Clamp node positions to prevent overflow and provide breathing room
-    // X gets standard 8-92% bounds, Y gets 10-90% (container is shifted down to avoid metrics)
-    const clampX = (val: number) => Math.max(8, Math.min(92, val));
-    const clampY = (val: number) => Math.max(10, Math.min(90, val));
+    // Scale node positions to prevent overflow while preserving aspect ratio and topology
+    // X mapped from 0-100 to 6-94%, Y mapped from 0-100 to 8-92%
+    const scaleX = (val: number) => 6 + (val * 0.88);
+    const scaleY = (val: number) => 8 + (val * 0.84);
 
     return (
         <div className="flex-1 flex flex-col relative rounded-xl overflow-hidden shadow-inner bg-background relative border border-border h-full">
@@ -90,7 +90,7 @@ export const GraphVisualizer: React.FC = () => {
                             <mask id="graph-node-mask">
                                 <rect width="100%" height="100%" fill="white" />
                                 {nodes.map((node: any) => (
-                                    <circle key={`mask-${node.id}`} cx={`${clampX(node.x)}%`} cy={`${clampY(node.y)}%`} r="28" fill="black" />
+                                    <circle key={`mask-${node.id}`} cx={`${scaleX(node.x)}%`} cy={`${scaleY(node.y)}%`} r="28" fill="black" />
                                 ))}
                             </mask>
                             <filter id="edge-glow" x="-20%" y="-20%" width="140%" height="140%">
@@ -109,10 +109,10 @@ export const GraphVisualizer: React.FC = () => {
                             return (
                                 <g key={`edge-${source.id}-${target.id}-${i}`}>
                                     <motion.line
-                                        x1={`${clampX(source.x)}%`}
-                                        y1={`${clampY(source.y)}%`}
-                                        x2={`${clampX(target.x)}%`}
-                                        y2={`${clampY(target.y)}%`}
+                                        x1={`${scaleX(source.x)}%`}
+                                        y1={`${scaleY(source.y)}%`}
+                                        x2={`${scaleX(target.x)}%`}
+                                        y2={`${scaleY(target.y)}%`}
                                         stroke={isEdgeActive ? "#2FE0C2" : "#34304A"}
                                         strokeWidth={isEdgeActive ? 3 : 2}
                                         mask="url(#graph-node-mask)"
@@ -123,15 +123,15 @@ export const GraphVisualizer: React.FC = () => {
                                     {edge.weight != null && (
                                         <g>
                                             <circle
-                                                cx={`${(clampX(source.x) + clampX(target.x)) / 2}%`}
-                                                cy={`${(clampY(source.y) + clampY(target.y)) / 2}%`}
+                                                cx={`${(scaleX(source.x) + scaleX(target.x)) / 2}%`}
+                                                cy={`${(scaleY(source.y) + scaleY(target.y)) / 2}%`}
                                                 r="8"
                                                 fill="#1C1829"
                                                 className="transition-colors duration-300"
                                             />
                                             <text
-                                                x={`${(clampX(source.x) + clampX(target.x)) / 2}%`}
-                                                y={`${(clampY(source.y) + clampY(target.y)) / 2}%`}
+                                                x={`${(scaleX(source.x) + scaleX(target.x)) / 2}%`}
+                                                y={`${(scaleY(source.y) + scaleY(target.y)) / 2}%`}
                                                 fill={isEdgeActive ? "#2FE0C2" : "#9C96AC"}
                                                 fontSize="10"
                                                 fontFamily="monospace"
@@ -208,7 +208,7 @@ export const GraphVisualizer: React.FC = () => {
                             <motion.div
                                 key={node.id}
                                 className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
-                                style={{ left: `${clampX(node.x)}%`, top: `${clampY(node.y)}%`, zIndex }}
+                                style={{ left: `${scaleX(node.x)}%`, top: `${scaleY(node.y)}%`, zIndex }}
                                 animate={{ scale }}
                                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
                             >
