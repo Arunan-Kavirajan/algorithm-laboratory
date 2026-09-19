@@ -67,15 +67,14 @@ export const GraphVisualizer: React.FC = () => {
             {/* Central Graph Area */}
             <div className="flex-1 relative w-full h-full z-10 overflow-hidden">
                 {algorithmId === 'dijkstra' && (
-                    <div className="absolute top-6 right-6 flex flex-col gap-3 p-4 bg-surface/90 backdrop-blur-md border border-border/60 rounded-xl shadow-lg z-30">
-                        <div className="text-[10px] font-mono text-text-muted/80 uppercase tracking-widest mb-1">Dijkstra's Legend</div>
-                        <div className="flex items-center gap-3">
-                            <div className="w-5 h-5 rounded-full bg-[#0f172a] flex items-center justify-center text-[10px] font-mono font-bold text-[#94a3b8] shrink-0 shadow-sm">5</div>
-                            <span className="text-xs font-mono text-text-muted">Edge Weight (Path Cost)</span>
+                    <div className="absolute top-6 right-8 flex flex-col gap-2 z-30 opacity-75">
+                        <div className="flex items-center gap-2 justify-end">
+                            <span className="text-[10px] font-mono text-text-muted">Edge Weight</span>
+                            <div className="w-4 h-4 rounded-full bg-[#0f172a] flex items-center justify-center text-[8px] font-mono font-bold text-[#94a3b8]">5</div>
                         </div>
-                        <div className="flex items-center gap-3">
-                            <div className="px-1.5 py-0.5 rounded-full bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/30 text-[9px] font-mono font-bold shrink-0 shadow-sm">d=12</div>
-                            <span className="text-xs font-mono text-text-muted">Total Shortest Distance</span>
+                        <div className="flex items-center gap-2 justify-end">
+                            <span className="text-[10px] font-mono text-text-muted">Shortest Distance</span>
+                            <div className="px-1 py-0.5 rounded-full bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/30 text-[8px] font-mono font-bold">d=12</div>
                         </div>
                     </div>
                 )}
