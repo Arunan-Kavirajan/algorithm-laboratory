@@ -14,16 +14,16 @@ function App() {
   const [activeAlgorithm, setActiveAlgorithm] = useState('bubble_sort');
   const [searchTarget, setSearchTarget] = useState(25);
 
-  const isSearch = activeAlgorithm.includes('search') || activeAlgorithm === 'bfs';
+  const isSearch = activeAlgorithm.includes('search') || activeAlgorithm === 'bfs' || activeAlgorithm === 'dfs';
   const requiresSorted = activeAlgorithm === 'binary_search';
-  const isGraphRunning = currentRunningAlgorithm === 'bfs';
+  const isGraphRunning = currentRunningAlgorithm === 'bfs' || currentRunningAlgorithm === 'dfs';
 
   const generateAndRun = async () => {
     setLoading(true);
     try {
       let dataset: any;
 
-      if (activeAlgorithm === 'bfs') {
+      if (activeAlgorithm === 'bfs' || activeAlgorithm === 'dfs') {
           const nodes = [];
           const edges = [];
           for (let i = 0; i < arraySize; i++) {
@@ -113,6 +113,7 @@ function App() {
                     <option value="linear_search">Linear Search</option>
                     <option value="binary_search">Binary Search</option>
                     <option value="bfs">Breadth-First Search (BFS)</option>
+                    <option value="dfs">Depth-First Search (DFS)</option>
                 </select>
             </p>
           </div>

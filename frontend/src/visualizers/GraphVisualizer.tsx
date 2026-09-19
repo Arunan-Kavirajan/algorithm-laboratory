@@ -201,7 +201,7 @@ export const GraphVisualizer: React.FC = () => {
                 <div className="w-full max-w-3xl">
                     <div className="flex flex-col">
                         <span className="text-[10px] font-mono text-text-muted/60 uppercase tracking-wider mb-2 pl-2">
-                            BFS Queue (FIFO)
+                            {algorithmId === 'dfs' ? 'DFS Stack (LIFO)' : 'BFS Queue (FIFO)'}
                         </span>
                         <div className="flex items-center gap-2 p-3 bg-surface/60 rounded-xl border border-dashed border-border/60 min-h-[72px] shadow-inner backdrop-blur-md overflow-x-auto custom-scrollbar">
                             <AnimatePresence mode="popLayout">
@@ -230,7 +230,7 @@ export const GraphVisualizer: React.FC = () => {
                                         animate={{ opacity: 1 }}
                                         className="text-text-muted/40 font-mono text-sm mx-auto"
                                     >
-                                        Empty Queue
+                                        {algorithmId === 'dfs' ? 'Empty Stack' : 'Empty Queue'}
                                     </motion.span>
                                 )}
                             </AnimatePresence>
