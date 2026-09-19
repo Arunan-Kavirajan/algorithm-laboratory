@@ -202,9 +202,9 @@ export function Landing() {
 
       {/* FOOTER */}
       <footer className="w-full border-t border-border/50 relative z-10 bg-background/80 backdrop-blur-sm mt-auto">
-        <div className="max-w-5xl mx-auto px-6 py-6 md:py-8">
+        <div className="max-w-5xl mx-auto px-6 py-4 md:py-5">
           
-          <div className="flex flex-col md:flex-row justify-between gap-6 mb-6">
+          <div className="flex flex-col md:flex-row justify-between gap-4 mb-4">
             
             {/* Left Side */}
             <div className="flex flex-col gap-1">
@@ -222,7 +222,7 @@ export function Landing() {
             </div>
             
             {/* Right Side */}
-            <div className="flex flex-col gap-1 md:text-right mt-4 md:mt-0">
+            <div className="flex flex-col gap-1 md:text-right mt-2 md:mt-0">
               <div className="text-text font-bold text-sm">
                 Found a bug?
               </div>
@@ -233,7 +233,7 @@ export function Landing() {
             
           </div>
           
-          <div className="border-t border-border/50 pt-6 text-[10px] font-mono text-text-muted tracking-widest uppercase">
+          <div className="border-t border-border/50 pt-3 text-[10px] font-mono text-text-muted tracking-widest uppercase">
             © 2026 Algorithm Laboratory. All rights reserved.
           </div>
           
