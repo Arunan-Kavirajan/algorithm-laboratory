@@ -49,7 +49,7 @@ def binary_search_algorithm(dataset: ArrayDataset, target: int) -> ExecutionResu
         description="Setting initial boundaries: left at 0, right at the end.",
         state=[a.copy() for a in arr],
         active_elements=list(range(left, right + 1)),
-        line=2,
+        line=3,
         pointers={"left": left, "right": right, "target": target}
     )
 
@@ -63,7 +63,7 @@ def binary_search_algorithm(dataset: ArrayDataset, target: int) -> ExecutionResu
             ]),
             state=[a.copy() for a in arr],
             active_elements=list(range(left, right + 1)),
-            line=4,
+            line=5,
             pointers={"left": left, "right": right, "target": target}
         )
         
@@ -78,7 +78,7 @@ def binary_search_algorithm(dataset: ArrayDataset, target: int) -> ExecutionResu
             ]),
             state=[a.copy() for a in arr],
             active_elements=[mid],
-            line=5,
+            line=6,
             pointers={"left": left, "right": right, "mid": mid, "target": target}
         )
         
@@ -92,7 +92,7 @@ def binary_search_algorithm(dataset: ArrayDataset, target: int) -> ExecutionResu
             ]),
             state=[a.copy() for a in arr],
             active_elements=[mid],
-            line=7,
+            line=8,
             pointers={"left": left, "right": right, "mid": mid, "target": target}
         )
         
@@ -106,7 +106,7 @@ def binary_search_algorithm(dataset: ArrayDataset, target: int) -> ExecutionResu
                 ]),
                 state=[a.copy() for a in arr],
                 active_elements=[mid],
-                line=8,
+                line=9,
                 pointers={"left": left, "right": right, "mid": mid, "target": target}
             )
             found_idx = mid
@@ -122,7 +122,7 @@ def binary_search_algorithm(dataset: ArrayDataset, target: int) -> ExecutionResu
                 ]),
                 state=[a.copy() for a in arr],
                 active_elements=[mid],
-                line=10,
+                line=11,
                 pointers={"left": left, "right": right, "mid": mid, "target": target}
             )
             
@@ -135,7 +135,7 @@ def binary_search_algorithm(dataset: ArrayDataset, target: int) -> ExecutionResu
                 ]),
                 state=[a.copy() for a in arr],
                 active_elements=[],
-                line=11,
+                line=12,
                 pointers={"left": left, "right": right, "mid": mid, "target": target}
             )
             left = mid + 1
@@ -150,7 +150,7 @@ def binary_search_algorithm(dataset: ArrayDataset, target: int) -> ExecutionResu
                 ]),
                 state=[a.copy() for a in arr],
                 active_elements=[mid],
-                line=13,
+                line=14,
                 pointers={"left": left, "right": right, "mid": mid, "target": target}
             )
             
@@ -163,7 +163,7 @@ def binary_search_algorithm(dataset: ArrayDataset, target: int) -> ExecutionResu
                 ]),
                 state=[a.copy() for a in arr],
                 active_elements=[],
-                line=14,
+                line=15,
                 pointers={"left": left, "right": right, "mid": mid, "target": target}
             )
             right = mid - 1
@@ -174,7 +174,7 @@ def binary_search_algorithm(dataset: ArrayDataset, target: int) -> ExecutionResu
             description=f"left ({left}) > right ({right}). Search space exhausted.",
             state=[a.copy() for a in arr],
             active_elements=[],
-            line=4, # Loop breaks
+            line=5, # Loop breaks
             pointers={"target": target}
         )
         engine.record_event(
@@ -182,7 +182,7 @@ def binary_search_algorithm(dataset: ArrayDataset, target: int) -> ExecutionResu
             description=f"Target {target} is not in the array.",
             state=[a.copy() for a in arr],
             active_elements=[],
-            line=16,
+            line=17,
             pointers={"target": target}
         )
     else:
