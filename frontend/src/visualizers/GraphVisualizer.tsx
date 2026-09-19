@@ -34,6 +34,9 @@ export const GraphVisualizer: React.FC = () => {
         pointersById[nodeId].push(name);
     });
 
+    // Clamp node positions to prevent overflow (keep nodes 8-92% to leave room for labels/badges)
+    const clamp = (val: number) => Math.max(8, Math.min(92, val));
+
     return (
         <div className="flex-1 flex flex-col relative rounded-xl overflow-hidden shadow-inner bg-background relative border border-border h-full">
             
@@ -70,11 +73,11 @@ export const GraphVisualizer: React.FC = () => {
                     <div className="absolute top-6 right-8 flex flex-col gap-2 z-30 opacity-75">
                         <div className="flex items-center gap-2 justify-end">
                             <span className="text-[10px] font-mono text-text-muted">Edge Weight</span>
-                            <div className="w-4 h-4 rounded-full bg-[#0f172a] flex items-center justify-center text-[8px] font-mono font-bold text-[#94a3b8]">5</div>
+                            <div className="w-4 h-4 rounded-full bg-surface-raised flex items-center justify-center text-[8px] font-mono font-bold text-text-secondary">5</div>
                         </div>
                         <div className="flex items-center gap-2 justify-end">
                             <span className="text-[10px] font-mono text-text-muted">Shortest Distance</span>
-                            <div className="px-1 py-0.5 rounded-full bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/30 text-[8px] font-mono font-bold">d=12</div>
+                            <div className="px-1 py-0.5 rounded-full bg-accent/20 text-accent border border-accent/30 text-[8px] font-mono font-bold">d=12</div>
                         </div>
                     </div>
                 )}
@@ -85,7 +88,7 @@ export const GraphVisualizer: React.FC = () => {
                             <mask id="graph-node-mask">
                                 <rect width="100%" height="100%" fill="white" />
                                 {nodes.map((node: any) => (
-                                    <circle key={`mask-${node.id}`} cx={`${node.x}%`} cy={`${node.y}%`} r="28" fill="black" />
+                                    <circle key={`mask-${node.id}`} cx={`${clamp(node.x)}%`} cy={`${clamp(node.y)}%`} r="28" fill="black" />
                                 ))}
                             </mask>
                             <filter id="edge-glow" x="-20%" y="-20%" width="140%" height="140%">
@@ -99,17 +102,16 @@ export const GraphVisualizer: React.FC = () => {
                             const target = nodesDict[edge.target];
                             if (!source || !target) return null;
                             
-                            // Highlight edge if both source and target are active (e.g. scanning neighbors)
                             const isEdgeActive = activeElements.includes(source.id) && activeElements.includes(target.id);
                             
                             return (
                                 <g key={`edge-${source.id}-${target.id}-${i}`}>
                                     <motion.line
-                                        x1={`${source.x}%`}
-                                        y1={`${source.y}%`}
-                                        x2={`${target.x}%`}
-                                        y2={`${target.y}%`}
-                                        stroke={isEdgeActive ? "#3b82f6" : "rgba(255,255,255,0.1)"}
+                                        x1={`${clamp(source.x)}%`}
+                                        y1={`${clamp(source.y)}%`}
+                                        x2={`${clamp(target.x)}%`}
+                                        y2={`${clamp(target.y)}%`}
+                                        stroke={isEdgeActive ? "#2FE0C2" : "#34304A"}
                                         strokeWidth={isEdgeActive ? 3 : 2}
                                         mask="url(#graph-node-mask)"
                                         filter={isEdgeActive ? "url(#edge-glow)" : ""}
@@ -119,16 +121,16 @@ export const GraphVisualizer: React.FC = () => {
                                     {edge.weight != null && (
                                         <g>
                                             <circle
-                                                cx={`${(source.x + target.x) / 2}%`}
-                                                cy={`${(source.y + target.y) / 2}%`}
+                                                cx={`${(clamp(source.x) + clamp(target.x)) / 2}%`}
+                                                cy={`${(clamp(source.y) + clamp(target.y)) / 2}%`}
                                                 r="8"
-                                                fill="#0f172a"
+                                                fill="#1C1829"
                                                 className="transition-colors duration-300"
                                             />
                                             <text
-                                                x={`${(source.x + target.x) / 2}%`}
-                                                y={`${(source.y + target.y) / 2}%`}
-                                                fill={isEdgeActive ? "#3b82f6" : "#94a3b8"}
+                                                x={`${(clamp(source.x) + clamp(target.x)) / 2}%`}
+                                                y={`${(clamp(source.y) + clamp(target.y)) / 2}%`}
+                                                fill={isEdgeActive ? "#2FE0C2" : "#9C96AC"}
                                                 fontSize="10"
                                                 fontFamily="monospace"
                                                 fontWeight="bold"
@@ -162,70 +164,74 @@ export const GraphVisualizer: React.FC = () => {
                         let zIndex = 10;
 
                         if (isMatch) {
-                            borderColor = 'border-[#10b981]'; 
-                            bgColor = 'bg-[#10b981]/40 backdrop-blur-md';
-                            textColor = 'text-white font-bold';
-                            shadow = 'shadow-[0_0_40px_rgba(16,185,129,0.8)]';
+                            borderColor = 'border-state-match'; 
+                            bgColor = 'bg-state-match/40 backdrop-blur-md';
+                            textColor = 'text-text font-bold';
+                            shadow = 'shadow-[0_0_40px_rgba(47,224,194,0.8)]';
                             scale = 1.2;
                             zIndex = 30;
                         } else if (isMismatch) {
-                            borderColor = 'border-[#f43f5e]'; 
-                            bgColor = 'bg-[#f43f5e]/30 backdrop-blur-md';
-                            textColor = 'text-white';
-                            shadow = 'shadow-[0_0_20px_rgba(244,63,94,0.5)]';
+                            borderColor = 'border-state-mismatch'; 
+                            bgColor = 'bg-state-mismatch/30 backdrop-blur-md';
+                            textColor = 'text-text';
+                            shadow = 'shadow-[0_0_20px_rgba(232,84,144,0.5)]';
                             scale = 1.1;
                             zIndex = 25;
                         } else if (isCurrent) {
-                            borderColor = 'border-[#3b82f6]'; 
-                            bgColor = 'bg-[#3b82f6]/30 backdrop-blur-md';
-                            textColor = 'text-white font-bold';
-                            shadow = 'shadow-[0_0_25px_rgba(59,130,246,0.6)]';
+                            borderColor = 'border-accent'; 
+                            bgColor = 'bg-accent/30 backdrop-blur-md';
+                            textColor = 'text-text font-bold';
+                            shadow = 'shadow-[0_0_25px_rgba(47,224,194,0.6)]';
                             scale = 1.15;
                             zIndex = 20;
                         } else if (isEnqueued) {
-                            borderColor = 'border-[#f59e0b]'; 
-                            bgColor = 'bg-[#f59e0b]/20 backdrop-blur-md';
-                            textColor = 'text-[#f59e0b]';
-                            shadow = 'shadow-[0_0_15px_rgba(245,158,11,0.3)]';
+                            borderColor = 'border-state-compare'; 
+                            bgColor = 'bg-state-compare/20 backdrop-blur-md';
+                            textColor = 'text-state-compare';
+                            shadow = 'shadow-[0_0_15px_rgba(232,163,23,0.3)]';
                         } else if (isVisited) {
-                            borderColor = 'border-[#10b981]/40'; 
-                            bgColor = 'bg-[#10b981]/10 backdrop-blur-md';
-                            textColor = 'text-[#10b981]/80';
+                            borderColor = 'border-state-visited/40'; 
+                            bgColor = 'bg-state-visited/10 backdrop-blur-md';
+                            textColor = 'text-state-visited';
                         } else if (activeElements.length > 0) {
-                            // Dim unvisited non-active nodes slightly
                             bgColor = 'bg-surface/30 backdrop-blur-sm';
                             borderColor = 'border-border/50';
                             textColor = 'text-text-muted/50';
                         }
 
                         const pBadges = pointersById[node.id] || [];
+                        const hasDistance = distances[node.id] !== undefined;
 
                         return (
                             <motion.div
                                 key={node.id}
                                 className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
-                                style={{ left: `${node.x}%`, top: `${node.y}%`, zIndex }}
+                                style={{ left: `${clamp(node.x)}%`, top: `${clamp(node.y)}%`, zIndex }}
                                 animate={{ scale }}
                                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
                             >
-                                <div className={`w-12 h-12 rounded-full flex items-center justify-center font-mono text-sm border-2 ${borderColor} ${bgColor} ${textColor} ${shadow} transition-all duration-300 relative`}>
-                                    <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-mono text-text-muted/60 uppercase tracking-widest bg-background/80 px-1 rounded">
-                                        N{node.id.split('-')[1]}
-                                    </div>
-                                    {node.value}
-                                    {distances[node.id] !== undefined && (
-                                        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/30">
-                                            {distances[node.id] === 999 ? '∞' : `d=${distances[node.id]}`}
-                                        </div>
-                                    )}
+                                {/* Node Label (above node) */}
+                                <div className="text-[9px] font-mono text-text-muted/60 uppercase tracking-widest mb-1">
+                                    N{node.id.split('-')[1]}
                                 </div>
-                                
-                                {/* Pointer Badges */}
+
+                                {/* Node Circle */}
+                                <div className={`w-11 h-11 rounded-full flex items-center justify-center font-mono text-sm border-2 ${borderColor} ${bgColor} ${textColor} ${shadow} transition-all duration-300`}>
+                                    {node.value}
+                                </div>
+
+                                {/* Distance Badge (below node, only for Dijkstra) */}
+                                {hasDistance && (
+                                    <div className="mt-1 text-[8px] font-mono font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap bg-accent/20 text-accent border border-accent/30">
+                                        {distances[node.id] === 999 ? '\u221E' : `d=${distances[node.id]}`}
+                                    </div>
+                                )}
+
+                                {/* Pointer Badges (below distance, stacked vertically) */}
                                 {pBadges.length > 0 && (
-                                    <div className="absolute top-full mt-2 flex flex-col items-center gap-1">
-                                        <div className="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-b-[4px] border-b-accent/80" />
+                                    <div className="mt-1 flex flex-col items-center gap-0.5">
                                         {pBadges.map(p => (
-                                            <span key={p} className="px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded-md bg-accent/10 text-accent border border-accent/20 shadow-sm backdrop-blur-sm">
+                                            <span key={p} className="px-1.5 py-0.5 text-[9px] font-mono font-bold uppercase rounded-md bg-accent/10 text-accent border border-accent/20 leading-none">
                                                 {p}
                                             </span>
                                         ))}
@@ -257,15 +263,15 @@ export const GraphVisualizer: React.FC = () => {
                                             initial={{ opacity: 0, x: -20, scale: 0.8 }}
                                             animate={{ opacity: 1, x: 0, scale: 1 }}
                                             exit={{ opacity: 0, y: -20, scale: 0.8 }}
-                                            className="w-12 h-12 flex-shrink-0 rounded-lg flex items-center justify-center font-mono font-bold text-sm border-2 border-[#f59e0b] bg-[#f59e0b]/20 text-[#f59e0b] shadow-[0_0_15px_rgba(245,158,11,0.2)] relative mt-4"
+                                            className="w-12 h-12 flex-shrink-0 rounded-lg flex items-center justify-center font-mono font-bold text-sm border-2 border-state-compare bg-state-compare/20 text-state-compare shadow-[0_0_15px_rgba(232,163,23,0.2)] relative mt-4"
                                         >
-                                            <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-[9px] font-mono text-[#f59e0b]/80 uppercase tracking-widest">
+                                            <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-[9px] font-mono text-state-compare/80 uppercase tracking-widest">
                                                 N{node.id.split('-')[1]}
                                             </div>
                                             {node.value}
                                             {distances[node.id] !== undefined && (
-                                                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 text-[8px] font-mono font-bold px-1 py-0.5 rounded-full whitespace-nowrap bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/30">
-                                                    {distances[node.id] === 999 ? '∞' : `d=${distances[node.id]}`}
+                                                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 text-[8px] font-mono font-bold px-1 py-0.5 rounded-full whitespace-nowrap bg-accent/20 text-accent border border-accent/30">
+                                                    {distances[node.id] === 999 ? '\u221E' : `d=${distances[node.id]}`}
                                                 </div>
                                             )}
                                         </motion.div>
@@ -304,5 +310,3 @@ export const GraphVisualizer: React.FC = () => {
         </div>
     );
 };
-
-

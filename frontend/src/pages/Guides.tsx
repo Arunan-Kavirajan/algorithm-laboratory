@@ -2,11 +2,13 @@ import { useState, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import { AlgorithmSelector } from '../components/AlgorithmSelector';
+import { useThemeStore } from '../store/useThemeStore';
 
 const markdownFiles = import.meta.glob('../content/guides/*.md', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
 
 export function Guides() {
     const [activeAlgorithm, setActiveAlgorithm] = useState('bubble_sort');
+    const { theme } = useThemeStore();
 
     const markdownContent = useMemo(() => {
         const path = `../content/guides/${activeAlgorithm}.md`;
@@ -20,7 +22,7 @@ export function Guides() {
             </header>
 
             <main className="flex-1 overflow-auto p-8 lg:p-12">
-                <div className="max-w-3xl mx-auto prose prose-invert prose-emerald">
+                <div className={`max-w-3xl mx-auto prose ${theme === 'dark' ? 'prose-invert' : ''} prose-headings:font-display prose-headings:text-text prose-p:text-text-secondary prose-strong:text-text prose-code:text-accent prose-a:text-accent`}>
                     <ReactMarkdown rehypePlugins={[rehypeRaw]}>
                         {markdownContent}
                     </ReactMarkdown>

@@ -45,14 +45,13 @@ const ALL_ALGORITHMS: AlgorithmGroup[] = [
 interface AlgorithmSelectorProps {
   value: string;
   onChange: (id: string) => void;
-  filter?: string[]; // optional list of algorithm ids to show
+  filter?: string[];
 }
 
 export function AlgorithmSelector({ value, onChange, filter }: AlgorithmSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Close on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -63,7 +62,6 @@ export function AlgorithmSelector({ value, onChange, filter }: AlgorithmSelector
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // Close on Escape
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setIsOpen(false);
@@ -72,7 +70,6 @@ export function AlgorithmSelector({ value, onChange, filter }: AlgorithmSelector
     return () => document.removeEventListener('keydown', handler);
   }, []);
 
-  // Filter groups if needed
   const groups = filter
     ? ALL_ALGORITHMS.map((g) => ({
         ...g,
@@ -80,7 +77,6 @@ export function AlgorithmSelector({ value, onChange, filter }: AlgorithmSelector
       })).filter((g) => g.algorithms.length > 0)
     : ALL_ALGORITHMS;
 
-  // Find the currently selected algorithm's display name
   const selected = ALL_ALGORITHMS.flatMap((g) => g.algorithms).find((a) => a.id === value);
 
   return (
@@ -88,12 +84,12 @@ export function AlgorithmSelector({ value, onChange, filter }: AlgorithmSelector
       {/* Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-surface-raised hover:bg-surface-hover text-sm font-medium text-text transition-all cursor-pointer"
+        className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl border border-border bg-surface-raised hover:bg-surface-hover text-sm font-medium text-text transition-all cursor-pointer"
       >
         <span className="truncate">{selected?.name || 'Select Algorithm'}</span>
         <ChevronDown
           size={14}
-          className={`text-text-muted transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+          className={`text-text-muted transition-transform duration-200 shrink-0 ${isOpen ? 'rotate-180' : ''}`}
         />
       </button>
 
@@ -105,14 +101,14 @@ export function AlgorithmSelector({ value, onChange, filter }: AlgorithmSelector
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.96 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
-            className="absolute top-full left-0 mt-2 w-72 bg-surface-raised border border-border rounded-xl shadow-2xl overflow-hidden z-50"
+            className="absolute top-full left-0 mt-2 w-80 bg-surface-raised border border-border rounded-2xl shadow-2xl overflow-hidden z-50"
           >
-            <div className="max-h-80 overflow-y-auto py-2">
+            <div className="py-2">
               {groups.map((group, gi) => (
                 <div key={group.label}>
-                  {gi > 0 && <div className="mx-3 my-1.5 border-t border-border-subtle" />}
-                  <div className="px-3 pt-2 pb-1">
-                    <span className="text-[10px] font-semibold uppercase tracking-widest text-text-muted">
+                  {gi > 0 && <div className="mx-4 my-2 border-t border-border" />}
+                  <div className="px-4 pt-3 pb-1.5">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-text-muted">
                       {group.label}
                     </span>
                   </div>
@@ -123,7 +119,7 @@ export function AlgorithmSelector({ value, onChange, filter }: AlgorithmSelector
                         onChange(algo.id);
                         setIsOpen(false);
                       }}
-                      className={`w-full flex items-center justify-between px-3 py-2 mx-0 text-sm transition-colors ${
+                      className={`w-full flex items-center justify-between px-4 py-2.5 text-[13px] transition-colors ${
                         value === algo.id
                           ? 'bg-accent-subtle text-accent'
                           : 'text-text-secondary hover:bg-surface-hover hover:text-text'
@@ -131,7 +127,7 @@ export function AlgorithmSelector({ value, onChange, filter }: AlgorithmSelector
                     >
                       <span className="font-medium">{algo.name}</span>
                       <span
-                        className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
+                        className={`text-[10px] font-mono px-2 py-0.5 rounded-md ${
                           value === algo.id
                             ? 'bg-accent/15 text-accent'
                             : 'bg-surface-hover text-text-muted'

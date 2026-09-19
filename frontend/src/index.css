@@ -41,21 +41,21 @@
 
 /* ── Light Mode Overrides ── */
 .light {
-  --color-background: #FAFAFC;
-  --color-surface: #FFFFFF;
-  --color-surface-raised: #F5F3F8;
-  --color-surface-hover: #EEEAF4;
-  --color-border: #D8D5E0;
-  --color-border-subtle: #E8E5F0;
+  --color-background: #F6F4F0;
+  --color-surface: #FEFDFB;
+  --color-surface-raised: #F0EDE8;
+  --color-surface-hover: #E8E4DD;
+  --color-border: #D4CFC6;
+  --color-border-subtle: #E0DBD2;
 
-  --color-text: #16131F;
-  --color-text-secondary: #5E5878;
-  --color-text-muted: #9C96AC;
+  --color-text: #1A1621;
+  --color-text-secondary: #4A4358;
+  --color-text-muted: #7D7590;
 
-  --color-accent: #12B79C;
-  --color-accent-hover: #0FA68D;
-  --color-accent-subtle: rgba(18, 183, 156, 0.10);
-  --color-accent-glow: rgba(18, 183, 156, 0.20);
+  --color-accent: #0FA68D;
+  --color-accent-hover: #0D9680;
+  --color-accent-subtle: rgba(15, 166, 141, 0.10);
+  --color-accent-glow: rgba(15, 166, 141, 0.20);
 }
 
 body {

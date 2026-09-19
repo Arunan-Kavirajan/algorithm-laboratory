@@ -83,37 +83,37 @@ export const SortingVisualizer: React.FC = () => {
                                 zIndex = 10;
                                 scale = 1.05;
                                 if (currentEvent.type === 'COMPARE') {
-                                    borderColor = 'border-[#eab308]'; 
-                                    bgColor = 'bg-[#eab308]/20 backdrop-blur-md';
-                                    textColor = 'text-[#eab308]';
+                                    borderColor = 'border-state-compare'; 
+                                    bgColor = 'bg-state-compare/20 backdrop-blur-md';
+                                    textColor = 'text-state-compare';
                                     shadow = 'shadow-[0_0_25px_rgba(234,179,8,0.25)]';
                                 } else if (currentEvent.type === 'SWAP') {
-                                    borderColor = 'border-[#ef4444]'; 
-                                    bgColor = 'bg-[#ef4444]/20 backdrop-blur-md';
-                                    textColor = 'text-[#ef4444]';
+                                    borderColor = 'border-state-swap'; 
+                                    bgColor = 'bg-state-swap/20 backdrop-blur-md';
+                                    textColor = 'text-state-swap';
                                     shadow = 'shadow-[0_0_25px_rgba(239,68,68,0.25)]';
                                 } else if (currentEvent.type === 'NO_SWAP') {
-                                    borderColor = 'border-[#10b981]'; 
-                                    bgColor = 'bg-[#10b981]/20 backdrop-blur-md';
-                                    textColor = 'text-[#10b981]';
-                                    shadow = 'shadow-[0_0_25px_rgba(16,185,129,0.2)]';
+                                    borderColor = 'border-state-match'; 
+                                    bgColor = 'bg-state-match/20 backdrop-blur-md';
+                                    textColor = 'text-state-match';
+                                    shadow = 'shadow-[0_0_25px_rgba(47,224,194,0.2)]';
                                 } else if (currentEvent.type === 'MATCH') {
-                                    borderColor = 'border-[#10b981]'; 
-                                    bgColor = 'bg-[#10b981]/30 backdrop-blur-md';
-                                    textColor = 'text-[#10b981]';
-                                    shadow = 'shadow-[0_0_40px_rgba(16,185,129,0.6)]';
+                                    borderColor = 'border-state-match'; 
+                                    bgColor = 'bg-state-match/30 backdrop-blur-md';
+                                    textColor = 'text-state-match';
+                                    shadow = 'shadow-[0_0_40px_rgba(47,224,194,0.6)]';
                                     scale = 1.2;
                                     zIndex = 20;
                                 } else if (currentEvent.type === 'MISMATCH') {
-                                    borderColor = 'border-[#f43f5e]'; 
-                                    bgColor = 'bg-[#f43f5e]/20 backdrop-blur-md';
-                                    textColor = 'text-[#f43f5e]';
-                                    shadow = 'shadow-[0_0_20px_rgba(244,63,94,0.3)]';
+                                    borderColor = 'border-state-mismatch'; 
+                                    bgColor = 'bg-state-mismatch/20 backdrop-blur-md';
+                                    textColor = 'text-state-mismatch';
+                                    shadow = 'shadow-[0_0_20px_rgba(232,84,144,0.3)]';
                                     scale = 0.95;
                                 } else if (currentEvent.type === 'SORTED_ELEMENT') {
-                                    borderColor = 'border-[#3b82f6]/60'; 
-                                    bgColor = 'bg-[#3b82f6]/10 backdrop-blur-sm';
-                                    textColor = 'text-[#3b82f6]';
+                                    borderColor = 'border-accent/60'; 
+                                    bgColor = 'bg-accent/10 backdrop-blur-sm';
+                                    textColor = 'text-accent';
                                     scale = 1;
                                 }
                             } else if (currentEvent.type === 'SORTED_ELEMENT' && activeElements.length === 0) {

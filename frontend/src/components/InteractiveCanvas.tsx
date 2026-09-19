@@ -124,7 +124,7 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
             onMouseUp={handleCanvasMouseUp}
             onMouseLeave={() => { setDragStartNode(null); setDragTargetNode(null); }}
         >
-            <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
+            <div className="absolute inset-0 dot-grid pointer-events-none" />
 
             <svg className="absolute inset-0 w-full h-full pointer-events-none">
                 {edges.map((edge, i) => {
@@ -144,8 +144,8 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
                                     cx={`${(sourceNode.x + targetNode.x)/2}%`} 
                                     cy={`${(sourceNode.y + targetNode.y)/2}%`} 
                                     r="10" 
-                                    fill="#0f172a"
-                                    stroke="rgba(255,255,255,0.1)"
+                                    fill="#1C1829"
+                                    stroke="#34304A"
                                     strokeWidth="1"
                                 />
                             )}
@@ -155,7 +155,7 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
                                     y={`${(sourceNode.y + targetNode.y)/2}%`} 
                                     textAnchor="middle" 
                                     dominantBaseline="central" 
-                                    fill="#94a3b8"
+                                    fill="#9C96AC"
                                     fontSize="11"
                                     fontWeight="bold"
                                     fontFamily="monospace"
@@ -182,7 +182,7 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
             {nodes.map(node => {
                 let hoverClasses = '';
                 if (activeMode === 'ADD_EDGE') hoverClasses = 'cursor-pointer hover:border-accent hover:text-accent';
-                if (activeMode === 'REMOVE_NODE') hoverClasses = 'cursor-pointer hover:border-red-500 hover:text-red-500 hover:bg-red-500/10';
+                if (activeMode === 'REMOVE_NODE') hoverClasses = 'cursor-pointer hover:border-state-swap hover:text-state-swap hover:bg-state-swap/10';
 
                 return (
                     <div
