@@ -38,4 +38,7 @@ if os.path.isdir(dist_path):
     @app.get("/{catchall:path}")
     @app.head("/{catchall:path}")
     def serve_react_app(catchall: str):
+        file_path = os.path.join(dist_path, catchall)
+        if catchall and os.path.isfile(file_path):
+            return FileResponse(file_path)
         return FileResponse(os.path.join(dist_path, "index.html"))
