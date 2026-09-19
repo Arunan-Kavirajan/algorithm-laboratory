@@ -109,7 +109,7 @@ export function Visualizer() {
                    <select
                      value={searchTarget}
                      onChange={(e) => setSearchTarget(Number(e.target.value))}
-                     className="w-16 bg-transparent text-text font-mono font-bold outline-none text-sm cursor-pointer"
+                     className="w-32 bg-transparent text-text font-mono font-bold outline-none text-sm cursor-pointer"
                    >
                      {dataset?.type === 'ARRAY' && dataset.values.map((v: any) => (
                          <option key={v.id} value={v.value} className="bg-surface text-text">{v.value}</option>
@@ -117,6 +117,7 @@ export function Visualizer() {
                      {dataset?.type === 'GRAPH' && dataset.nodes.map((n: any) => (
                          <option key={n.id} value={n.value} className="bg-surface text-text">{n.value}</option>
                      ))}
+                     <option value={-999} className="bg-surface text-text">None (Missing)</option>
                    </select>
                </div>
            )}
