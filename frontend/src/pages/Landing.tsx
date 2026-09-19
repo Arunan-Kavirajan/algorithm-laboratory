@@ -74,6 +74,83 @@ function MiniVisualizer() {
   );
 }
 
+type Frame = {
+  arr: number[];
+  pointers: number[];
+  action: string;
+  detail: string;
+  settled: number[];
+};
+
+const conceptFrames: Frame[] = [
+  { arr: [8, 3, 7, 1, 5], pointers: [0, 1], action: "COMPARE", detail: "8 > 3", settled: [] },
+  { arr: [3, 8, 7, 1, 5], pointers: [0, 1], action: "SWAP", detail: "Move 8 right", settled: [] },
+  { arr: [3, 8, 7, 1, 5], pointers: [1, 2], action: "COMPARE", detail: "8 > 7", settled: [] },
+  { arr: [3, 7, 8, 1, 5], pointers: [1, 2], action: "SWAP", detail: "Move 8 right", settled: [] },
+  { arr: [3, 7, 8, 1, 5], pointers: [2, 3], action: "COMPARE", detail: "8 > 1", settled: [] },
+  { arr: [3, 7, 1, 8, 5], pointers: [2, 3], action: "SWAP", detail: "Move 8 right", settled: [] },
+  { arr: [3, 7, 1, 8, 5], pointers: [3, 4], action: "COMPARE", detail: "8 > 5", settled: [] },
+  { arr: [3, 7, 1, 5, 8], pointers: [3, 4], action: "SWAP", detail: "Move 8 right", settled: [] },
+  { arr: [3, 7, 1, 5, 8], pointers: [], action: "SETTLED", detail: "Largest moved to end", settled: [4] }
+];
+
+function ConceptVisualizer() {
+  const [step, setStep] = useState(0);
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setStep(s => {
+        if (s === conceptFrames.length - 1) return 0;
+        return s + 1;
+      });
+    }, 1200);
+    return () => clearInterval(t);
+  }, []);
+
+  const frame = conceptFrames[step];
+
+  return (
+    <div className="w-full border border-border bg-surface font-mono p-6 md:p-8 relative">
+      <div className="flex justify-between items-center text-xs text-text-muted mb-12 uppercase tracking-widest border-b border-border/50 pb-4">
+        <span>Execution Log</span>
+        <span>{String(step + 1).padStart(2, '0')} / {String(conceptFrames.length).padStart(2, '0')}</span>
+      </div>
+
+      <div className="flex justify-center gap-4 md:gap-6 items-end h-24 mb-12">
+        {frame.arr.map((val, idx) => {
+          const isActive = frame.pointers.includes(idx);
+          const isSettled = frame.settled.includes(idx);
+          return (
+            <div key={idx} className="flex flex-col items-center gap-3">
+              <div 
+                className={`w-10 flex flex-col justify-end items-center pb-2 transition-all duration-500 ease-in-out ${
+                  isActive ? 'bg-accent-subtle border-b-2 border-accent text-accent' : 
+                  isSettled ? 'bg-surface-hover border-b-2 border-text-muted text-text-muted opacity-50' : 
+                  'bg-surface-raised border-b-2 border-border-subtle text-text'
+                }`} 
+                style={{ height: `${val * 8}px` }}
+              >
+                <span className={isActive ? 'font-bold' : ''}>{val.toString().padStart(2, '0')}</span>
+              </div>
+              <div className={`h-4 text-accent transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-0'}`}>
+                ↑
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="bg-surface-raised/50 border border-border-subtle p-4 flex flex-col gap-2">
+        <div className="text-[10px] text-text-muted tracking-widest uppercase">Current Operation</div>
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-accent font-bold tracking-widest">{frame.action}</span>
+          <span className="text-text-secondary">{frame.detail}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const container: Variants = {
   hidden: { opacity: 0 },
   show: {
@@ -172,120 +249,107 @@ export function Landing() {
           </div>
         </div>
 
-        {/* EXPLORE THE LABORATORY */}
-        <div className="mt-32 pt-16 border-t border-border">
-          <h2 className="text-2xl font-display font-bold text-text mb-16 uppercase tracking-wider">Explore the Laboratory</h2>
+        {/* EXPLORE ALGORITHMS */}
+        <div className="mt-24 pt-16 border-t border-border">
+          <h2 className="text-xl font-display font-bold text-text mb-8 tracking-tight uppercase">Explore Algorithms</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
+          <div className="border border-border bg-surface-raised/20">
+            <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-border">
+              
+              {/* Sorting */}
+              <div className="p-8 group hover:bg-surface-raised/40 transition-colors">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+                  <h3 className="text-text font-mono text-sm tracking-widest uppercase">Sorting</h3>
+                </div>
+                <div className="font-mono text-xs text-text-muted leading-relaxed mb-6">
+                  Bubble · Selection · Insertion<br/>Merge · Quick · Heap
+                </div>
+                <div className="font-mono text-[10px] text-text-secondary whitespace-pre opacity-60 group-hover:opacity-100 transition-opacity">
+                  [07] [03] [09] [01]{'\n'}
+                  <span className="text-accent">  ↑    ↑{'\n'}</span>
+                  <span className="text-accent"> compare</span>
+                </div>
+              </div>
+
+              {/* Searching */}
+              <div className="p-8 group hover:bg-surface-raised/40 transition-colors">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+                  <h3 className="text-text font-mono text-sm tracking-widest uppercase">Searching</h3>
+                </div>
+                <div className="font-mono text-xs text-text-muted leading-relaxed mb-6">
+                  Linear · Binary
+                </div>
+                <div className="font-mono text-[10px] text-text-secondary whitespace-pre opacity-60 group-hover:opacity-100 transition-opacity mt-10">
+                  01  04  <span className="text-text">08</span>  12  17{'\n'}
+                  <span className="text-accent">        ↑{'\n'}</span>
+                  <span className="text-accent">      middle</span>
+                </div>
+              </div>
+
+              {/* Graphs */}
+              <div className="p-8 group hover:bg-surface-raised/40 transition-colors">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+                  <h3 className="text-text font-mono text-sm tracking-widest uppercase">Graphs</h3>
+                </div>
+                <div className="font-mono text-xs text-text-muted leading-relaxed mb-6">
+                  BFS · DFS · Dijkstra
+                </div>
+                <div className="font-mono text-[10px] text-text-secondary whitespace-pre opacity-60 group-hover:opacity-100 transition-opacity mt-10">
+                  {'      A\n'}
+                  {'     / \\\n'}
+                  {'    B   '}<span className="text-text">C</span>{'\n'}
+                  <span className="text-accent">VISITING → C</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        {/* WATCH EVERY DECISION */}
+        <div className="mt-24 pt-24 border-t border-border pb-24">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
             
-            {/* Sorting */}
-            <div className="flex flex-col group">
-              <div className="font-mono text-xs text-text-muted mb-8 whitespace-pre bg-surface border border-border p-6 select-none group-hover:border-accent transition-colors">
-                <span className="text-text">[07]</span> <span className="text-text">[03]</span> [09] [01] [05]{'\n'}
-                <span className="text-accent">  ↑    ↑{'\n'}</span>
-                <span className="text-accent">   compare</span>
-              </div>
-              <h3 className="text-text font-bold text-lg mb-3 flex items-center gap-4">
-                <span className="text-accent font-mono text-sm">01</span> SORTING
-              </h3>
-              <p className="text-text-muted text-sm leading-relaxed mb-6">
-                Watch values move, compare, swap and settle into their final positions.
-              </p>
-              <div className="flex flex-wrap gap-2 font-mono text-[10px] text-text-secondary uppercase">
-                <span>Bubble</span>•<span>Selection</span>•<span>Insertion</span>•<span>Merge</span>•<span>Quick</span>•<span>Heap</span>
-              </div>
+            <div className="order-2 md:order-1">
+              <ConceptVisualizer />
             </div>
 
-            {/* Searching */}
-            <div className="flex flex-col group">
-              <div className="font-mono text-xs text-text-muted mb-8 whitespace-pre bg-surface border border-border p-6 select-none group-hover:border-accent transition-colors">
-                01  04  08  <span className="text-text">12</span>  17  21  29{'\n'}
-                <span className="text-accent">            ↑{'\n'}</span>
-                <span className="text-accent">          middle</span>
-              </div>
-              <h3 className="text-text font-bold text-lg mb-3 flex items-center gap-4">
-                <span className="text-accent font-mono text-sm">02</span> SEARCHING
-              </h3>
-              <p className="text-text-muted text-sm leading-relaxed mb-6">
-                Observe the search space elegantly shrink or scan to locate the exact target.
+            <div className="order-1 md:order-2">
+              <h2 className="text-3xl font-display font-bold text-text mb-6 tracking-tight uppercase">Watch every decision</h2>
+              <p className="text-lg text-text-secondary leading-relaxed mb-12">
+                The visualizer doesn't just show the final answer. It exposes the operations that produce it.
               </p>
-              <div className="flex flex-wrap gap-2 font-mono text-[10px] text-text-secondary uppercase">
-                <span>Linear</span>•<span>Binary</span>
-              </div>
-            </div>
 
-            {/* Graphs */}
-            <div className="flex flex-col group">
-              <div className="font-mono text-xs text-text-muted mb-8 whitespace-pre bg-surface border border-border p-6 select-none group-hover:border-accent transition-colors">
-                {'      A\n'}
-                {'     / \\\n'}
-                {'    B   '}<span className="text-text">C</span>{'\n'}
-                {'   /     \\\n'}
-                <span className="text-accent">VISITING → C</span>
-              </div>
-              <h3 className="text-text font-bold text-lg mb-3 flex items-center gap-4">
-                <span className="text-accent font-mono text-sm">03</span> GRAPHS
-              </h3>
-              <p className="text-text-muted text-sm leading-relaxed mb-6">
-                Follow algorithms as they traverse and evaluate deeply connected structures.
-              </p>
-              <div className="flex flex-wrap gap-2 font-mono text-[10px] text-text-secondary uppercase">
-                <span>BFS</span>•<span>DFS</span>•<span>Dijkstra</span>
+              <div className="flex flex-col gap-8 font-mono text-xs tracking-widest">
+                <div className="flex items-center gap-6">
+                  <div className="w-12 h-px bg-accent"></div>
+                  <span className="text-text">COMPARE</span>
+                </div>
+                <div className="flex items-center gap-6">
+                  <div className="w-12 h-px bg-accent"></div>
+                  <span className="text-text">DECIDE</span>
+                </div>
+                <div className="flex items-center gap-6">
+                  <div className="w-12 h-px bg-accent"></div>
+                  <span className="text-text">MOVE</span>
+                </div>
               </div>
             </div>
 
           </div>
         </div>
 
-        {/* INSIDE AN ALGORITHM */}
-        <div className="mt-32 pt-16 border-t border-border pb-32">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-            
-            <div className="border border-border bg-surface p-8 font-mono text-xs leading-loose text-text-muted">
-              <div><span className="text-text">STEP 04 / 18</span></div>
-              <div className="h-px bg-border my-4" />
-              <div><span className="text-accent">COMPARE</span></div>
-              <div className="my-4">
-                [08]  [03]<br/>
-                <span className="text-accent">  ↑     ↑</span>
-              </div>
-              <div><span className="text-text">08 {'>'} 03</span></div>
-              <div className="mt-4 opacity-70">
-                Therefore, the elements are swapped.
-              </div>
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-display font-bold text-text mb-6 uppercase tracking-wider">Inside an Algorithm</h2>
-              <p className="text-lg text-text-secondary leading-relaxed mb-6">
-                Every animation you see is an actual operation performed by the algorithm in real-time.
-              </p>
-              <p className="text-text-muted text-sm leading-relaxed mb-10">
-                Algorithm Laboratory doesn't just animate the final result. It maps the internal execution state directly to visual components, letting you inspect the exact mathematical and logical decisions being made.
-              </p>
-
-              <div className="flex flex-col gap-6 border-l border-border pl-6">
-                <div>
-                  <div className="text-xs font-mono text-accent mb-1">01 / LEARN</div>
-                  <div className="text-sm text-text-muted">Read the mathematical theory.</div>
-                </div>
-                <div>
-                  <div className="text-xs font-mono text-accent mb-1">02 / VISUALIZE</div>
-                  <div className="text-sm text-text-muted">Watch the algorithm execute.</div>
-                </div>
-                <div>
-                  <div className="text-xs font-mono text-accent mb-1">03 / INSPECT</div>
-                  <div className="text-sm text-text-muted">Understand why an operation happened.</div>
-                </div>
-                <div>
-                  <div className="text-xs font-mono text-accent mb-1">04 / EXPERIMENT</div>
-                  <div className="text-sm text-text-muted">Change the input and run it yourself.</div>
-                </div>
-              </div>
-
-            </div>
-
-          </div>
+        {/* FINAL CTA */}
+        <div className="border-t border-border py-20 flex flex-col items-center text-center">
+          <Link 
+            to="/visualizer" 
+            className="flex items-center justify-center px-10 py-4 bg-text text-background hover:bg-accent hover:text-background transition-colors font-mono font-bold text-sm w-full sm:w-auto"
+          >
+            ENTER THE LABORATORY
+          </Link>
         </div>
 
       </div>
