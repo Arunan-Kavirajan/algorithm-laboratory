@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 // Load all markdown files as raw strings
-const markdownFiles = import.meta.glob('../content/guides/*.md', { as: 'raw', eager: true });
+const markdownFiles = import.meta.glob('../content/guides/*.md', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
 
 export function Guides() {
     const [activeAlgorithm, setActiveAlgorithm] = useState('bubble_sort');
