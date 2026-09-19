@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { HelpCircle, AlertCircle } from 'lucide-react';
 
 interface ModalProps {
@@ -30,9 +31,12 @@ export const Modal: React.FC<ModalProps> = ({
         onClose();
     };
 
-    return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/40 backdrop-blur-md transition-opacity">
-            <div className="bg-surface border border-border/60 shadow-[0_10px_40px_rgba(0,0,0,0.3)] rounded-2xl w-full max-w-xs overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    return createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-background/60 backdrop-blur-md transition-opacity">
+            <div 
+                className="bg-surface border border-border/60 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-2xl w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+                style={{ maxWidth: '280px' }}
+            >
                 <div className="p-5 flex flex-col items-center text-center">
                     
                     <div className="w-10 h-10 rounded-full flex items-center justify-center mb-3 bg-background border border-border shadow-sm">
@@ -81,6 +85,7 @@ export const Modal: React.FC<ModalProps> = ({
                     </button>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
