@@ -116,7 +116,7 @@ export function Landing() {
   const { theme, toggle } = useThemeStore();
 
   return (
-    <div className="min-h-screen flex flex-col justify-center bg-background relative selection:bg-accent-subtle selection:text-accent overflow-hidden">
+    <div className="min-h-screen flex flex-col justify-between bg-background relative selection:bg-accent-subtle selection:text-accent overflow-hidden">
       
       {/* Navigation (Just Theme Toggle) */}
       <div className="absolute top-6 right-6 z-50">
@@ -136,7 +136,7 @@ export function Landing() {
         style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.75%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}
       />
       
-      <div className="w-full max-w-5xl mx-auto px-6 py-12 flex flex-col relative z-10">
+      <div className="w-full max-w-5xl mx-auto px-6 py-12 flex-1 flex flex-col justify-center relative z-10">
         
         {/* HERO SECTION */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
@@ -199,6 +199,61 @@ export function Landing() {
         </div>
 
       </div>
+
+      {/* FOOTER */}
+      <footer className="w-full border-t border-border/50 relative z-10 bg-background/80 backdrop-blur-sm mt-auto">
+        <div className="max-w-5xl mx-auto px-6 py-8 md:py-12">
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
+            {/* Left */}
+            <div className="flex flex-col">
+              <div className="text-[10px] text-text-muted font-mono tracking-widest uppercase mb-4 flex items-center gap-3">
+                <div className="w-6 h-px bg-border" />
+                LAB.AUTHOR // 001
+              </div>
+              <div className="text-text font-bold uppercase tracking-widest text-sm mb-4">
+                Built by Arunan Kavirajan
+              </div>
+              <div className="flex gap-6 font-mono text-xs text-text-secondary">
+                <a href="https://www.linkedin.com/in/arunan-kavirajan" target="_blank" rel="noreferrer" className="hover:text-accent transition-colors">
+                  LinkedIn
+                </a>
+                <a href="https://github.com/Arunan-Kavirajan" target="_blank" rel="noreferrer" className="hover:text-accent transition-colors">
+                  GitHub
+                </a>
+              </div>
+            </div>
+
+            {/* Right */}
+            <div className="flex flex-col md:items-end">
+              <div className="text-[10px] text-text-muted font-mono tracking-widest uppercase mb-4 flex items-center gap-3">
+                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                SYSTEM.MAINTAINER
+                <div className="w-6 h-px bg-border md:hidden" />
+              </div>
+              <div className="text-text font-bold uppercase tracking-widest text-sm mb-4">
+                Found a bug?
+              </div>
+              <div className="font-mono text-xs text-text-secondary">
+                <a href="mailto:arunan.kavirajan@gmail.com" className="hover:text-accent transition-colors">
+                  arunan.kavirajan@gmail.com
+                </a>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-[10px] font-mono text-text-muted tracking-widest uppercase border-t border-border/50 pt-8">
+            <div>
+              © 2026 Arunan Kavirajan. All rights reserved.
+            </div>
+            <div>
+              Algorithm Laboratory
+            </div>
+          </div>
+          
+        </div>
+      </footer>
+
     </div>
   );
 }
