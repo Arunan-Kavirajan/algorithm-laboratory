@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import axios from 'axios';
 import { AlgorithmSelector } from '../components/AlgorithmSelector';
 import { RaceTrack } from '../components/RaceTrack';
@@ -16,50 +16,7 @@ const ALGORITHM_DATA: Record<string, { time: string, space: string, name: string
     'heap_sort': { name: 'Heap Sort', time: 'O(n log n)', space: 'O(1)' },
 };
 
-function getAnalysisText(
-    algA: string, algB: string, 
-    eventsA: ExecutionEvent[], eventsB: ExecutionEvent[]
-) {
-    const stepsA = eventsA.length;
-    const stepsB = eventsB.length;
-    const dataA = ALGORITHM_DATA[algA];
-    const dataB = ALGORITHM_DATA[algB];
-    
-    if (stepsA === stepsB) {
-        return [`Both ${dataA.name} and ${dataB.name} sorted the dataset in exactly ${stepsA} steps.`, `This indicates identical structural performance for this specific randomized dataset arrangement. Both algorithms executed the exact same number of operations.`];
-    }
-
-    const winner = stepsA < stepsB ? 'A' : 'B';
-    const winnerData = winner === 'A' ? dataA : dataB;
-    const loserData = winner === 'A' ? dataB : dataA;
-    
-    const winSteps = winner === 'A' ? stepsA : stepsB;
-    const loseSteps = winner === 'A' ? stepsB : stepsA;
-    
-    const winComp = (winner === 'A' ? eventsA : eventsB)[winSteps - 1].metrics.comparisons;
-    const loseComp = (winner === 'A' ? eventsB : eventsA)[loseSteps - 1].metrics.comparisons;
-    
-    const speedup = (loseSteps / winSteps).toFixed(1);
-    const diff = loseSteps - winSteps;
-    
-    const paragraphs = [];
-
-    paragraphs.push(`${winnerData.name} (Track ${winner}) dominated this benchmark, completing the execution ${speedup}x faster than ${loserData.name}. It saved a total of ${diff} operational steps.`);
-
-    if (winnerData.time !== loserData.time) {
-        paragraphs.push(`This vividly demonstrates theoretical time complexity in practice. ${winnerData.name} operates at an average time complexity of ${winnerData.time}, which scales far better on larger datasets than the ${loserData.time} complexity of ${loserData.name}.`);
-    } else {
-        paragraphs.push(`Interestingly, both algorithms share an average time complexity of ${winnerData.time}. However, ${winnerData.name}'s specific approach proved highly optimized for this dataset's distribution.`);
-    }
-
-    if (winComp < loseComp) {
-        paragraphs.push(`By drastically reducing algorithmic comparisons (${winComp} vs ${loseComp}), it avoided unnecessary inner-loop checks, proving its partitioning or searching strategy was highly efficient.`);
-    } else {
-        paragraphs.push(`Even though it performed more raw comparisons (${winComp} vs ${loseComp}), its memory write optimizations gave it the decisive performance edge.`);
-    }
-
-    return paragraphs;
-}
+import { generateReport } from '../utils/benchmarkReports';
 
 export function Benchmark() {
     const [algorithmA, setAlgorithmA] = useState('quick_sort');
@@ -176,6 +133,12 @@ export function Benchmark() {
             setEventsB([]);
         }
     };
+
+    // Memoize the report generation so it doesn't flicker/reroll during window resizes or slider changes
+    const generatedReport = useMemo<string[]>(() => {
+        if (!bothFinished) return [];
+        return generateReport(algorithmA, algorithmB, eventsA, eventsB);
+    }, [algorithmA, algorithmB, eventsA, eventsB, bothFinished]);
 
     // Derived max metrics for visual bar scaling
     const maxSteps = bothFinished ? Math.max(eventsA.length, eventsB.length) : 1;
@@ -391,7 +354,7 @@ export function Benchmark() {
                         <div className="flex flex-col gap-4 border border-border/50 rounded-xl p-6 bg-background shadow-inner">
                             <h3 className="text-[10px] font-mono uppercase tracking-widest text-accent mb-2">Laboratory Insights</h3>
                             <div className="flex flex-col gap-4 text-sm text-text-secondary leading-relaxed">
-                                {getAnalysisText(algorithmA, algorithmB, eventsA, eventsB).map((paragraph, i) => (
+                                {generatedReport.map((paragraph: string, i: number) => (
                                     <p key={i}>{paragraph}</p>
                                 ))}
                             </div>
