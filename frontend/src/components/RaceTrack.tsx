@@ -61,7 +61,7 @@ export const RaceTrack: React.FC<RaceTrackProps> = ({ title, algorithmId, events
             <div className="flex-1 relative mx-6 mb-6 mt-4 border-b border-border/50">
                 {array.map((item, idx) => {
                     const isActive = activeElements.includes(idx);
-                    const isSorted = currentEvent.type === 'SORTED_ELEMENT' && activeElements.includes(idx);
+                    const isSorted = (currentEvent.type === 'SORTED_ELEMENT' || currentEvent.type === 'MATCH') && activeElements.includes(idx);
                     
                     let bgColor = 'bg-surface-raised';
                     let borderColor = 'border-border-subtle';

@@ -46,10 +46,11 @@ interface AlgorithmSelectorProps {
   value: string;
   onChange: (id: string) => void;
   filter?: string[];
+  category?: 'Sorting' | 'Searching' | 'Graph Algorithms';
   disabled?: boolean;
 }
 
-export function AlgorithmSelector({ value, onChange, filter, disabled }: AlgorithmSelectorProps) {
+export function AlgorithmSelector({ value, onChange, filter, category, disabled }: AlgorithmSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -71,12 +72,16 @@ export function AlgorithmSelector({ value, onChange, filter, disabled }: Algorit
     return () => document.removeEventListener('keydown', handler);
   }, []);
 
-  const groups = filter
-    ? ALL_ALGORITHMS.map((g) => ({
+  let groups = ALL_ALGORITHMS;
+  if (category) {
+      groups = groups.filter(g => g.label === category);
+  }
+  if (filter) {
+      groups = groups.map((g) => ({
         ...g,
         algorithms: g.algorithms.filter((a) => filter.includes(a.id)),
-      })).filter((g) => g.algorithms.length > 0)
-    : ALL_ALGORITHMS;
+      })).filter((g) => g.algorithms.length > 0);
+  }
 
   const selected = ALL_ALGORITHMS.flatMap((g) => g.algorithms).find((a) => a.id === value);
 

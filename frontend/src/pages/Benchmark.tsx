@@ -2,10 +2,10 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import axios from 'axios';
 import { AlgorithmSelector } from '../components/AlgorithmSelector';
 import { RaceTrack } from '../components/RaceTrack';
+import { RaceGraphVisualizer } from '../components/RaceGraphVisualizer';
 import { Play, Pause, RotateCcw, Loader2, Trophy, FastForward, Activity, Database } from 'lucide-react';
 import type { ExecutionResult, ExecutionEvent } from '../types';
-
-const SORTING_ALGORITHMS = ['bubble_sort', 'selection_sort', 'insertion_sort', 'merge_sort', 'quick_sort', 'heap_sort'];
+import { generateReport } from '../utils/benchmarkReports';
 
 const ALGORITHM_DATA: Record<string, { time: string, space: string, name: string }> = {
     'bubble_sort': { name: 'Bubble Sort', time: 'O(n²)', space: 'O(1)' },
@@ -14,16 +14,25 @@ const ALGORITHM_DATA: Record<string, { time: string, space: string, name: string
     'merge_sort': { name: 'Merge Sort', time: 'O(n log n)', space: 'O(n)' },
     'quick_sort': { name: 'Quick Sort', time: 'O(n log n)', space: 'O(log n)' },
     'heap_sort': { name: 'Heap Sort', time: 'O(n log n)', space: 'O(1)' },
+    'linear_search': { name: 'Linear Search', time: 'O(n)', space: 'O(1)' },
+    'binary_search': { name: 'Binary Search', time: 'O(log n)', space: 'O(1)' },
+    'bfs': { name: 'BFS', time: 'O(V+E)', space: 'O(V)' },
+    'dfs': { name: 'DFS', time: 'O(V+E)', space: 'O(V)' },
+    'dijkstra': { name: "Dijkstra's", time: 'O(V²)', space: 'O(V)' },
 };
 
-import { generateReport } from '../utils/benchmarkReports';
-
 export function Benchmark() {
+    const [category, setCategory] = useState<'Sorting' | 'Searching' | 'Graph Algorithms'>('Sorting');
+    
     const [algorithmA, setAlgorithmA] = useState('quick_sort');
     const [algorithmB, setAlgorithmB] = useState('bubble_sort');
     const [arraySize, setArraySize] = useState(25);
     const [playbackSpeed, setPlaybackSpeed] = useState(80); // 1 to 100
     
+    // Dataset state for searching/graphs
+    const [dataset, setDataset] = useState<any>(null);
+    const [searchTarget, setSearchTarget] = useState<number | string>(25);
+
     const [loading, setLoading] = useState(false);
     const [eventsA, setEventsA] = useState<ExecutionEvent[]>([]);
     const [eventsB, setEventsB] = useState<ExecutionEvent[]>([]);
@@ -34,6 +43,67 @@ export function Benchmark() {
     
     const timerRef = useRef<number | null>(null);
 
+    // Whenever category or size changes, regenerate the underlying dataset
+    useEffect(() => {
+        setIsPlaying(false);
+        setStepA(0);
+        setStepB(0);
+        setEventsA([]);
+        setEventsB([]);
+        
+        let newDataset: any;
+
+        if (category === 'Sorting') {
+            const values = Array.from({ length: arraySize }, (_, i) => ({
+                id: `el-${i}`,
+                value: Math.floor(Math.random() * 95) + 5
+            }));
+            newDataset = { type: "ARRAY", values };
+            setAlgorithmA('quick_sort');
+            setAlgorithmB('bubble_sort');
+        } else if (category === 'Searching') {
+            const values = Array.from({ length: arraySize }, (_, i) => ({
+                id: `el-${i}`,
+                value: Math.floor(Math.random() * 95) + 5
+            })).sort((a, b) => a.value - b.value); // Must be sorted for binary search!
+            newDataset = { type: "ARRAY", values };
+            setAlgorithmA('binary_search');
+            setAlgorithmB('linear_search');
+            
+            // Auto-select a valid target
+            const randomIndex = Math.floor(Math.random() * values.length);
+            setSearchTarget(values[randomIndex].value);
+        } else if (category === 'Graph Algorithms') {
+            const numNodes = Math.min(15, Math.floor(arraySize / 2));
+            const nodes = Array.from({ length: numNodes }, (_, i) => {
+                const angle = (i / numNodes) * 2 * Math.PI;
+                const radius = 35 + Math.random() * 10;
+                return {
+                    id: String.fromCharCode(65 + i),
+                    value: String.fromCharCode(65 + i),
+                    x: 50 + radius * Math.cos(angle),
+                    y: 50 + radius * Math.sin(angle)
+                };
+            });
+            const edges = [];
+            for (let i = 0; i < numNodes; i++) {
+                edges.push({ source: nodes[i].id, target: nodes[(i + 1) % numNodes].id, weight: 1 });
+                if (Math.random() > 0.5) {
+                    const randomTarget = Math.floor(Math.random() * numNodes);
+                    if (randomTarget !== i) {
+                        edges.push({ source: nodes[i].id, target: nodes[randomTarget].id, weight: 1 });
+                    }
+                }
+            }
+            newDataset = { type: "GRAPH", nodes, edges };
+            setAlgorithmA('bfs');
+            setAlgorithmB('dfs');
+            setSearchTarget(nodes[nodes.length - 1].id);
+        }
+
+        setDataset(newDataset);
+    }, [category, arraySize]);
+
     // Playback loop
     useEffect(() => {
         if (!isPlaying) {
@@ -41,7 +111,6 @@ export function Benchmark() {
             return;
         }
 
-        // speed: 1 to 100. delay: 500ms to 10ms.
         const delay = Math.max(10, 500 - ((playbackSpeed - 1) * (490 / 99)));
 
         timerRef.current = window.setInterval(() => {
@@ -74,7 +143,9 @@ export function Benchmark() {
         };
     }, [isPlaying, eventsA.length, eventsB.length, playbackSpeed]);
 
-    const generateAndRace = async () => {
+    const executeRace = async () => {
+        if (!dataset) return;
+        
         setLoading(true);
         setIsPlaying(false);
         setStepA(0);
@@ -83,16 +154,17 @@ export function Benchmark() {
         setEventsB([]);
 
         try {
-            // Generate identical dataset for both
-            const values = Array.from({ length: arraySize }, (_, i) => ({
-                id: `el-${i}`,
-                value: Math.floor(Math.random() * 95) + 5
-            }));
-            const dataset = { type: "ARRAY", values };
+            const payloadA: any = { algorithmId: algorithmA, dataset };
+            const payloadB: any = { algorithmId: algorithmB, dataset };
+            
+            if (category === 'Searching' || category === 'Graph Algorithms') {
+                payloadA.target = searchTarget;
+                payloadB.target = searchTarget;
+            }
 
             const [resA, resB] = await Promise.all([
-                axios.post<ExecutionResult>('/api/execute', { algorithmId: algorithmA, dataset }),
-                axios.post<ExecutionResult>('/api/execute', { algorithmId: algorithmB, dataset })
+                axios.post<ExecutionResult>('/api/execute', payloadA),
+                axios.post<ExecutionResult>('/api/execute', payloadB)
             ]);
 
             setEventsA(resA.data.events);
@@ -134,13 +206,11 @@ export function Benchmark() {
         }
     };
 
-    // Memoize the report generation so it doesn't flicker/reroll during window resizes or slider changes
     const generatedReport = useMemo<string[]>(() => {
         if (!bothFinished) return [];
         return generateReport(algorithmA, algorithmB, eventsA, eventsB);
     }, [algorithmA, algorithmB, eventsA, eventsB, bothFinished]);
 
-    // Derived max metrics for visual bar scaling
     const maxSteps = bothFinished ? Math.max(eventsA.length, eventsB.length) : 1;
     const maxComp = bothFinished ? Math.max(eventsA[eventsA.length-1].metrics.comparisons, eventsB[eventsB.length-1].metrics.comparisons) : 1;
     const maxSwaps = bothFinished ? Math.max(eventsA[eventsA.length-1].metrics.swaps, eventsB[eventsB.length-1].metrics.swaps) : 1;
@@ -149,18 +219,37 @@ export function Benchmark() {
         <div className="flex-1 flex flex-col h-full relative overflow-hidden bg-background">
             
             {/* Header / Global Controls */}
-            <header className="border-b border-border/60 bg-surface/50 backdrop-blur-sm px-5 py-3 flex items-center justify-between z-10 shrink-0">
+            <header className="border-b border-border/60 bg-surface/50 backdrop-blur-sm px-5 py-3 flex items-center justify-between z-10 shrink-0 overflow-x-auto">
                 <div className="flex items-center">
-                    <div className="flex items-center gap-3 border-r border-border/50 pr-4 md:pr-6">
+                    <div className="flex items-center gap-3 border-r border-border/50 pr-4 md:pr-6 shrink-0">
                         <Trophy size={16} className="text-accent" />
                         <span className="font-display font-bold text-text uppercase tracking-wider text-sm hidden md:block">Algorithmic Racing</span>
                     </div>
 
-                    <div className="flex items-center gap-6 ml-4 md:ml-6">
+                    <div className="flex items-center gap-4 md:gap-6 ml-4 md:ml-6 shrink-0">
+                        
+                        {/* Category Selector */}
+                        <div className="flex bg-surface-raised p-1 rounded-lg border border-border-subtle shrink-0">
+                            {(['Sorting', 'Searching', 'Graph Algorithms'] as const).map(cat => (
+                                <button
+                                    key={cat}
+                                    disabled={isPlaying || loading}
+                                    onClick={() => setCategory(cat)}
+                                    className={`px-3 py-1.5 text-xs font-bold font-mono rounded-md uppercase tracking-wider transition-colors ${
+                                        category === cat 
+                                        ? 'bg-accent/20 text-accent' 
+                                        : 'text-text-muted hover:text-text disabled:opacity-50'
+                                    }`}
+                                >
+                                    {cat.split(' ')[0]}
+                                </button>
+                            ))}
+                        </div>
+
                         {/* Dataset Size */}
-                        <div className="flex flex-col gap-1.5">
+                        <div className="flex flex-col gap-1.5 shrink-0">
                             <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-text-muted flex items-center gap-1.5">
-                                <Database size={12} /> Dataset Size
+                                <Database size={12} /> Size
                             </span>
                             <div className="flex items-center gap-2.5">
                                 <input
@@ -176,12 +265,37 @@ export function Benchmark() {
                             </div>
                         </div>
 
-                        <div className="w-px h-8 bg-border/50 hidden sm:block" />
+                        {/* Target Selector (If Searching or Graph) */}
+                        {(category === 'Searching' || category === 'Graph Algorithms') && (
+                            <div className="flex flex-col gap-1.5 shrink-0">
+                                <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-text-muted flex items-center gap-1.5">
+                                    Target
+                                </span>
+                                <div className="flex items-center h-[24px]">
+                                    <select
+                                        value={searchTarget}
+                                        onChange={(e) => setSearchTarget(e.target.value)}
+                                        disabled={isPlaying || loading}
+                                        className="bg-transparent text-text font-mono font-bold outline-none text-sm cursor-pointer border-b border-border-subtle pb-0.5"
+                                    >
+                                        {dataset?.type === 'ARRAY' && dataset.values.map((v: any) => (
+                                            <option key={v.id} value={v.value} className="bg-surface text-text">{v.value}</option>
+                                        ))}
+                                        {dataset?.type === 'GRAPH' && dataset.nodes.map((n: any) => (
+                                            <option key={n.id} value={n.id} className="bg-surface text-text">{n.id}</option>
+                                        ))}
+                                        <option value={-999} className="bg-surface text-text">None</option>
+                                    </select>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="w-px h-8 bg-border/50 hidden sm:block mx-2" />
 
                         {/* Playback Speed */}
-                        <div className="flex flex-col gap-1.5">
+                        <div className="flex flex-col gap-1.5 shrink-0">
                             <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-accent flex items-center gap-1.5">
-                                <FastForward size={12} /> Playback Speed
+                                <FastForward size={12} /> Speed
                             </span>
                             <div className="flex items-center gap-2">
                                 <input
@@ -197,34 +311,32 @@ export function Benchmark() {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                    {hasData && (
-                        <div className="flex items-center gap-2 mr-2 md:mr-4 border-r border-border/50 pr-2 md:pr-4">
-                            <button
-                                onClick={() => setIsPlaying(!isPlaying)}
-                                className="w-8 h-8 flex items-center justify-center rounded-full bg-surface-raised hover:bg-surface-hover text-text transition-colors border border-border"
-                                title={isPlaying ? "Pause Race" : "Resume Race"}
-                            >
-                                {isPlaying ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" className="ml-0.5" />}
-                            </button>
-                            <button
-                                onClick={resetRace}
-                                className="w-8 h-8 flex items-center justify-center rounded-full bg-surface-raised hover:bg-surface-hover text-text transition-colors border border-border"
-                                title="Reset to Start"
-                            >
-                                <RotateCcw size={14} />
-                            </button>
-                        </div>
+                {/* Primary Action */}
+                <div className="flex items-center gap-3 shrink-0 ml-4">
+                    {bothFinished ? (
+                        <button 
+                            onClick={resetRace}
+                            className="flex items-center justify-center gap-2 px-4 py-2 bg-surface-raised border border-border rounded-xl text-text hover:bg-surface-hover hover:text-white transition-all text-xs font-bold font-mono tracking-wider uppercase"
+                        >
+                            <RotateCcw size={14} /> Clear
+                        </button>
+                    ) : isPlaying ? (
+                        <button 
+                            onClick={() => setIsPlaying(false)}
+                            className="flex items-center justify-center gap-2 px-6 py-2 bg-text text-background rounded-xl hover:bg-white transition-colors text-xs font-bold font-mono tracking-wider uppercase shadow-[0_0_15px_rgba(255,255,255,0.1)]"
+                        >
+                            <Pause size={14} /> Pause
+                        </button>
+                    ) : (
+                        <button 
+                            onClick={hasData ? () => setIsPlaying(true) : executeRace}
+                            disabled={loading}
+                            className={`flex items-center justify-center gap-2 px-6 py-2 ${hasData ? 'bg-accent/20 text-accent hover:bg-accent/30' : 'bg-accent text-background hover:bg-accent/90 shadow-[0_0_20px_rgba(56,189,248,0.2)]'} rounded-xl transition-all text-xs font-bold font-mono tracking-wider uppercase disabled:opacity-50`}
+                        >
+                            {loading ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />}
+                            {hasData ? 'Resume' : 'Execute'}
+                        </button>
                     )}
-
-                    <button
-                        onClick={generateAndRace}
-                        disabled={loading}
-                        className="flex items-center gap-2 bg-text hover:bg-text/90 text-background px-4 md:px-6 py-1.5 rounded-lg text-sm font-semibold transition-all disabled:opacity-50 uppercase tracking-wider"
-                    >
-                        {loading ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} fill="currentColor" />}
-                        <span className="hidden sm:inline">{loading ? 'Compiling...' : (hasData ? 'New Race' : 'Start Race')}</span>
-                    </button>
                 </div>
             </header>
 
@@ -245,17 +357,15 @@ export function Benchmark() {
                         <AlgorithmSelector 
                             value={algorithmA} 
                             onChange={(id) => handleAlgorithmChange(id, setAlgorithmA)}
-                            filter={SORTING_ALGORITHMS}
-                            disabled={isPlaying}
+                            category={category}
+                            disabled={isPlaying || loading}
                         />
                     </div>
-                    <RaceTrack 
-                        title="Algorithm A" 
-                        algorithmId={algorithmA} 
-                        events={eventsA} 
-                        currentStepIndex={stepA}
-                        winner={winnerId === 'A'}
-                    />
+                    {category === 'Graph Algorithms' ? (
+                        <RaceGraphVisualizer events={eventsA} currentStepIndex={stepA} />
+                    ) : (
+                        <RaceTrack title="Algorithm A" algorithmId={algorithmA} events={eventsA} currentStepIndex={stepA} winner={winnerId === 'A'} />
+                    )}
                 </div>
 
                 {/* VS Divider */}
@@ -278,17 +388,15 @@ export function Benchmark() {
                         <AlgorithmSelector 
                             value={algorithmB} 
                             onChange={(id) => handleAlgorithmChange(id, setAlgorithmB)}
-                            filter={SORTING_ALGORITHMS}
-                            disabled={isPlaying}
+                            category={category}
+                            disabled={isPlaying || loading}
                         />
                     </div>
-                    <RaceTrack 
-                        title="Algorithm B" 
-                        algorithmId={algorithmB} 
-                        events={eventsB} 
-                        currentStepIndex={stepB}
-                        winner={winnerId === 'B'}
-                    />
+                    {category === 'Graph Algorithms' ? (
+                        <RaceGraphVisualizer events={eventsB} currentStepIndex={stepB} />
+                    ) : (
+                        <RaceTrack title="Algorithm B" algorithmId={algorithmB} events={eventsB} currentStepIndex={stepB} winner={winnerId === 'B'} />
+                    )}
                 </div>
             </main>
             
@@ -337,7 +445,7 @@ export function Benchmark() {
                             {/* Swaps */}
                             <div className="flex flex-col gap-2">
                                 <div className="flex justify-between text-xs font-mono">
-                                    <span className="text-text-secondary">Array Writes / Swaps</span>
+                                    <span className="text-text-secondary">Memory Writes / Mutations</span>
                                 </div>
                                 <div className="relative h-6 bg-surface-raised rounded overflow-hidden flex items-center border border-border-subtle">
                                     <div className={`absolute top-0 left-0 h-full ${eventsA[eventsA.length-1].metrics.swaps < eventsB[eventsB.length-1].metrics.swaps ? 'bg-emerald-500' : 'bg-surface-hover'} opacity-80`} style={{ width: `${(eventsA[eventsA.length-1].metrics.swaps / maxSwaps) * 100}%` }} />
@@ -367,10 +475,10 @@ export function Benchmark() {
                                     <RotateCcw size={14} /> Play Again
                                 </button>
                                 <button 
-                                    onClick={generateAndRace}
+                                    onClick={executeRace}
                                     className="flex items-center gap-2 text-xs font-bold font-mono bg-text hover:bg-text/90 text-background px-4 py-2 rounded uppercase tracking-wider transition-colors"
                                 >
-                                    New Random Dataset
+                                    Regenerate & Race
                                 </button>
                             </div>
                         </div>

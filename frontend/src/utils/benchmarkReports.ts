@@ -7,12 +7,20 @@ const ALGORITHM_DATA: Record<string, { time: string, space: string, name: string
     'merge_sort': { name: 'Merge Sort', time: 'O(n log n)', space: 'O(n)' },
     'quick_sort': { name: 'Quick Sort', time: 'O(n log n)', space: 'O(log n)' },
     'heap_sort': { name: 'Heap Sort', time: 'O(n log n)', space: 'O(1)' },
+    'linear_search': { name: 'Linear Search', time: 'O(n)', space: 'O(1)' },
+    'binary_search': { name: 'Binary Search', time: 'O(log n)', space: 'O(1)' },
+    'bfs': { name: 'BFS', time: 'O(V+E)', space: 'O(V)' },
+    'dfs': { name: 'DFS', time: 'O(V+E)', space: 'O(V)' },
+    'dijkstra': { name: "Dijkstra's", time: 'O(V²)', space: 'O(V)' },
 };
 
 const rankTime = (t: string) => {
-    if (t.includes('n²')) return 3;
-    if (t.includes('n log n')) return 2;
-    if (t.includes('n')) return 1;
+    if (t.includes('V²') || t.includes('n²')) return 5;
+    if (t.includes('V+E')) return 4;
+    if (t.includes('n log n')) return 3;
+    if (t === 'O(n)') return 2;
+    if (t.includes('log n')) return 1;
+    if (t === 'O(1)') return 0;
     return 0;
 };
 
