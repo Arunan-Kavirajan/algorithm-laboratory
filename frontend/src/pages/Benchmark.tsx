@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { AlgorithmSelector } from '../components/AlgorithmSelector';
 import { RaceTrack } from '../components/RaceTrack';
-import { Play, Pause, RotateCcw, Loader2, Trophy, FastForward, Activity } from 'lucide-react';
+import { Play, Pause, RotateCcw, Loader2, Trophy, FastForward, Activity, Database } from 'lucide-react';
 import type { ExecutionResult, ExecutionEvent } from '../types';
 
 const SORTING_ALGORITHMS = ['bubble_sort', 'selection_sort', 'insertion_sort', 'merge_sort', 'quick_sort', 'heap_sort'];
@@ -176,39 +176,49 @@ export function Benchmark() {
             
             {/* Header / Global Controls */}
             <header className="border-b border-border/60 bg-surface/50 backdrop-blur-sm px-5 py-3 flex items-center justify-between z-10 shrink-0">
-                <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-3 border-r border-border/50 pr-4">
+                <div className="flex items-center">
+                    <div className="flex items-center gap-3 border-r border-border/50 pr-4 md:pr-6">
                         <Trophy size={16} className="text-accent" />
                         <span className="font-display font-bold text-text uppercase tracking-wider text-sm hidden md:block">Algorithmic Racing</span>
                     </div>
 
-                    <div className="flex items-center gap-2.5 text-sm ml-2">
-                        <span className="text-text-muted text-[10px] font-bold uppercase tracking-widest hidden sm:inline">Size</span>
-                        <input
-                            type="range"
-                            min="10"
-                            max="75"
-                            value={arraySize}
-                            onChange={(e) => setArraySize(Number(e.target.value))}
-                            className="w-16 md:w-24 accent-accent"
-                            disabled={isPlaying || loading}
-                        />
-                        <span className="font-mono text-text-muted text-xs w-4">{arraySize}</span>
-                    </div>
+                    <div className="flex items-center gap-6 ml-4 md:ml-6">
+                        {/* Dataset Size */}
+                        <div className="flex flex-col gap-1.5">
+                            <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-text-muted flex items-center gap-1.5">
+                                <Database size={12} /> Dataset Size
+                            </span>
+                            <div className="flex items-center gap-2.5">
+                                <input
+                                    type="range"
+                                    min="10"
+                                    max="75"
+                                    value={arraySize}
+                                    onChange={(e) => setArraySize(Number(e.target.value))}
+                                    className="w-20 md:w-24 accent-accent"
+                                    disabled={isPlaying || loading}
+                                />
+                                <span className="font-mono text-text-muted text-xs w-5">{arraySize}</span>
+                            </div>
+                        </div>
 
-                    <div className="flex flex-col gap-1 ml-2 md:ml-4 border-l border-border/50 pl-4 md:pl-6">
-                        <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-accent flex items-center gap-1.5">
-                            <FastForward size={12} /> Playback Speed
-                        </span>
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="range"
-                                min="1"
-                                max="100"
-                                value={playbackSpeed}
-                                onChange={(e) => setPlaybackSpeed(Number(e.target.value))}
-                                className="w-16 md:w-24 accent-accent"
-                            />
+                        <div className="w-px h-8 bg-border/50 hidden sm:block" />
+
+                        {/* Playback Speed */}
+                        <div className="flex flex-col gap-1.5">
+                            <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-accent flex items-center gap-1.5">
+                                <FastForward size={12} /> Playback Speed
+                            </span>
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="range"
+                                    min="1"
+                                    max="100"
+                                    value={playbackSpeed}
+                                    onChange={(e) => setPlaybackSpeed(Number(e.target.value))}
+                                    className="w-20 md:w-24 accent-accent"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
