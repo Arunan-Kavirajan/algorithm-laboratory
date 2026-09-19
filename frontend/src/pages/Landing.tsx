@@ -1,13 +1,24 @@
 import { Link } from 'react-router-dom';
-import { Activity, Shapes, BookOpen } from 'lucide-react';
+import { Activity, Shapes, BookOpen, Sun, Moon } from 'lucide-react';
 import { useThemeStore } from '../store/useThemeStore';
 
 export function Landing() {
-  const { theme } = useThemeStore();
+  const { theme, toggle } = useThemeStore();
 
   return (
-    <div className="flex-1 flex flex-col bg-background relative selection:bg-accent-subtle selection:text-accent">
+    <div className="min-h-screen flex flex-col bg-background relative selection:bg-accent-subtle selection:text-accent">
       
+      {/* Theme Toggle */}
+      <div className="absolute top-6 right-6 z-50">
+        <button
+          onClick={toggle}
+          className="p-3 rounded-full bg-surface-raised/50 border border-border/50 text-text-muted hover:text-text hover:bg-surface-hover backdrop-blur-sm transition-colors shadow-sm"
+          aria-label="Toggle theme"
+        >
+          {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+        </button>
+      </div>
+
       {/* Background Textures: Dot Grid + Film Grain */}
       <div className="absolute inset-0 dot-grid pointer-events-none opacity-50" />
       <div 

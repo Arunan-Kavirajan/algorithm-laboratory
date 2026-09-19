@@ -8,8 +8,8 @@ import { Playground } from './pages/Playground';
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Landing />} />
+      <Route path="/" element={<Landing />} />
+      <Route element={<Layout />}>
         <Route path="visualizer" element={<Visualizer />} />
         <Route path="guides" element={<Guides />} />
         <Route path="playground" element={<Playground />} />
