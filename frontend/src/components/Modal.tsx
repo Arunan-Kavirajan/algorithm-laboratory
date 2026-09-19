@@ -32,7 +32,7 @@ export const Modal: React.FC<ModalProps> = ({
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/40 backdrop-blur-md transition-opacity">
-            <div className="bg-surface border border-border/60 shadow-[0_10px_40px_rgba(0,0,0,0.3)] rounded-2xl w-full max-w-[280px] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="bg-surface border border-border/60 shadow-[0_10px_40px_rgba(0,0,0,0.3)] rounded-2xl w-full max-w-xs overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                 <div className="p-5 flex flex-col items-center text-center">
                     
                     <div className="w-10 h-10 rounded-full flex items-center justify-center mb-3 bg-background border border-border shadow-sm">
@@ -47,13 +47,13 @@ export const Modal: React.FC<ModalProps> = ({
                     {message && <p className="text-[11px] text-text-muted mt-1.5 leading-relaxed">{message}</p>}
                     
                     {type === 'prompt' && (
-                        <div className="w-full mt-4 relative group">
+                        <div className="w-full mt-4 flex justify-center">
                             <input
                                 type="text"
                                 value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
+                                onChange={(e) => setInputValue(e.target.value.replace(/[^0-9-]/g, ''))}
                                 placeholder={placeholder}
-                                className="w-full bg-background border border-border/80 rounded-xl px-4 py-2.5 text-base font-mono font-bold text-center text-accent placeholder-text-muted/30 focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all shadow-inner"
+                                className="w-24 bg-transparent border-b-2 border-border/50 px-2 py-1 text-3xl font-bold font-mono text-center text-accent placeholder-text-muted/30 focus:outline-none focus:border-accent transition-colors"
                                 autoFocus
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') handleConfirm();
