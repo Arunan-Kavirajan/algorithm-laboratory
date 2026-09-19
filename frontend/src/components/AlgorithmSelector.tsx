@@ -46,9 +46,10 @@ interface AlgorithmSelectorProps {
   value: string;
   onChange: (id: string) => void;
   filter?: string[];
+  disabled?: boolean;
 }
 
-export function AlgorithmSelector({ value, onChange, filter }: AlgorithmSelectorProps) {
+export function AlgorithmSelector({ value, onChange, filter, disabled }: AlgorithmSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -83,13 +84,16 @@ export function AlgorithmSelector({ value, onChange, filter }: AlgorithmSelector
     <div ref={containerRef} className="relative">
       {/* Trigger Button */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl border border-border bg-surface-raised hover:bg-surface-hover text-sm font-medium text-text transition-all cursor-pointer"
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+        disabled={disabled}
+        className={`flex items-center gap-2.5 px-3.5 py-2 rounded-xl border border-border bg-surface-raised transition-all ${
+          disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-surface-hover cursor-pointer'
+        } text-sm font-medium text-text`}
       >
         <span className="truncate">{selected?.name || 'Select Algorithm'}</span>
         <ChevronDown
           size={14}
-          className={`text-text-muted transition-transform duration-200 shrink-0 ${isOpen ? 'rotate-180' : ''}`}
+          className={`text-text-muted transition-transform duration-200 shrink-0 ${isOpen && !disabled ? 'rotate-180' : ''}`}
         />
       </button>
 

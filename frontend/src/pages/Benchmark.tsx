@@ -166,6 +166,17 @@ export function Benchmark() {
         setStepB(0);
     };
 
+    const handleAlgorithmChange = (id: string, setter: (val: string) => void) => {
+        setter(id);
+        if (hasData) {
+            setIsPlaying(false);
+            setStepA(0);
+            setStepB(0);
+            setEventsA([]);
+            setEventsB([]);
+        }
+    };
+
     // Derived max metrics for visual bar scaling
     const maxSteps = bothFinished ? Math.max(eventsA.length, eventsB.length) : 1;
     const maxComp = bothFinished ? Math.max(eventsA[eventsA.length-1].metrics.comparisons, eventsB[eventsB.length-1].metrics.comparisons) : 1;
@@ -270,8 +281,9 @@ export function Benchmark() {
                         </div>
                         <AlgorithmSelector 
                             value={algorithmA} 
-                            onChange={setAlgorithmA}
+                            onChange={(id) => handleAlgorithmChange(id, setAlgorithmA)}
                             filter={SORTING_ALGORITHMS}
+                            disabled={isPlaying}
                         />
                     </div>
                     <RaceTrack 
@@ -302,8 +314,9 @@ export function Benchmark() {
                         </div>
                         <AlgorithmSelector 
                             value={algorithmB} 
-                            onChange={setAlgorithmB}
+                            onChange={(id) => handleAlgorithmChange(id, setAlgorithmB)}
                             filter={SORTING_ALGORITHMS}
+                            disabled={isPlaying}
                         />
                     </div>
                     <RaceTrack 
