@@ -1,26 +1,33 @@
 import React, { useEffect, useRef } from 'react';
 import { usePlayerStore } from '../store/usePlayerStore';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 export const CodeViewer: React.FC = () => {
     const { sourceCode, events, currentStepIndex, algorithmId } = usePlayerStore();
     const containerRef = useRef<HTMLDivElement>(null);
-    const activeLineRef = useRef<HTMLDivElement>(null);
+
+    const currentEvent = events[currentStepIndex];
+    const activeLine = currentEvent?.line;
 
     // Auto-scroll to active line
     useEffect(() => {
-        if (activeLineRef.current && containerRef.current) {
+        if (containerRef.current && activeLine) {
             const container = containerRef.current;
-            const element = activeLineRef.current;
+            // The syntax highlighter will assign the 'active-line' class
+            const element = container.querySelector('.active-line') as HTMLElement;
             
-            const topPos = element.offsetTop;
-            const containerHeight = container.clientHeight;
-            
-            container.scrollTo({
-                top: topPos - (containerHeight / 2) + 20,
-                behavior: 'smooth'
-            });
+            if (element) {
+                const topPos = element.offsetTop;
+                const containerHeight = container.clientHeight;
+                
+                container.scrollTo({
+                    top: topPos - (containerHeight / 2) + 20,
+                    behavior: 'smooth'
+                });
+            }
         }
-    }, [currentStepIndex, events]);
+    }, [currentStepIndex, events, activeLine]);
 
     if (!sourceCode || events.length === 0) {
         return (
@@ -29,10 +36,6 @@ export const CodeViewer: React.FC = () => {
             </div>
         );
     }
-
-    const currentEvent = events[currentStepIndex];
-    const lines = sourceCode.split('\n');
-    const activeLine = currentEvent.line;
 
     return (
         <div className="flex flex-col h-full bg-surface border-l border-border/60 relative">
@@ -50,32 +53,39 @@ export const CodeViewer: React.FC = () => {
             </div>
 
             {/* Code Body */}
-            <div ref={containerRef} className="flex-1 overflow-auto py-4 font-mono text-[13px] leading-6 select-text relative">
-                {lines.map((line, idx) => {
-                    const lineNum = idx + 1;
-                    const isLineActive = activeLine === lineNum;
-                    
-                    return (
-                        <div 
-                            key={idx}
-                            ref={isLineActive ? activeLineRef : null}
-                            className={`flex px-2 transition-colors duration-150 ${
+            <div ref={containerRef} className="flex-1 overflow-auto font-mono text-[13px] leading-6 select-text relative custom-scrollbar">
+                <SyntaxHighlighter
+                    language="python"
+                    style={vscDarkPlus}
+                    showLineNumbers={true}
+                    wrapLines={true}
+                    customStyle={{
+                        margin: 0,
+                        padding: '1rem 0',
+                        background: 'transparent',
+                        fontSize: '13px',
+                    }}
+                    lineNumberStyle={(lineNum) => ({
+                        minWidth: '2.5rem',
+                        paddingRight: '1rem',
+                        textAlign: 'right',
+                        color: activeLine === lineNum ? '#38bdf8' : '#64748b',
+                        fontWeight: activeLine === lineNum ? 'bold' : 'normal',
+                        opacity: activeLine === lineNum ? 1 : 0.5,
+                    })}
+                    lineProps={(lineNum) => {
+                        const isLineActive = activeLine === lineNum;
+                        return {
+                            className: `transition-colors duration-150 block ${
                                 isLineActive 
-                                    ? 'bg-accent/10 border-l-[3px] border-accent text-text' 
-                                    : 'border-l-[3px] border-transparent text-text-secondary'
-                            }`}
-                        >
-                            <span className={`w-8 flex-shrink-0 text-right pr-4 select-none ${
-                                isLineActive ? 'text-accent font-semibold' : 'text-text-muted'
-                            }`}>
-                                {lineNum}
-                            </span>
-                            <span className="whitespace-pre flex-1">
-                                {line || ' '}
-                            </span>
-                        </div>
-                    );
-                })}
+                                    ? 'bg-accent/10 border-l-[3px] border-accent text-text active-line' 
+                                    : 'border-l-[3px] border-transparent'
+                            }`
+                        };
+                    }}
+                >
+                    {sourceCode}
+                </SyntaxHighlighter>
             </div>
         </div>
     );
