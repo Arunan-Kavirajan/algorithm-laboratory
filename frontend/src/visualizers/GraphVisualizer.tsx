@@ -35,9 +35,9 @@ export const GraphVisualizer: React.FC = () => {
     });
 
     // Clamp node positions to prevent overflow and provide breathing room
-    // X gets standard 8-92% bounds, Y gets 16-84% to clear top metrics bar and bottom queue
+    // X gets standard 8-92% bounds, Y gets 10-90% (container is shifted down to avoid metrics)
     const clampX = (val: number) => Math.max(8, Math.min(92, val));
-    const clampY = (val: number) => Math.max(16, Math.min(84, val));
+    const clampY = (val: number) => Math.max(10, Math.min(90, val));
 
     return (
         <div className="flex-1 flex flex-col relative rounded-xl overflow-hidden shadow-inner bg-background relative border border-border h-full">
@@ -83,7 +83,7 @@ export const GraphVisualizer: React.FC = () => {
                         </div>
                     </div>
                 )}
-                <div className="absolute inset-0 p-8 pt-24 pb-8">
+                <div className="absolute top-24 left-0 right-0 bottom-8">
                     {/* SVG Edges Layer */}
                     <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
                         <defs>
