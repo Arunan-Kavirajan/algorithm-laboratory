@@ -154,7 +154,7 @@ export const GraphVisualizer: React.FC = () => {
                         const isEnqueued = queue.includes(node.id) || currentEvent.type === 'ENQUEUE' && activeElements.includes(node.id);
                         const isVisited = !isActive && !isEnqueued && currentStepIndex > 0 && events.slice(0, currentStepIndex).some(e => e.type === 'DEQUEUE' && e.pointers.curr === node.id);
 
-                        let borderColor = 'border-border/60';
+                        let borderColor = 'border-border';
                         let bgColor = 'bg-surface/80 backdrop-blur-sm';
                         let textColor = 'text-text-muted';
                         let shadow = 'shadow-sm';
@@ -194,7 +194,7 @@ export const GraphVisualizer: React.FC = () => {
                         } else if (activeElements.length > 0) {
                             // Dim unvisited non-active nodes slightly
                             bgColor = 'bg-surface/30 backdrop-blur-sm';
-                            borderColor = 'border-border/20';
+                            borderColor = 'border-border/50';
                             textColor = 'text-text-muted/50';
                         }
 
