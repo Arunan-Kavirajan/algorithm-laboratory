@@ -66,7 +66,7 @@ export const GraphVisualizer: React.FC = () => {
 
             {/* Central Graph Area */}
             <div className="flex-1 relative w-full h-full z-10 overflow-hidden">
-                <div className="absolute inset-0 p-12 pb-48 pt-24">
+                <div className="absolute inset-0 p-8 pt-24 pb-8">
                     {/* SVG Edges Layer */}
                     <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
                         <defs>
@@ -191,57 +191,60 @@ export const GraphVisualizer: React.FC = () => {
                 </div>
             </div>
 
-            {/* Queue Visualization */}
-            <div className="absolute bottom-24 left-1/2 -translate-x-1/2 w-full max-w-3xl z-20 px-8">
-                <div className="flex flex-col">
-                    <span className="text-[10px] font-mono text-text-muted/60 uppercase tracking-wider mb-2 pl-2">
-                        BFS Queue (FIFO)
-                    </span>
-                    <div className="flex items-center gap-2 p-3 bg-surface/60 rounded-xl border border-dashed border-border/60 min-h-[72px] shadow-inner backdrop-blur-md overflow-x-auto custom-scrollbar">
-                        <AnimatePresence mode="popLayout">
-                            {queue.map((nodeId: string, idx: number) => {
-                                const node = nodesDict[nodeId];
-                                if (!node) return null;
-                                return (
-                                    <motion.div
-                                        key={`q-${nodeId}-${idx}`}
-                                        layout
-                                        initial={{ opacity: 0, x: -20, scale: 0.8 }}
-                                        animate={{ opacity: 1, x: 0, scale: 1 }}
-                                        exit={{ opacity: 0, y: -20, scale: 0.8 }}
-                                        className="w-12 h-12 flex-shrink-0 rounded-lg flex items-center justify-center font-mono font-bold text-sm border-2 border-[#f59e0b] bg-[#f59e0b]/20 text-[#f59e0b] shadow-[0_0_15px_rgba(245,158,11,0.2)]"
+            {/* Bottom Controls Container */}
+            <div className="shrink-0 flex flex-col items-center gap-4 w-full z-20 px-8 pb-6 pt-2">
+                {/* Queue Visualization */}
+                <div className="w-full max-w-3xl">
+                    <div className="flex flex-col">
+                        <span className="text-[10px] font-mono text-text-muted/60 uppercase tracking-wider mb-2 pl-2">
+                            BFS Queue (FIFO)
+                        </span>
+                        <div className="flex items-center gap-2 p-3 bg-surface/60 rounded-xl border border-dashed border-border/60 min-h-[72px] shadow-inner backdrop-blur-md overflow-x-auto custom-scrollbar">
+                            <AnimatePresence mode="popLayout">
+                                {queue.map((nodeId: string, idx: number) => {
+                                    const node = nodesDict[nodeId];
+                                    if (!node) return null;
+                                    return (
+                                        <motion.div
+                                            key={`q-${nodeId}-${idx}`}
+                                            layout
+                                            initial={{ opacity: 0, x: -20, scale: 0.8 }}
+                                            animate={{ opacity: 1, x: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: -20, scale: 0.8 }}
+                                            className="w-12 h-12 flex-shrink-0 rounded-lg flex items-center justify-center font-mono font-bold text-sm border-2 border-[#f59e0b] bg-[#f59e0b]/20 text-[#f59e0b] shadow-[0_0_15px_rgba(245,158,11,0.2)]"
+                                        >
+                                            {node.value}
+                                        </motion.div>
+                                    );
+                                })}
+                                {queue.length === 0 && (
+                                    <motion.span 
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        className="text-text-muted/40 font-mono text-sm mx-auto"
                                     >
-                                        {node.value}
-                                    </motion.div>
-                                );
-                            })}
-                            {queue.length === 0 && (
-                                <motion.span 
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    className="text-text-muted/40 font-mono text-sm mx-auto"
-                                >
-                                    Empty Queue
-                                </motion.span>
-                            )}
-                        </AnimatePresence>
+                                        Empty Queue
+                                    </motion.span>
+                                )}
+                            </AnimatePresence>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Event Description Toast */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 max-w-md w-full z-30">
-                <motion.div 
-                    key={`toast-${currentStepIndex}`}
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    className="mx-auto bg-surface/90 backdrop-blur-md border border-border shadow-lg rounded-xl p-4 flex items-center gap-4"
-                >
-                    <div className="w-3 h-3 rounded-full bg-accent animate-pulse shadow-[0_0_10px_var(--accent)]" />
-                    <p className="text-text text-sm font-medium leading-relaxed">
-                        {currentEvent.description}
-                    </p>
-                </motion.div>
+                {/* Event Description Toast */}
+                <div className="w-full max-w-md">
+                    <motion.div 
+                        key={`toast-${currentStepIndex}`}
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        className="mx-auto bg-surface/90 backdrop-blur-md border border-border shadow-lg rounded-xl p-4 flex items-center gap-4"
+                    >
+                        <div className="w-3 h-3 rounded-full bg-accent animate-pulse shadow-[0_0_10px_var(--accent)]" />
+                        <p className="text-text text-sm font-medium leading-relaxed">
+                            {currentEvent.description}
+                        </p>
+                    </motion.div>
+                </div>
             </div>
             
         </div>
