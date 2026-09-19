@@ -1,116 +1,89 @@
-import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Play, Sparkles, Activity, BookOpen, Shapes } from 'lucide-react';
+import { Activity, Shapes } from 'lucide-react';
 
 export function Landing() {
   return (
-    <div className="relative flex-1 flex flex-col items-center justify-center overflow-hidden bg-background">
-      {/* Background Constellation & Nebulas */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute inset-0 dot-grid opacity-10" />
+    <div className="flex-1 flex flex-col bg-background relative selection:bg-accent-subtle selection:text-accent">
+      <div className="absolute inset-0 dot-grid pointer-events-none" />
+      
+      <div className="w-full max-w-6xl mx-auto px-6 py-12 md:py-20 flex-1 flex flex-col justify-center relative z-10">
         
-        {/* Glowing Nebulas */}
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3],
-          }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-accent/20 blur-[120px]"
-        />
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.3, 1],
-            opacity: [0.2, 0.4, 0.2],
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          className="absolute top-[40%] -right-[10%] w-[40vw] h-[40vw] rounded-full bg-state-compare/10 blur-[100px]"
-        />
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.1, 1],
-            opacity: [0.1, 0.3, 0.1],
-          }}
-          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          className="absolute -bottom-[20%] left-[20%] w-[60vw] h-[60vw] rounded-full bg-state-swap/10 blur-[120px]"
-        />
-      </div>
-
-      <div className="z-10 flex flex-col items-center text-center px-6 max-w-4xl mt-[-5vh]">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-raised border border-border-subtle text-xs font-mono text-text-muted mb-8 shadow-sm"
-        >
-          <Sparkles size={14} className="text-state-compare" />
-          <span>Observatory Engine v2.0</span>
-        </motion.div>
-
-        <motion.h1 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-          className="text-5xl md:text-7xl font-bold font-display tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-text to-text-secondary leading-[1.1] mb-6"
-        >
-          Decode the Universe <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-blue-500">of Algorithms.</span>
-        </motion.h1>
-
-        <motion.p 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-lg md:text-xl text-text-muted max-w-2xl leading-relaxed mb-10"
-        >
-          A celestial laboratory for data structures and algorithms. Visualize execution, build custom topologies, and deeply understand code mechanics.
-        </motion.p>
-
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="flex flex-col sm:flex-row items-center gap-4 w-full justify-center"
-        >
-          <Link 
-            to="/visualizer" 
-            className="group relative flex items-center gap-3 px-8 py-4 bg-accent text-background rounded-2xl font-bold text-lg overflow-hidden shadow-[0_0_40px_var(--color-accent-glow)] hover:shadow-[0_0_60px_var(--color-accent-glow)] transition-all duration-300 w-full sm:w-auto justify-center hover:-translate-y-1"
-          >
-            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
-            <Play size={20} fill="currentColor" className="relative z-10" />
-            <span className="relative z-10">Launch Visualizer</span>
-          </Link>
-
-          <Link 
-            to="/playground" 
-            className="group flex items-center gap-3 px-8 py-4 bg-surface-raised text-text border border-border rounded-2xl font-semibold text-lg hover:bg-surface-hover transition-all duration-300 w-full sm:w-auto justify-center hover:-translate-y-1"
-          >
-            <Shapes size={20} className="text-text-secondary group-hover:text-text transition-colors" />
-            <span>Open Playground</span>
-          </Link>
-        </motion.div>
-
-        {/* Feature Cards */}
-        <motion.div 
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.5 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-20 w-full"
-        >
-          {[
-            { icon: Activity, title: 'Live Execution', desc: 'Watch algorithms step-by-step with synchronized code highlighting.' },
-            { icon: Shapes, title: 'Graph Builder', desc: 'Construct your own complex graphs and trees in the interactive playground.' },
-            { icon: BookOpen, title: 'Deep Guides', desc: 'Learn the theory behind the mechanics with comprehensive visual guides.' },
-          ].map((f, i) => (
-            <div key={i} className="flex flex-col items-center text-center p-6 rounded-2xl bg-surface/50 border border-border/50 backdrop-blur-sm hover:bg-surface-hover/50 transition-colors shadow-sm">
-              <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-accent-subtle text-accent mb-4">
-                <f.icon size={24} />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+          <div className="lg:col-span-8 flex flex-col">
+            <div className="flex items-center gap-4 mb-8">
+              <span className="w-12 h-px bg-accent"></span>
+              <span className="text-accent font-mono text-xs uppercase tracking-widest">System Ready</span>
+            </div>
+            
+            <h1 className="text-5xl md:text-7xl font-display font-bold text-text leading-[1.05] tracking-tight mb-8">
+              The architecture <br />
+              <span className="text-text-muted">of computation.</span>
+            </h1>
+            
+            <p className="text-lg text-text-secondary max-w-2xl leading-relaxed mb-10">
+              Algorithm Laboratory is a minimal, structured environment designed to dissect, build, and observe data structures and algorithms in real-time. No magic—just pure logic.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <Link 
+                to="/visualizer" 
+                className="flex items-center justify-center gap-3 px-8 py-4 bg-text text-background hover:bg-accent transition-colors font-mono font-bold text-sm w-full sm:w-auto"
+              >
+                <Activity size={16} />
+                ENTER_VISUALIZER
+              </Link>
+              
+              <Link 
+                to="/playground" 
+                className="flex items-center justify-center gap-3 px-8 py-4 bg-surface border border-border text-text hover:bg-surface-raised transition-colors font-mono font-medium text-sm w-full sm:w-auto"
+              >
+                <Shapes size={16} className="text-text-muted" />
+                OPEN_PLAYGROUND
+              </Link>
+            </div>
+          </div>
+          
+          {/* Minimalist Geometric Aesthetic */}
+          <div className="lg:col-span-4 hidden lg:flex justify-end">
+            <div className="relative w-72 h-72 border border-border bg-surface-raised/20 flex flex-col items-center justify-center">
+              <div className="absolute inset-4 border border-border-subtle border-dashed pointer-events-none" />
+              <div className="w-16 h-16 border-[1.5px] border-accent rounded-full flex items-center justify-center relative">
+                <div className="w-2 h-2 bg-text rounded-full animate-pulse" />
+                {/* Structural lines connecting to the border */}
+                <div className="absolute top-[-92px] left-1/2 w-px h-[92px] bg-border-subtle" />
+                <div className="absolute bottom-[-92px] left-1/2 w-px h-[92px] bg-border-subtle" />
+                <div className="absolute left-[-92px] top-1/2 h-px w-[92px] bg-border-subtle" />
+                <div className="absolute right-[-92px] top-1/2 h-px w-[92px] bg-border-subtle" />
               </div>
-              <h3 className="text-text font-bold mb-2">{f.title}</h3>
+              
+              {/* Corner Accents */}
+              <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-text" />
+              <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-text" />
+              <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-text" />
+              <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-text" />
+              
+              <div className="absolute bottom-6 right-6 text-[10px] font-mono text-text-muted">
+                [ FIG 01. GRAPH_NODE ]
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Minimal Structural Feature Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-t border-border mt-24">
+          {[
+            { id: '01', title: 'Execution Engine', desc: 'Step-by-step evaluation mapped directly to source code lines. Absolute transparency into algorithm mechanics.' },
+            { id: '02', title: 'Topological Playground', desc: 'Manually construct custom graph structures. Draw nodes and edges to stress test search algorithms.' },
+            { id: '03', title: 'Theory & Mechanics', desc: 'Comprehensive technical documentation and visual walkthroughs for each algorithm.' },
+          ].map((f, i) => (
+            <div key={i} className={`p-8 border-border flex flex-col hover:bg-surface-hover/30 transition-colors ${i !== 2 ? 'md:border-r' : ''} ${i !== 0 ? 'border-t md:border-t-0' : ''}`}>
+              <span className="text-accent font-mono text-xs mb-8">{f.id} //</span>
+              <h3 className="text-text font-bold text-lg mb-3">{f.title}</h3>
               <p className="text-text-muted text-sm leading-relaxed">{f.desc}</p>
             </div>
           ))}
-        </motion.div>
+        </div>
+
       </div>
     </div>
   );
