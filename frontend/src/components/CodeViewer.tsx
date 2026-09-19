@@ -1,10 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import { usePlayerStore } from '../store/usePlayerStore';
+import { useThemeStore } from '../store/useThemeStore';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { vscDarkPlus, vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 export const CodeViewer: React.FC = () => {
     const { sourceCode, events, currentStepIndex, algorithmId } = usePlayerStore();
+    const { theme } = useThemeStore();
     const containerRef = useRef<HTMLDivElement>(null);
 
     const currentEvent = events[currentStepIndex];
@@ -56,7 +58,7 @@ export const CodeViewer: React.FC = () => {
             <div ref={containerRef} className="flex-1 overflow-auto font-mono text-[13px] leading-6 select-text relative custom-scrollbar">
                 <SyntaxHighlighter
                     language="python"
-                    style={vscDarkPlus}
+                    style={theme === 'dark' ? vscDarkPlus : vs}
                     showLineNumbers={true}
                     wrapLines={true}
                     customStyle={{
@@ -69,7 +71,7 @@ export const CodeViewer: React.FC = () => {
                         minWidth: '2.5rem',
                         paddingRight: '1rem',
                         textAlign: 'right',
-                        color: activeLine === lineNum ? '#38bdf8' : '#64748b',
+                        color: activeLine === lineNum ? (theme === 'dark' ? '#38bdf8' : '#0FA68D') : '#64748b',
                         fontWeight: activeLine === lineNum ? 'bold' : 'normal',
                         opacity: activeLine === lineNum ? 1 : 0.5,
                     })}
