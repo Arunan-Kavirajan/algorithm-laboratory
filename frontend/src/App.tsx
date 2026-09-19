@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { Visualizer } from './pages/Visualizer';
 import { Guides } from './pages/Guides';
+import { Playground } from './pages/Playground';
 
 export default function App() {
   return (
@@ -9,6 +10,7 @@ export default function App() {
       <Route path="/" element={<Layout />}>
         <Route index element={<Visualizer />} />
         <Route path="guides" element={<Guides />} />
+        <Route path="playground" element={<Playground />} />
       </Route>
     </Routes>
   );

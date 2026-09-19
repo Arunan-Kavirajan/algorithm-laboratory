@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
 
 // Load all markdown files as raw strings
 const markdownFiles = import.meta.glob('../content/guides/*.md', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
@@ -44,7 +45,7 @@ export function Guides() {
 
             <main className="flex-1 overflow-auto p-8 lg:p-12">
                 <div className="max-w-3xl mx-auto prose prose-invert prose-emerald">
-                    <ReactMarkdown>
+                    <ReactMarkdown rehypePlugins={[rehypeRaw]}>
                         {markdownContent}
                     </ReactMarkdown>
                 </div>
