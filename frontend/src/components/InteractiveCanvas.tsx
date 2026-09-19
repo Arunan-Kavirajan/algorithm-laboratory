@@ -104,8 +104,8 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
     };
 
     const handleWeightConfirm = (val?: string) => {
-        if (pendingEdge && val) {
-            const weight = !isNaN(Number(val)) ? Number(val) : 1;
+        if (pendingEdge) {
+            const weight = (val && !isNaN(Number(val))) ? Number(val) : 1;
             onEdgesChange([...edges, {
                 source: pendingEdge.source,
                 target: pendingEdge.target,
@@ -143,8 +143,9 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
                                 <circle 
                                     cx={`${(sourceNode.x + targetNode.x)/2}%`} 
                                     cy={`${(sourceNode.y + targetNode.y)/2}%`} 
-                                    r="12" 
-                                    className="fill-surface stroke-border" 
+                                    r="10" 
+                                    fill="#0f172a"
+                                    stroke="rgba(255,255,255,0.1)"
                                     strokeWidth="1"
                                 />
                             )}
@@ -154,7 +155,10 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
                                     y={`${(sourceNode.y + targetNode.y)/2}%`} 
                                     textAnchor="middle" 
                                     dominantBaseline="central" 
-                                    className="fill-text-muted text-[10px] font-mono font-bold"
+                                    fill="#94a3b8"
+                                    fontSize="11"
+                                    fontWeight="bold"
+                                    fontFamily="monospace"
                                 >
                                     {edge.weight}
                                 </text>
@@ -202,7 +206,7 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
                 type="prompt"
                 title="Edge Weight"
                 message="Enter a weight for this path:"
-                defaultValue="1"
+                defaultValue=""
                 onClose={() => setPendingEdge(null)}
                 onConfirm={handleWeightConfirm}
             />
