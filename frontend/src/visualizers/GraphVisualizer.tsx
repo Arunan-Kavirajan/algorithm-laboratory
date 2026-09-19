@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { usePlayerStore } from '../store/usePlayerStore';
 
 export const GraphVisualizer: React.FC = () => {
-    const { events, currentStepIndex } = usePlayerStore();
+    const { events, currentStepIndex, algorithmId } = usePlayerStore();
     const currentEvent = events[currentStepIndex];
 
     if (!currentEvent) {
