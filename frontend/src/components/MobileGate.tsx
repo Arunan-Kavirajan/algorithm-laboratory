@@ -32,35 +32,21 @@ export const MobileGate: React.FC<{ children: React.ReactNode }> = ({ children }
                 
                 {/* Content */}
                 <div className="relative z-10 max-w-lg border border-border/60 bg-surface/80 backdrop-blur-md p-8 md:p-12 rounded-2xl shadow-2xl flex flex-col items-center">
-                    <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-6 border border-red-500/20">
-                        <MonitorX size={32} className="text-red-400" />
+                    <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mb-6 border border-accent/20">
+                        <MonitorX size={32} className="text-accent" />
                     </div>
                     
-                    <h1 className="text-2xl md:text-3xl font-display font-bold uppercase tracking-widest mb-2 text-text">
-                        System Halt
+                    <h1 className="text-2xl md:text-3xl font-display font-bold tracking-wide mb-3 text-text">
+                        Desktop Required
                     </h1>
-                    <div className="text-[10px] font-mono text-red-400/80 uppercase tracking-[0.3em] mb-8">
-                        Error: Insufficient Viewport
-                    </div>
                     
-                    <p className="text-sm md:text-base text-text-secondary leading-relaxed mb-8">
-                        The Algorithm Laboratory is a high-density technical instrument requiring significant screen real estate to render execution metrics, code diagnostics, and parallel visualization tracks.
+                    <p className="text-sm md:text-base text-text-secondary leading-relaxed text-center mb-6">
+                        Algorithm Laboratory is built for larger screens. The complex visualizations, code panels, and metrics require a desktop or laptop to function properly. 
                     </p>
-                    
-                    <div className="bg-background border border-border/50 rounded-lg p-4 w-full text-left font-mono text-xs text-text-muted space-y-2">
-                        <div className="flex justify-between border-b border-border/50 pb-2">
-                            <span>Required Env:</span>
-                            <span className="text-accent">Desktop / Laptop</span>
-                        </div>
-                        <div className="flex justify-between border-b border-border/50 pb-2">
-                            <span>Min Resolution:</span>
-                            <span className="text-accent">1024px width</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span>Status:</span>
-                            <span className="text-red-400">Access Denied</span>
-                        </div>
-                    </div>
+
+                    <p className="text-sm text-text-muted">
+                        Please come back on a computer to explore the lab!
+                    </p>
                 </div>
             </div>
         );
