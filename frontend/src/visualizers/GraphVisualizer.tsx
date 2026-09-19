@@ -1,9 +1,37 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePlayerStore } from '../store/usePlayerStore';
+import { audio } from '../utils/audio';
 
 export const GraphVisualizer: React.FC = () => {
-    const { events, currentStepIndex, algorithmId } = usePlayerStore();
+    const { events, currentStepIndex, algorithmId, isPlaying, isMuted } = usePlayerStore();
+    const prevStepRef = useRef(currentStepIndex);
+
+    useEffect(() => {
+        if (!isMuted) audio.init();
+    }, [isMuted]);
+
+    useEffect(() => {
+        if (isPlaying && !isMuted && events.length > 0 && currentStepIndex > prevStepRef.current) {
+            const ev = events[currentStepIndex];
+            const activeElements = ev.activeElements as string[];
+            
+            if (activeElements.length > 0) {
+                // For graphs, nodes typically have IDs. We can create a simple hash to a frequency value.
+                // We'll generate a pseudo-random but consistent pitch for each node ID.
+                activeElements.forEach(nodeId => {
+                    let hash = 0;
+                    for (let i = 0; i < nodeId.length; i++) {
+                        hash = nodeId.charCodeAt(i) + ((hash << 5) - hash);
+                    }
+                    const normalized = Math.abs(hash) % 100; // 0 to 99
+                    audio.playTone(normalized, 100, 'compare');
+                });
+            }
+        }
+        prevStepRef.current = currentStepIndex;
+    }, [currentStepIndex, isPlaying, isMuted, events]);
+
     const currentEvent = events[currentStepIndex];
 
     if (!currentEvent) {

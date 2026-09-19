@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { SortingVisualizer } from '../visualizers/SortingVisualizer';
 import { GraphVisualizer } from '../visualizers/GraphVisualizer';
@@ -16,59 +16,63 @@ export function Visualizer() {
   const [activeAlgorithm, setActiveAlgorithm] = useState('bubble_sort');
   const [searchTarget, setSearchTarget] = useState(25);
 
+  const [dataset, setDataset] = useState<any>(null);
+
   const isSearch = activeAlgorithm.includes('search') || activeAlgorithm === 'bfs' || activeAlgorithm === 'dfs' || activeAlgorithm === 'dijkstra';
   const requiresSorted = activeAlgorithm === 'binary_search';
+  const isGraphAlgorithm = activeAlgorithm === 'bfs' || activeAlgorithm === 'dfs' || activeAlgorithm === 'dijkstra';
   const isGraphRunning = currentRunningAlgorithm === 'bfs' || currentRunningAlgorithm === 'dfs' || currentRunningAlgorithm === 'dijkstra';
 
-  const generateAndRun = async () => {
+  // Generate dataset whenever algorithm type (graph/array) or size changes
+  useEffect(() => {
+    let newDataset: any;
+    if (isGraphAlgorithm) {
+        const nodes = [];
+        const edges = [];
+        const getWeight = () => activeAlgorithm === 'dijkstra' ? Math.floor(Math.random() * 9) + 1 : undefined;
+        const totalLevels = Math.floor(Math.log2(arraySize)) + 1;
+        const yStep = totalLevels > 1 ? 77 / (totalLevels - 1) : 0;
+        for (let i = 0; i < arraySize; i++) {
+          const level = Math.floor(Math.log2(i + 1));
+          const levelWidth = Math.pow(2, level);
+          const indexInLevel = i - (levelWidth - 1);
+          const x = ((indexInLevel + 0.5) / levelWidth) * 92 + 4;
+          const y = level * yStep + 8;
+          nodes.push({ id: `node-${i}`, value: i, x, y });
+          if (i > 0) edges.push({ source: `node-${Math.floor((i - 1) / 2)}`, target: `node-${i}`, weight: getWeight() });
+        }
+        if (arraySize > 4) edges.push({ source: 'node-1', target: 'node-4', weight: getWeight() });
+        if (arraySize > 5) edges.push({ source: 'node-2', target: 'node-3', weight: getWeight() });
+        if (arraySize > 7) edges.push({ source: 'node-3', target: 'node-7', weight: getWeight() });
+        if (arraySize > 8) edges.push({ source: 'node-4', target: 'node-6', weight: getWeight() });
+        if (arraySize > 10) edges.push({ source: 'node-5', target: 'node-9', weight: getWeight() });
+        if (arraySize > 12) edges.push({ source: 'node-7', target: 'node-10', weight: getWeight() });
+        if (arraySize > 13) edges.push({ source: 'node-8', target: 'node-12', weight: getWeight() });
+        if (arraySize > 14) edges.push({ source: 'node-11', target: 'node-14', weight: getWeight() });
+        newDataset = { type: "GRAPH", nodes, edges };
+    } else {
+        const values = Array.from({ length: arraySize }, (_, i) => ({
+          id: `el-${i}`,
+          value: requiresSorted ? (i + 1) * 5 : Math.floor(Math.random() * 95) + 5
+        }));
+        newDataset = { type: "ARRAY", values };
+    }
+    setDataset(newDataset);
+    
+    // Auto-select a valid target for the new dataset
+    if (newDataset.type === 'ARRAY') {
+        const randomIndex = Math.floor(Math.random() * newDataset.values.length);
+        setSearchTarget(newDataset.values[randomIndex].value);
+    } else if (newDataset.type === 'GRAPH') {
+        const randomIndex = Math.floor(Math.random() * newDataset.nodes.length);
+        setSearchTarget(newDataset.nodes[randomIndex].value); // or id, assuming backend takes value/id
+    }
+  }, [arraySize, isGraphAlgorithm, requiresSorted, activeAlgorithm]);
+
+  const executeAlgorithm = async () => {
+    if (!dataset) return;
     setLoading(true);
     try {
-      let dataset: any;
-
-      if (activeAlgorithm === 'bfs' || activeAlgorithm === 'dfs' || activeAlgorithm === 'dijkstra') {
-          const nodes = [];
-          const edges = [];
-          const getWeight = () => activeAlgorithm === 'dijkstra' ? Math.floor(Math.random() * 9) + 1 : undefined;
-          const totalLevels = Math.floor(Math.log2(arraySize)) + 1;
-          // Distribute levels evenly across 8-85% vertical space to leave room for labels (top) and badges (bottom)
-          const yStep = totalLevels > 1 ? 77 / (totalLevels - 1) : 0;
-          for (let i = 0; i < arraySize; i++) {
-            const level = Math.floor(Math.log2(i + 1));
-            const levelWidth = Math.pow(2, level);
-            const indexInLevel = i - (levelWidth - 1);
-            // Spread nodes across 4-96% horizontal, 8-85% vertical
-            const x = ((indexInLevel + 0.5) / levelWidth) * 92 + 4;
-            const y = level * yStep + 8;
-            nodes.push({
-              id: `node-${i}`,
-              value: i,
-              x,
-              y
-            });
-            if (i > 0) {
-              edges.push({ source: `node-${Math.floor((i - 1) / 2)}`, target: `node-${i}`, weight: getWeight() });
-            }
-          }
-          if (arraySize > 4) edges.push({ source: 'node-1', target: 'node-4', weight: getWeight() });
-          if (arraySize > 5) edges.push({ source: 'node-2', target: 'node-3', weight: getWeight() });
-          if (arraySize > 7) edges.push({ source: 'node-3', target: 'node-7', weight: getWeight() });
-          if (arraySize > 8) edges.push({ source: 'node-4', target: 'node-6', weight: getWeight() });
-          if (arraySize > 10) edges.push({ source: 'node-5', target: 'node-9', weight: getWeight() });
-          if (arraySize > 12) edges.push({ source: 'node-7', target: 'node-10', weight: getWeight() });
-          if (arraySize > 13) edges.push({ source: 'node-8', target: 'node-12', weight: getWeight() });
-          if (arraySize > 14) edges.push({ source: 'node-11', target: 'node-14', weight: getWeight() });
-
-          dataset = { type: "GRAPH", nodes, edges };
-      } else {
-          const values = Array.from({ length: arraySize }, (_, i) => ({
-            id: `el-${i}`,
-            value: requiresSorted
-              ? (i + 1) * 5
-              : Math.floor(Math.random() * 95) + 5
-          }));
-          dataset = { type: "ARRAY", values };
-      }
-
       const payload: any = {
         algorithmId: activeAlgorithm,
         dataset: dataset
@@ -102,12 +106,18 @@ export function Visualizer() {
                    <Search size={14} className="text-accent" />
                    <span className="text-text-muted font-medium text-xs">Target</span>
                    <div className="w-px h-4 bg-border-subtle mx-0.5" />
-                   <input
-                     type="number"
+                   <select
                      value={searchTarget}
                      onChange={(e) => setSearchTarget(Number(e.target.value))}
-                     className="w-12 bg-transparent text-text font-mono font-bold outline-none text-center text-sm"
-                   />
+                     className="w-16 bg-transparent text-text font-mono font-bold outline-none text-sm cursor-pointer"
+                   >
+                     {dataset?.type === 'ARRAY' && dataset.values.map((v: any) => (
+                         <option key={v.id} value={v.value} className="bg-surface text-text">{v.value}</option>
+                     ))}
+                     {dataset?.type === 'GRAPH' && dataset.nodes.map((n: any) => (
+                         <option key={n.id} value={n.value} className="bg-surface text-text">{n.value}</option>
+                     ))}
+                   </select>
                </div>
            )}
            <div className="flex items-center gap-2.5 text-sm">
@@ -124,7 +134,7 @@ export function Visualizer() {
            </div>
 
            <button
-             onClick={generateAndRun}
+             onClick={executeAlgorithm}
              disabled={loading}
              className="flex items-center gap-2 bg-accent hover:bg-accent-hover text-background px-4 py-1.5 rounded-lg text-sm font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm shadow-accent-glow"
            >
