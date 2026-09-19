@@ -29,6 +29,8 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
     const [dragStartNode, setDragStartNode] = useState<string | null>(null);
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
+    const [dragTargetNode, setDragTargetNode] = useState<string | null>(null);
+
     // Derive the next node counter safely from existing nodes
     const getNextNodeId = () => {
         if (nodes.length === 0) return 1;
@@ -68,19 +70,18 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
         e.stopPropagation();
         if (activeMode === 'ADD_EDGE') {
             setDragStartNode(nodeId);
+            setDragTargetNode(null); // Reset
         } else if (activeMode === 'REMOVE_NODE') {
-            // Remove node and any edges connected to it
             onNodesChange(nodes.filter(n => n.id !== nodeId));
             onEdgesChange(edges.filter(edge => edge.source !== nodeId && edge.target !== nodeId));
         }
     };
 
-    const handleNodeMouseUp = (nodeId: string, e: React.MouseEvent) => {
-        e.stopPropagation();
-        if (activeMode === 'ADD_EDGE' && dragStartNode && dragStartNode !== nodeId) {
+    const handleCanvasMouseUp = () => {
+        if (activeMode === 'ADD_EDGE' && dragStartNode && dragTargetNode && dragStartNode !== dragTargetNode) {
             const exists = edges.some(e => 
-                (e.source === dragStartNode && e.target === nodeId) ||
-                (e.target === dragStartNode && e.source === nodeId)
+                (e.source === dragStartNode && e.target === dragTargetNode) ||
+                (e.target === dragStartNode && e.source === dragTargetNode)
             );
             
             if (!exists) {
@@ -94,22 +95,23 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
                 
                 onEdgesChange([...edges, {
                     source: dragStartNode,
-                    target: nodeId,
+                    target: dragTargetNode,
                     weight: isDijkstra ? weight : undefined
                 }]);
             }
         }
         setDragStartNode(null);
+        setDragTargetNode(null);
     };
 
     return (
         <div 
             ref={canvasRef}
-            className={`flex-1 w-full h-full relative overflow-hidden bg-background rounded-xl border border-border shadow-inner ${activeMode === 'ADD_NODE' ? 'cursor-crosshair' : ''}`}
+            className={`flex-1 w-full h-full relative overflow-hidden bg-background rounded-xl border border-border shadow-inner ${activeMode === 'ADD_NODE' ? 'cursor-crosshair' : ''} select-none`}
             onMouseMove={handleMouseMove}
             onClick={handleCanvasClick}
-            onMouseUp={() => setDragStartNode(null)}
-            onMouseLeave={() => setDragStartNode(null)}
+            onMouseUp={handleCanvasMouseUp}
+            onMouseLeave={() => { setDragStartNode(null); setDragTargetNode(null); }}
         >
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
 
@@ -173,7 +175,8 @@ export const InteractiveCanvas: React.FC<InteractiveCanvasProps> = ({
                         className={`canvas-node absolute -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center font-mono text-sm border-2 border-border bg-surface/80 backdrop-blur-sm text-text-muted shadow-sm transition-colors ${hoverClasses}`}
                         style={{ left: `${node.x}%`, top: `${node.y}%` }}
                         onMouseDown={(e) => handleNodeMouseDown(node.id, e)}
-                        onMouseUp={(e) => handleNodeMouseUp(node.id, e)}
+                        onMouseEnter={() => setDragTargetNode(node.id)}
+                        onMouseLeave={() => setDragTargetNode(null)}
                     >
                         <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-mono text-text-muted/60 uppercase tracking-widest bg-background/80 px-1 rounded">
                             N{node.id.split('-')[1]}
