@@ -46,10 +46,11 @@ def bfs_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
         }
         
     start_node = dataset.nodes[0].id
+    start_node_name = start_node.replace('node-', 'Node ')
 
     engine.record_event(
         type="START",
-        description=f"Initiating BFS for target {target} starting at {start_node}...",
+        description=f"Initiating BFS for target {target} starting at {start_node_name}...",
         state=get_state(),
         active_elements=[],
         line=1,
@@ -61,7 +62,7 @@ def bfs_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
     
     engine.record_event(
         type="ENQUEUE",
-        description=f"Initializing queue with start node {start_node}.",
+        description=f"Starting BFS. Added {start_node.replace('node-', 'Node ')} to the queue.",
         state=get_state(),
         active_elements=[start_node],
         line=4,
@@ -73,10 +74,16 @@ def bfs_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
     
     while queue:
         curr = queue.pop(0) # popleft
+        curr_name = curr.replace('node-', 'Node ')
+        curr_val = nodes_dict[curr].value
         
         engine.record_event(
             type="DEQUEUE",
-            description=f"Dequeued {curr} to process.",
+            description=random.choice([
+                f"Popped {curr_name} from the front of the queue to process.",
+                f"It's {curr_name}'s turn. Popping it from the queue.",
+                f"Taking {curr_name} out of the queue to check its value."
+            ]),
             state=get_state(),
             active_elements=[curr],
             line=8,
@@ -86,10 +93,14 @@ def bfs_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
         
         engine.increment_metric("comparisons")
         
-        if nodes_dict[curr].value == target:
+        if curr_val == target:
             engine.record_event(
                 type="MATCH",
-                description=f"Target {target} found at {curr}!",
+                description=random.choice([
+                    f"Match! {curr_name} holds the target value {target}.",
+                    f"Found it! {curr_name}'s value is {target}.",
+                    f"Success! {curr_name} matches our target."
+                ]),
                 state=get_state(),
                 active_elements=[curr],
                 line=10,
@@ -102,7 +113,11 @@ def bfs_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
         else:
             engine.record_event(
                 type="MISMATCH",
-                description=f"Node {curr} ({nodes_dict[curr].value}) != {target}.",
+                description=random.choice([
+                    f"{curr_name} holds {curr_val}, which is not {target}.",
+                    f"No match here. {curr_val} != {target}.",
+                    f"{curr_name} is a miss."
+                ]),
                 state=get_state(),
                 active_elements=[curr],
                 line=11,
@@ -114,7 +129,11 @@ def bfs_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
         if neighbors:
             engine.record_event(
                 type="INFO",
-                description=f"Scanning {len(neighbors)} neighbors of {curr}.",
+                description=random.choice([
+                    f"Now scanning {curr_name}'s neighbors to add to the queue.",
+                    f"Let's look at the {len(neighbors)} nodes connected to {curr_name}.",
+                    f"Finding all unvisited neighbors of {curr_name}."
+                ]),
                 state=get_state(),
                 active_elements=[curr] + neighbors,
                 line=13,
@@ -126,9 +145,14 @@ def bfs_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
             if nbr not in visited:
                 visited.add(nbr)
                 queue.append(nbr)
+                nbr_name = nbr.replace('node-', 'Node ')
                 engine.record_event(
                     type="ENQUEUE",
-                    description=f"Discovered {nbr}. Adding to queue.",
+                    description=random.choice([
+                        f"Discovered {nbr_name}! Adding it to the back of the queue.",
+                        f"{nbr_name} hasn't been visited yet. Enqueueing it.",
+                        f"Found new neighbor {nbr_name}. Dropping it in the queue."
+                    ]),
                     state=get_state(),
                     active_elements=[curr, nbr],
                     line=16,

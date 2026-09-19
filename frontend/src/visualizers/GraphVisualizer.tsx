@@ -170,7 +170,11 @@ export const GraphVisualizer: React.FC = () => {
                                 animate={{ scale }}
                                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
                             >
-                                <div className={`w-12 h-12 rounded-full flex items-center justify-center font-mono text-sm border-2 ${borderColor} ${bgColor} ${textColor} ${shadow} transition-all duration-300`}>
+                                <div className={`w-12 h-12 rounded-full flex items-center justify-center font-mono text-sm border-2 ${borderColor} ${bgColor} ${textColor} ${shadow} transition-all duration-300 relative`}>
+                                    {/* Node ID Label */}
+                                    <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-mono text-text-muted/60 uppercase tracking-widest bg-background/80 px-1 rounded">
+                                        N{node.id.split('-')[1]}
+                                    </div>
                                     {node.value}
                                 </div>
                                 
@@ -211,8 +215,11 @@ export const GraphVisualizer: React.FC = () => {
                                             initial={{ opacity: 0, x: -20, scale: 0.8 }}
                                             animate={{ opacity: 1, x: 0, scale: 1 }}
                                             exit={{ opacity: 0, y: -20, scale: 0.8 }}
-                                            className="w-12 h-12 flex-shrink-0 rounded-lg flex items-center justify-center font-mono font-bold text-sm border-2 border-[#f59e0b] bg-[#f59e0b]/20 text-[#f59e0b] shadow-[0_0_15px_rgba(245,158,11,0.2)]"
+                                            className="w-12 h-12 flex-shrink-0 rounded-lg flex items-center justify-center font-mono font-bold text-sm border-2 border-[#f59e0b] bg-[#f59e0b]/20 text-[#f59e0b] shadow-[0_0_15px_rgba(245,158,11,0.2)] relative mt-4"
                                         >
+                                            <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-[9px] font-mono text-[#f59e0b]/80 uppercase tracking-widest">
+                                                N{node.id.split('-')[1]}
+                                            </div>
                                             {node.value}
                                         </motion.div>
                                     );
