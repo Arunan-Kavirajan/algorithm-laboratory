@@ -50,8 +50,6 @@ for every item in the list:
 ```
 
 ## 9. How to implement it
-<details>
-<summary>Click to view Python Code</summary>
 
 ```python
 def bubble_sort(arr):
@@ -72,7 +70,6 @@ def bubble_sort(arr):
             
     return arr
 ```
-</details>
 
 ## 10. Time Complexity ⏱️
 - **Best Case (Already sorted):** `O(n)` - We just walk through the list once, realize it's sorted, and stop.
