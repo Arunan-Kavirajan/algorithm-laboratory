@@ -1,5 +1,6 @@
 import time
 import random
+from collections import deque
 from typing import List, Dict, Set
 from ...engine.execution import ExecutionEngine
 from ...models.dataset import GraphDataset, GraphNode

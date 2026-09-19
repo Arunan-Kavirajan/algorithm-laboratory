@@ -30,7 +30,7 @@ export const usePlayerStore = create<PlayerState>((set) => ({
     isPlaying: false,
     playbackSpeed: 500,
 
-    setExecutionData: (events, summary, sourceCode, algorithmId) => set({ events, summary, sourceCode, algorithmId, currentStepIndex: 0, isPlaying: false }),
+    setExecutionData: (events, summary, sourceCode, algorithmId) => set({ events, summary, sourceCode, algorithmId, currentStepIndex: 0, isPlaying: true }),
     
     stepForward: () => set((state) => ({
         currentStepIndex: Math.min(state.currentStepIndex + 1, state.events.length - 1)
@@ -50,5 +50,5 @@ export const usePlayerStore = create<PlayerState>((set) => ({
     
     setPlaybackSpeed: (speed) => set({ playbackSpeed: speed }),
     
-    reset: () => set({ events: [], summary: null, currentStepIndex: 0, isPlaying: false })
+    reset: () => set({ events: [], summary: null, currentStepIndex: 0, isPlaying: true })
 }))
