@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { AlgorithmSelector } from '../components/AlgorithmSelector';
 import { RaceTrack } from '../components/RaceTrack';
-import { Play, Pause, RotateCcw, Loader2, Trophy, FastForward, Info } from 'lucide-react';
+import { Play, Pause, RotateCcw, Loader2, Trophy, FastForward, Activity } from 'lucide-react';
 import type { ExecutionResult, ExecutionEvent } from '../types';
 
 const SORTING_ALGORITHMS = ['bubble_sort', 'selection_sort', 'insertion_sort', 'merge_sort', 'quick_sort', 'heap_sort'];
@@ -15,6 +15,51 @@ const ALGORITHM_DATA: Record<string, { time: string, space: string, name: string
     'quick_sort': { name: 'Quick Sort', time: 'O(n log n)', space: 'O(log n)' },
     'heap_sort': { name: 'Heap Sort', time: 'O(n log n)', space: 'O(1)' },
 };
+
+function getAnalysisText(
+    algA: string, algB: string, 
+    eventsA: ExecutionEvent[], eventsB: ExecutionEvent[]
+) {
+    const stepsA = eventsA.length;
+    const stepsB = eventsB.length;
+    const dataA = ALGORITHM_DATA[algA];
+    const dataB = ALGORITHM_DATA[algB];
+    
+    if (stepsA === stepsB) {
+        return [`Both ${dataA.name} and ${dataB.name} sorted the dataset in exactly ${stepsA} steps.`, `This indicates identical structural performance for this specific randomized dataset arrangement. Both algorithms executed the exact same number of operations.`];
+    }
+
+    const winner = stepsA < stepsB ? 'A' : 'B';
+    const winnerData = winner === 'A' ? dataA : dataB;
+    const loserData = winner === 'A' ? dataB : dataA;
+    
+    const winSteps = winner === 'A' ? stepsA : stepsB;
+    const loseSteps = winner === 'A' ? stepsB : stepsA;
+    
+    const winComp = (winner === 'A' ? eventsA : eventsB)[winSteps - 1].metrics.comparisons;
+    const loseComp = (winner === 'A' ? eventsB : eventsA)[loseSteps - 1].metrics.comparisons;
+    
+    const speedup = (loseSteps / winSteps).toFixed(1);
+    const diff = loseSteps - winSteps;
+    
+    const paragraphs = [];
+
+    paragraphs.push(`${winnerData.name} (Track ${winner}) dominated this benchmark, completing the execution ${speedup}x faster than ${loserData.name}. It saved a total of ${diff} operational steps.`);
+
+    if (winnerData.time !== loserData.time) {
+        paragraphs.push(`This vividly demonstrates theoretical time complexity in practice. ${winnerData.name} operates at an average time complexity of ${winnerData.time}, which scales far better on larger datasets than the ${loserData.time} complexity of ${loserData.name}.`);
+    } else {
+        paragraphs.push(`Interestingly, both algorithms share an average time complexity of ${winnerData.time}. However, ${winnerData.name}'s specific approach proved highly optimized for this dataset's distribution.`);
+    }
+
+    if (winComp < loseComp) {
+        paragraphs.push(`By drastically reducing algorithmic comparisons (${winComp} vs ${loseComp}), it avoided unnecessary inner-loop checks, proving its partitioning or searching strategy was highly efficient.`);
+    } else {
+        paragraphs.push(`Even though it performed more raw comparisons (${winComp} vs ${loseComp}), its memory write optimizations gave it the decisive performance edge.`);
+    }
+
+    return paragraphs;
+}
 
 export function Benchmark() {
     const [algorithmA, setAlgorithmA] = useState('quick_sort');
@@ -121,6 +166,11 @@ export function Benchmark() {
         setStepB(0);
     };
 
+    // Derived max metrics for visual bar scaling
+    const maxSteps = bothFinished ? Math.max(eventsA.length, eventsB.length) : 1;
+    const maxComp = bothFinished ? Math.max(eventsA[eventsA.length-1].metrics.comparisons, eventsB[eventsB.length-1].metrics.comparisons) : 1;
+    const maxSwaps = bothFinished ? Math.max(eventsA[eventsA.length-1].metrics.swaps, eventsB[eventsB.length-1].metrics.swaps) : 1;
+
     return (
         <div className="flex-1 flex flex-col h-full relative overflow-hidden bg-background">
             
@@ -146,26 +196,30 @@ export function Benchmark() {
                         <span className="font-mono text-text-muted text-xs w-4">{arraySize}</span>
                     </div>
 
-                    <div className="flex items-center gap-2.5 text-sm ml-2 border-l border-border/50 pl-4">
-                        <FastForward size={14} className="text-text-muted hidden sm:block" />
-                        <span className="text-text-muted text-[10px] font-bold uppercase tracking-widest hidden sm:inline">Speed</span>
-                        <input
-                            type="range"
-                            min="1"
-                            max="100"
-                            value={playbackSpeed}
-                            onChange={(e) => setPlaybackSpeed(Number(e.target.value))}
-                            className="w-16 md:w-24 accent-accent"
-                        />
+                    <div className="flex flex-col gap-1 ml-2 md:ml-4 border-l border-border/50 pl-4 md:pl-6">
+                        <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-accent flex items-center gap-1.5">
+                            <FastForward size={12} /> Playback Speed
+                        </span>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="range"
+                                min="1"
+                                max="100"
+                                value={playbackSpeed}
+                                onChange={(e) => setPlaybackSpeed(Number(e.target.value))}
+                                className="w-16 md:w-24 accent-accent"
+                            />
+                        </div>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-3">
                     {hasData && (
-                        <div className="flex items-center gap-2 mr-4 border-r border-border/50 pr-4">
+                        <div className="flex items-center gap-2 mr-2 md:mr-4 border-r border-border/50 pr-2 md:pr-4">
                             <button
                                 onClick={() => setIsPlaying(!isPlaying)}
                                 className="w-8 h-8 flex items-center justify-center rounded-full bg-surface-raised hover:bg-surface-hover text-text transition-colors border border-border"
+                                title={isPlaying ? "Pause Race" : "Resume Race"}
                             >
                                 {isPlaying ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" className="ml-0.5" />}
                             </button>
@@ -182,16 +236,16 @@ export function Benchmark() {
                     <button
                         onClick={generateAndRace}
                         disabled={loading}
-                        className="flex items-center gap-2 bg-text hover:bg-text/90 text-background px-6 py-1.5 rounded-lg text-sm font-semibold transition-all disabled:opacity-50 uppercase tracking-wider"
+                        className="flex items-center gap-2 bg-text hover:bg-text/90 text-background px-4 md:px-6 py-1.5 rounded-lg text-sm font-semibold transition-all disabled:opacity-50 uppercase tracking-wider"
                     >
                         {loading ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} fill="currentColor" />}
-                        {loading ? 'Compiling...' : (hasData ? 'New Race' : 'Start Race')}
+                        <span className="hidden sm:inline">{loading ? 'Compiling...' : (hasData ? 'New Race' : 'Start Race')}</span>
                     </button>
                 </div>
             </header>
 
             {/* Split Track Area */}
-            <main className="flex-1 p-6 flex gap-6 overflow-hidden relative">
+            <main className={`flex-1 p-6 flex gap-6 overflow-hidden relative transition-all duration-500 ${bothFinished ? 'h-[40%] min-h-[300px] shrink-0' : 'h-full'}`}>
                 <div className="absolute inset-0 dot-grid pointer-events-none opacity-50" />
                 
                 {/* Track A */}
@@ -254,42 +308,85 @@ export function Benchmark() {
             
             {/* Post-Race Detailed Summary */}
             {bothFinished && (
-                <div className="border-t border-border bg-surface/95 backdrop-blur-md p-6 flex flex-col items-center z-20 shadow-[0_-10px_30px_rgba(0,0,0,0.2)]">
-                    <div className="flex items-center gap-2 mb-4 text-accent font-bold uppercase tracking-widest text-sm">
-                        <Info size={16} /> Race Analysis Complete
+                <div className="h-[60%] border-t border-border bg-surface/95 backdrop-blur-md p-8 flex flex-col items-center z-20 shadow-[0_-10px_40px_rgba(0,0,0,0.3)] overflow-y-auto overflow-x-hidden animate-in slide-in-from-bottom-12 duration-500">
+                    <div className="flex items-center gap-3 mb-6 text-accent font-bold uppercase tracking-widest text-base border-b border-border/50 pb-4 w-full max-w-5xl justify-center">
+                        <Activity size={18} /> Laboratory Benchmark Report
                     </div>
                     
-                    <div className="grid grid-cols-3 gap-12 w-full max-w-3xl text-sm border border-border/50 rounded-xl bg-background overflow-hidden shadow-inner">
-                        <div className={`p-4 flex flex-col gap-3 ${winnerId === 'A' ? 'bg-accent/5' : ''}`}>
-                            <span className="font-bold font-display uppercase tracking-wider border-b border-border/50 pb-2 text-center text-accent">Track A</span>
-                            <div className="flex justify-between font-mono text-xs"><span className="text-text-muted">Total Steps:</span> <span>{eventsA.length}</span></div>
-                            <div className="flex justify-between font-mono text-xs"><span className="text-text-muted">Comparisons:</span> <span>{eventsA[eventsA.length-1].metrics.comparisons}</span></div>
-                            <div className="flex justify-between font-mono text-xs"><span className="text-text-muted">Swaps/Writes:</span> <span>{eventsA[eventsA.length-1].metrics.swaps}</span></div>
-                            <div className="flex justify-between font-mono text-xs"><span className="text-text-muted">Time (Avg):</span> <span>{ALGORITHM_DATA[algorithmA].time}</span></div>
-                        </div>
-                        
-                        <div className="p-4 flex flex-col justify-center items-center text-center gap-2 bg-surface-raised border-x border-border/50">
-                            <span className="text-xs font-mono text-text-muted uppercase tracking-widest">Conclusion</span>
-                            <span className="font-bold text-text">
-                                {winnerId === 'TIE' ? 'It is an exact tie.' : `Track ${winnerId} won the race.`}
-                            </span>
-                            <span className="text-[11px] text-text-secondary mt-1">
-                                {winnerId === 'TIE' ? 'Both algorithms performed identically on this dataset.' : `Track ${winnerId} was more efficient, requiring ${Math.abs(eventsA.length - eventsB.length)} fewer steps to sort the exact same dataset.`}
-                            </span>
-                            <button 
-                                onClick={resetRace}
-                                className="mt-2 flex items-center justify-center gap-2 text-[10px] font-bold font-mono bg-text text-background hover:bg-accent px-4 py-1.5 rounded uppercase tracking-wider transition-colors w-full"
-                            >
-                                <RotateCcw size={12} /> Play Again
-                            </button>
+                    <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {/* Visual Stats Block */}
+                        <div className="flex flex-col gap-6 border border-border/50 rounded-xl p-6 bg-background shadow-inner">
+                            <h3 className="text-[10px] font-mono uppercase tracking-widest text-text-muted mb-2">Metrics Comparison</h3>
+                            
+                            {/* Total Steps */}
+                            <div className="flex flex-col gap-2">
+                                <div className="flex justify-between text-xs font-mono">
+                                    <span className="text-text-secondary">Total Steps</span>
+                                </div>
+                                <div className="relative h-6 bg-surface-raised rounded overflow-hidden flex items-center border border-border-subtle">
+                                    <div className={`absolute top-0 left-0 h-full ${winnerId === 'A' ? 'bg-accent' : 'bg-surface-hover'} opacity-80`} style={{ width: `${(eventsA.length / maxSteps) * 100}%` }} />
+                                    <span className="absolute left-2 text-[10px] font-mono font-bold z-10 mix-blend-difference text-white">Track A: {eventsA.length}</span>
+                                </div>
+                                <div className="relative h-6 bg-surface-raised rounded overflow-hidden flex items-center border border-border-subtle">
+                                    <div className={`absolute top-0 left-0 h-full ${winnerId === 'B' ? 'bg-accent' : 'bg-surface-hover'} opacity-80`} style={{ width: `${(eventsB.length / maxSteps) * 100}%` }} />
+                                    <span className="absolute left-2 text-[10px] font-mono font-bold z-10 mix-blend-difference text-white">Track B: {eventsB.length}</span>
+                                </div>
+                            </div>
+
+                            {/* Comparisons */}
+                            <div className="flex flex-col gap-2">
+                                <div className="flex justify-between text-xs font-mono">
+                                    <span className="text-text-secondary">Total Comparisons</span>
+                                </div>
+                                <div className="relative h-6 bg-surface-raised rounded overflow-hidden flex items-center border border-border-subtle">
+                                    <div className={`absolute top-0 left-0 h-full ${eventsA[eventsA.length-1].metrics.comparisons < eventsB[eventsB.length-1].metrics.comparisons ? 'bg-emerald-500' : 'bg-surface-hover'} opacity-80`} style={{ width: `${(eventsA[eventsA.length-1].metrics.comparisons / maxComp) * 100}%` }} />
+                                    <span className="absolute left-2 text-[10px] font-mono font-bold z-10 mix-blend-difference text-white">Track A: {eventsA[eventsA.length-1].metrics.comparisons}</span>
+                                </div>
+                                <div className="relative h-6 bg-surface-raised rounded overflow-hidden flex items-center border border-border-subtle">
+                                    <div className={`absolute top-0 left-0 h-full ${eventsB[eventsB.length-1].metrics.comparisons < eventsA[eventsA.length-1].metrics.comparisons ? 'bg-emerald-500' : 'bg-surface-hover'} opacity-80`} style={{ width: `${(eventsB[eventsB.length-1].metrics.comparisons / maxComp) * 100}%` }} />
+                                    <span className="absolute left-2 text-[10px] font-mono font-bold z-10 mix-blend-difference text-white">Track B: {eventsB[eventsB.length-1].metrics.comparisons}</span>
+                                </div>
+                            </div>
+
+                            {/* Swaps */}
+                            <div className="flex flex-col gap-2">
+                                <div className="flex justify-between text-xs font-mono">
+                                    <span className="text-text-secondary">Array Writes / Swaps</span>
+                                </div>
+                                <div className="relative h-6 bg-surface-raised rounded overflow-hidden flex items-center border border-border-subtle">
+                                    <div className={`absolute top-0 left-0 h-full ${eventsA[eventsA.length-1].metrics.swaps < eventsB[eventsB.length-1].metrics.swaps ? 'bg-emerald-500' : 'bg-surface-hover'} opacity-80`} style={{ width: `${(eventsA[eventsA.length-1].metrics.swaps / maxSwaps) * 100}%` }} />
+                                    <span className="absolute left-2 text-[10px] font-mono font-bold z-10 mix-blend-difference text-white">Track A: {eventsA[eventsA.length-1].metrics.swaps}</span>
+                                </div>
+                                <div className="relative h-6 bg-surface-raised rounded overflow-hidden flex items-center border border-border-subtle">
+                                    <div className={`absolute top-0 left-0 h-full ${eventsB[eventsB.length-1].metrics.swaps < eventsA[eventsA.length-1].metrics.swaps ? 'bg-emerald-500' : 'bg-surface-hover'} opacity-80`} style={{ width: `${(eventsB[eventsB.length-1].metrics.swaps / maxSwaps) * 100}%` }} />
+                                    <span className="absolute left-2 text-[10px] font-mono font-bold z-10 mix-blend-difference text-white">Track B: {eventsB[eventsB.length-1].metrics.swaps}</span>
+                                </div>
+                            </div>
                         </div>
 
-                        <div className={`p-4 flex flex-col gap-3 ${winnerId === 'B' ? 'bg-accent/5' : ''}`}>
-                            <span className="font-bold font-display uppercase tracking-wider border-b border-border/50 pb-2 text-center text-accent">Track B</span>
-                            <div className="flex justify-between font-mono text-xs"><span className="text-text-muted">Total Steps:</span> <span>{eventsB.length}</span></div>
-                            <div className="flex justify-between font-mono text-xs"><span className="text-text-muted">Comparisons:</span> <span>{eventsB[eventsB.length-1].metrics.comparisons}</span></div>
-                            <div className="flex justify-between font-mono text-xs"><span className="text-text-muted">Swaps/Writes:</span> <span>{eventsB[eventsB.length-1].metrics.swaps}</span></div>
-                            <div className="flex justify-between font-mono text-xs"><span className="text-text-muted">Time (Avg):</span> <span>{ALGORITHM_DATA[algorithmB].time}</span></div>
+                        {/* Analysis Text Block */}
+                        <div className="flex flex-col gap-4 border border-border/50 rounded-xl p-6 bg-background shadow-inner">
+                            <h3 className="text-[10px] font-mono uppercase tracking-widest text-accent mb-2">Laboratory Insights</h3>
+                            <div className="flex flex-col gap-4 text-sm text-text-secondary leading-relaxed">
+                                {getAnalysisText(algorithmA, algorithmB, eventsA, eventsB).map((paragraph, i) => (
+                                    <p key={i}>{paragraph}</p>
+                                ))}
+                            </div>
+                            
+                            <div className="mt-auto pt-6 flex justify-end gap-3">
+                                <button 
+                                    onClick={resetRace}
+                                    className="flex items-center gap-2 text-xs font-bold font-mono bg-surface-raised hover:bg-surface-hover text-text border border-border px-4 py-2 rounded uppercase tracking-wider transition-colors"
+                                >
+                                    <RotateCcw size={14} /> Play Again
+                                </button>
+                                <button 
+                                    onClick={generateAndRace}
+                                    className="flex items-center gap-2 text-xs font-bold font-mono bg-text hover:bg-text/90 text-background px-4 py-2 rounded uppercase tracking-wider transition-colors"
+                                >
+                                    New Random Dataset
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
