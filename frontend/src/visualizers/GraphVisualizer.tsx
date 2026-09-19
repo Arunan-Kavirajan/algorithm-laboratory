@@ -293,7 +293,7 @@ export const GraphVisualizer: React.FC = () => {
                 </div>
 
                 {/* Event Description Toast */}
-                <div className="w-full max-w-md">
+                <div className="w-full max-w-md h-20 flex items-end justify-center">
                     <motion.div 
                         key={`toast-${currentStepIndex}`}
                         initial={{ opacity: 0, y: 10, scale: 0.95 }}
