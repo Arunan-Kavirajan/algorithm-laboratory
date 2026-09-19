@@ -1,47 +1,96 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+
+/* ═══════════════════════════════════════════════════
+   Observatory Design System — Algorithm Laboratory
+   ═══════════════════════════════════════════════════ */
+
 @theme {
-  --color-background: #0a0a0a;
-  --color-surface: #121212;
-  --color-surface-hover: #1a1a1a;
-  --color-border: #222222;
-  --color-text: #ededed;
-  --color-text-muted: #888888;
-  
-  --color-accent: #3b82f6;
-  --color-accent-hover: #2563eb;
-  
-  /* State colors tailored for dark mode */
-  --color-compare-border: #eab308;
-  --color-compare-bg: rgba(234, 179, 8, 0.15);
-  
-  --color-swap-border: #ef4444;
-  --color-swap-bg: rgba(239, 68, 68, 0.15);
-  
-  --color-sorted-border: #10b981;
-  --color-sorted-bg: rgba(16, 185, 129, 0.15);
-  --color-sorted-text: #34d399;
+  /* Typography */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Space Grotesk', 'Inter', ui-sans-serif, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* ── Dark Mode (Default) ── */
+  --color-background: #16131F;
+  --color-surface: #1C1829;
+  --color-surface-raised: #241F33;
+  --color-surface-hover: #2A2640;
+  --color-border: #34304A;
+  --color-border-subtle: #2A2640;
+
+  --color-text: #F4F2F8;
+  --color-text-secondary: #9C96AC;
+  --color-text-muted: #6B6580;
+
+  --color-accent: #2FE0C2;
+  --color-accent-hover: #26C9AD;
+  --color-accent-subtle: rgba(47, 224, 194, 0.12);
+  --color-accent-glow: rgba(47, 224, 194, 0.25);
+
+  /* ── Visualizer State Colors ── */
+  --color-state-compare: #E8A317;
+  --color-state-compare-bg: rgba(232, 163, 23, 0.15);
+  --color-state-swap: #E85454;
+  --color-state-swap-bg: rgba(232, 84, 84, 0.15);
+  --color-state-match: #2FE0C2;
+  --color-state-match-bg: rgba(47, 224, 194, 0.15);
+  --color-state-mismatch: #E85490;
+  --color-state-visited: #5E5878;
+}
+
+/* ── Light Mode Overrides ── */
+.light {
+  --color-background: #FAFAFC;
+  --color-surface: #FFFFFF;
+  --color-surface-raised: #F5F3F8;
+  --color-surface-hover: #EEEAF4;
+  --color-border: #D8D5E0;
+  --color-border-subtle: #E8E5F0;
+
+  --color-text: #16131F;
+  --color-text-secondary: #5E5878;
+  --color-text-muted: #9C96AC;
+
+  --color-accent: #12B79C;
+  --color-accent-hover: #0FA68D;
+  --color-accent-subtle: rgba(18, 183, 156, 0.10);
+  --color-accent-glow: rgba(18, 183, 156, 0.20);
 }
 
 body {
   background-color: var(--color-background);
   color: var(--color-text);
-  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom scrollbar for Code Viewer */
+/* ── Dot Grid Background Utility ── */
+.dot-grid {
+  background-image: radial-gradient(circle at 1px 1px, var(--color-text) 1px, transparent 0);
+  background-size: 28px 28px;
+  opacity: 0.04;
+}
+
+/* ── Scrollbar ── */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: transparent; 
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #333; 
-  border-radius: 4px;
+  background: var(--color-border);
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #555; 
+  background: var(--color-text-muted);
+}
+
+/* ── Selection ── */
+::selection {
+  background: var(--color-accent-subtle);
+  color: var(--color-accent);
 }

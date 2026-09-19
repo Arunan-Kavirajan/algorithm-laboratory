@@ -1,75 +1,99 @@
 import { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Activity, BookOpen, Shapes, Sun, Moon, Menu, X } from 'lucide-react';
+import { useThemeStore } from '../store/useThemeStore';
+
+const navItems = [
+  { path: '/', label: 'Visualizer', icon: Activity },
+  { path: '/guides', label: 'Guides', icon: BookOpen },
+  { path: '/playground', label: 'Playground', icon: Shapes },
+];
 
 export function Layout() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { theme, toggle } = useThemeStore();
+
+  const isActive = (path: string) => {
+    if (path === '/') return location.pathname === '/';
+    return location.pathname.startsWith(path);
+  };
 
   return (
-    <div className="min-h-screen flex flex-col font-sans selection:bg-accent/30 bg-background text-text">
-      
-      {/* Sidebar Overlay */}
-      {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 transition-opacity"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
+    <div className="min-h-screen flex flex-col bg-background text-text">
+      {/* ── Top Navigation Bar ── */}
+      <header className="sticky top-0 z-30 border-b border-border/60 bg-surface/80 backdrop-blur-xl">
+        <div className="flex items-center justify-between px-5 h-14">
+          {/* Left: Logo */}
+          <Link to="/" className="flex items-center gap-2 shrink-0">
+            <img
+              src={theme === 'dark' ? '/logo-horizontal-dark.svg' : '/logo-horizontal-light.svg'}
+              alt="Algorithm Laboratory"
+              className="h-6"
+            />
+          </Link>
 
-      {/* Sidebar Panel */}
-      <div 
-        className={`fixed top-0 left-0 h-full w-64 bg-surface border-r border-border z-50 transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
-      >
-        <div className="p-5 border-b border-border flex items-center justify-between">
-            <div className="flex items-center gap-3">
-                <img src="/icon-mark-dark.svg" alt="AL Logo" className="w-8 h-8 drop-shadow-md" />
-                <h2 className="text-sm font-bold tracking-tight text-text">Navigation</h2>
-            </div>
-            <button onClick={() => setIsSidebarOpen(false)} className="text-text-muted hover:text-text transition-colors rounded-lg p-1 hover:bg-surface-hover">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+          {/* Center: Desktop Nav Links */}
+          <nav className="hidden md:flex items-center gap-1 bg-surface-raised/60 rounded-xl px-1.5 py-1 border border-border-subtle/50">
+            {navItems.map(({ path, label, icon: Icon }) => (
+              <Link
+                key={path}
+                to={path}
+                className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  isActive(path)
+                    ? 'bg-accent-subtle text-accent shadow-sm'
+                    : 'text-text-muted hover:text-text hover:bg-surface-hover/60'
+                }`}
+              >
+                <Icon size={15} strokeWidth={isActive(path) ? 2.5 : 2} />
+                {label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Right: Theme Toggle + Mobile Menu */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggle}
+              className="p-2 rounded-lg text-text-muted hover:text-text hover:bg-surface-hover transition-colors"
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             </button>
-        </div>
-        <div className="p-3 flex flex-col gap-2">
-            <Link to="/" onClick={() => setIsSidebarOpen(false)} className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors ${location.pathname === '/' ? 'bg-accent/10 text-accent border border-accent/20' : 'text-text-muted hover:bg-surface-hover hover:text-text border border-transparent'}`}>
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-                Visualizer
-            </Link>
-            <Link to="/guides" onClick={() => setIsSidebarOpen(false)} className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors ${location.pathname.startsWith('/guides') ? 'bg-accent/10 text-accent border border-accent/20' : 'text-text-muted hover:bg-surface-hover hover:text-text border border-transparent'}`}>
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-                Guides
-            </Link>
-            <Link to="/playground" onClick={() => setIsSidebarOpen(false)} className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors ${location.pathname.startsWith('/playground') ? 'bg-accent/10 text-accent border border-accent/20' : 'text-text-muted hover:bg-surface-hover hover:text-text border border-transparent'}`}>
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
-                </svg>
-                Playground
-            </Link>
-        </div>
-      </div>
 
-      {/* Global Top Navigation */}
-      <header className="border-b border-border bg-surface px-6 py-4 flex items-center gap-4 z-10 shrink-0">
-          <button 
-            onClick={() => setIsSidebarOpen(true)}
-            className="p-2 -ml-2 text-text-muted hover:text-text hover:bg-surface-hover rounded-lg transition-colors"
-          >
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-          
-          <div className="flex items-center gap-3 border-l border-border pl-4">
-            <img src="/logo-horizontal-dark.svg" alt="Algorithm Laboratory" className="h-7" />
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 rounded-lg text-text-muted hover:text-text hover:bg-surface-hover transition-colors"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
           </div>
+        </div>
+
+        {/* Mobile Nav Dropdown */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-border/40 bg-surface px-4 py-3 flex flex-col gap-1">
+            {navItems.map(({ path, label, icon: Icon }) => (
+              <Link
+                key={path}
+                to={path}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  isActive(path)
+                    ? 'bg-accent-subtle text-accent'
+                    : 'text-text-muted hover:text-text hover:bg-surface-hover'
+                }`}
+              >
+                <Icon size={16} />
+                {label}
+              </Link>
+            ))}
+          </div>
+        )}
       </header>
-      
-      {/* Page Content */}
+
+      {/* ── Page Content ── */}
       <main className="flex-1 overflow-auto flex flex-col relative">
         <Outlet />
       </main>

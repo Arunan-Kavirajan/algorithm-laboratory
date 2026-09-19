@@ -12,7 +12,6 @@ export const CodeViewer: React.FC = () => {
             const container = containerRef.current;
             const element = activeLineRef.current;
             
-            // Calculate if element is out of view
             const topPos = element.offsetTop;
             const containerHeight = container.clientHeight;
             
@@ -25,7 +24,7 @@ export const CodeViewer: React.FC = () => {
 
     if (!sourceCode || events.length === 0) {
         return (
-            <div className="flex-1 flex items-center justify-center bg-[#0d0d0d] border-l border-border text-text-muted text-sm font-mono p-8 text-center">
+            <div className="flex-1 flex items-center justify-center bg-surface border-l border-border/60 text-text-muted text-sm font-mono p-8 text-center">
                 <p className="opacity-50">Algorithm source code will appear here during execution.</p>
             </div>
         );
@@ -36,16 +35,16 @@ export const CodeViewer: React.FC = () => {
     const activeLine = currentEvent.line;
 
     return (
-        <div className="flex flex-col h-full bg-[#0d0d0d] border-l border-border relative">
+        <div className="flex flex-col h-full bg-surface border-l border-border/60 relative">
             
             {/* Header / Tab */}
-            <div className="flex items-center px-4 py-3 bg-[#111] border-b border-[#222]">
+            <div className="flex items-center px-4 py-3 bg-surface-raised border-b border-border/60">
                 <div className="flex gap-2 mr-4">
-                    <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50" />
-                    <div className="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/50" />
-                    <div className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/50" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-state-swap/30 border border-state-swap/50" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-state-compare/30 border border-state-compare/50" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-accent/30 border border-accent/50" />
                 </div>
-                <div className="text-xs font-mono text-text-muted bg-[#222] px-3 py-1 rounded border border-[#333]">
+                <div className="text-[11px] font-mono text-text-muted bg-surface px-2.5 py-0.5 rounded-md border border-border-subtle">
                     {algorithmId ? `${algorithmId}.py` : 'source.py'}
                 </div>
             </div>
@@ -62,12 +61,12 @@ export const CodeViewer: React.FC = () => {
                             ref={isLineActive ? activeLineRef : null}
                             className={`flex px-2 transition-colors duration-150 ${
                                 isLineActive 
-                                    ? 'bg-[#1e293b]/70 border-l-[3px] border-accent text-[#e2e8f0]' 
-                                    : 'border-l-[3px] border-transparent text-[#94a3b8]'
+                                    ? 'bg-accent/10 border-l-[3px] border-accent text-text' 
+                                    : 'border-l-[3px] border-transparent text-text-secondary'
                             }`}
                         >
                             <span className={`w-8 flex-shrink-0 text-right pr-4 select-none ${
-                                isLineActive ? 'text-accent font-semibold' : 'text-[#475569]'
+                                isLineActive ? 'text-accent font-semibold' : 'text-text-muted'
                             }`}>
                                 {lineNum}
                             </span>

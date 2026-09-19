@@ -5,10 +5,11 @@ import { GraphVisualizer } from '../visualizers/GraphVisualizer';
 import { PlayerControls } from '../components/PlayerControls';
 import { CodeViewer } from '../components/CodeViewer';
 import { InteractiveCanvas } from '../components/InteractiveCanvas';
+import { AlgorithmSelector } from '../components/AlgorithmSelector';
 import { Modal } from '../components/Modal';
 import type { CustomNode, CustomEdge } from '../components/InteractiveCanvas';
 import type { ExecutionResult } from '../types';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Plus, Minus, Trash2, Play, Loader2, ArrowLeft } from 'lucide-react';
 
 type BuildMode = 'ADD_NODE' | 'ADD_EDGE' | 'REMOVE_NODE';
 
@@ -17,7 +18,6 @@ export function Playground() {
     const [loading, setLoading] = useState(false);
     const [activeAlgorithm, setActiveAlgorithm] = useState('dijkstra');
     
-    // We start without a target until they place nodes
     const [searchTarget, setSearchTarget] = useState<string>('');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     
@@ -88,80 +88,69 @@ export function Playground() {
     };
 
     return (
-        <div className="flex-1 flex flex-col font-sans selection:bg-accent/30 h-full relative">
-            <header className="border-b border-border bg-surface px-6 py-4 flex flex-wrap items-center justify-between gap-4 z-10 shrink-0">
+        <div className="flex-1 flex flex-col h-full relative">
+            <header className="border-b border-border/60 bg-surface/50 backdrop-blur-sm px-5 py-3 flex flex-wrap items-center justify-between gap-4 z-10 shrink-0">
                 <div className="flex items-center gap-4">
-                    <div className="flex flex-col">
-                        <h2 className="text-sm font-semibold tracking-tight text-text">Playground Mode</h2>
-                        <div className="text-xs text-text-muted font-mono uppercase tracking-wider flex items-center gap-2 mt-1 relative">
-                            <select 
-                                value={activeAlgorithm}
-                                onChange={(e) => setActiveAlgorithm(e.target.value)}
-                                className="bg-background border border-border text-accent rounded px-2 py-0.5 outline-none focus:border-accent disabled:opacity-50 appearance-none pr-8 cursor-pointer"
-                                disabled={!isBuilding}
-                            >
-                                <option value="bfs">Breadth-First Search (BFS)</option>
-                                <option value="dfs">Depth-First Search (DFS)</option>
-                                <option value="dijkstra">Dijkstra's Shortest Path</option>
-                            </select>
-                            <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-accent" />
-                        </div>
-                    </div>
+                    <AlgorithmSelector
+                        value={activeAlgorithm}
+                        onChange={setActiveAlgorithm}
+                        filter={['bfs', 'dfs', 'dijkstra']}
+                    />
                 </div>
 
                 {isBuilding ? (
-                    <div className="flex items-center gap-6">
-                        <div className="flex items-center gap-2 bg-background border border-border rounded-lg p-1">
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-1 bg-surface-raised/60 border border-border-subtle rounded-lg p-1">
                             <button 
                                 onClick={() => setActiveMode('ADD_NODE')}
-                                className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${activeMode === 'ADD_NODE' ? 'bg-accent text-white' : 'text-text-muted hover:text-text hover:bg-surface-hover'}`}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${activeMode === 'ADD_NODE' ? 'bg-accent text-background shadow-sm' : 'text-text-muted hover:text-text hover:bg-surface-hover'}`}
                             >
-                                + Node
+                                <Plus size={12} /> Node
                             </button>
                             <button 
                                 onClick={() => setActiveMode('ADD_EDGE')}
-                                className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${activeMode === 'ADD_EDGE' ? 'bg-accent text-white' : 'text-text-muted hover:text-text hover:bg-surface-hover'}`}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${activeMode === 'ADD_EDGE' ? 'bg-accent text-background shadow-sm' : 'text-text-muted hover:text-text hover:bg-surface-hover'}`}
                             >
-                                + Edge
+                                <Plus size={12} /> Edge
                             </button>
                             <button 
                                 onClick={() => setActiveMode('REMOVE_NODE')}
-                                className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${activeMode === 'REMOVE_NODE' ? 'bg-red-500 text-white' : 'text-text-muted hover:text-red-400 hover:bg-surface-hover'}`}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${activeMode === 'REMOVE_NODE' ? 'bg-state-swap text-white shadow-sm' : 'text-text-muted hover:text-state-swap hover:bg-surface-hover'}`}
                             >
-                                - Del
+                                <Minus size={12} /> Del
                             </button>
-                            <div className="w-px h-4 bg-border mx-1" />
+                            <div className="w-px h-4 bg-border-subtle mx-0.5" />
                             <button 
                                 onClick={handleClearCanvas}
-                                className="px-3 py-1.5 text-xs font-semibold rounded-md text-red-400 hover:bg-red-400/10 transition-colors"
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md text-state-swap hover:bg-state-swap/10 transition-colors"
                             >
-                                Clear All
+                                <Trash2 size={12} /> Clear
                             </button>
                         </div>
 
                         {/* Custom Dropdown for Target Node */}
-                        <div className="flex items-center gap-2 text-sm bg-surface/50 px-3 py-1.5 rounded-lg border border-border focus-within:border-accent transition-all relative" ref={dropdownRef}>
-                            <span className="text-text-muted font-medium text-xs uppercase tracking-widest">Target Node</span>
-                            <div className="w-px h-4 bg-border mx-1" />
+                        <div className="flex items-center gap-2 text-sm bg-surface-raised/60 px-3 py-1.5 rounded-lg border border-border-subtle focus-within:border-accent transition-all relative" ref={dropdownRef}>
+                            <span className="text-text-muted font-medium text-[10px] uppercase tracking-widest">Target</span>
+                            <div className="w-px h-4 bg-border-subtle mx-0.5" />
                             
                             <div 
-                                className="flex items-center gap-2 cursor-pointer text-text font-mono font-bold min-w-16 justify-between"
+                                className="flex items-center gap-2 cursor-pointer text-text font-mono font-bold min-w-12 justify-between text-sm"
                                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                             >
                                 <span>{searchTarget || '---'}</span>
-                                <ChevronDown size={14} className="text-text-muted" />
+                                <ChevronDown size={12} className={`text-text-muted transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                             </div>
 
                             {isDropdownOpen && (
-                                <div className="absolute top-full right-0 mt-2 w-40 bg-surface border border-border rounded-lg shadow-xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
-                                    <div className="max-h-48 overflow-y-auto">
+                                <div className="absolute top-full right-0 mt-2 w-40 bg-surface-raised border border-border rounded-xl shadow-2xl overflow-hidden z-50">
+                                    <div className="max-h-48 overflow-y-auto py-1">
                                         {nodes.length === 0 ? (
                                             <div className="px-4 py-2 text-xs text-text-muted italic">No nodes placed</div>
                                         ) : (
                                             nodes.map(n => (
                                                 <button
                                                     key={n.id}
-                                                    className={`w-full text-left px-4 py-2 text-sm font-mono font-bold transition-colors ${searchTarget === n.id ? 'bg-accent/10 text-accent' : 'text-text hover:bg-surface-hover'}`}
+                                                    className={`w-full text-left px-4 py-2 text-sm font-mono font-bold transition-colors ${searchTarget === n.id ? 'bg-accent-subtle text-accent' : 'text-text-secondary hover:bg-surface-hover hover:text-text'}`}
                                                     onClick={() => {
                                                         setSearchTarget(n.id);
                                                         setIsDropdownOpen(false);
@@ -179,8 +168,9 @@ export function Playground() {
                         <button 
                             onClick={generateAndRun}
                             disabled={loading || nodes.length === 0}
-                            className="bg-text text-background hover:bg-white px-5 py-1.5 rounded-md text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                            className="flex items-center gap-2 bg-accent hover:bg-accent-hover text-background px-4 py-1.5 rounded-lg text-sm font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm shadow-accent-glow"
                         >
+                            {loading ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} fill="currentColor" />}
                             {loading ? 'Compiling...' : 'Execute'}
                         </button>
                     </div>
@@ -188,17 +178,18 @@ export function Playground() {
                     <div className="flex items-center gap-4">
                         <button 
                             onClick={handleReset}
-                            className="bg-surface-hover text-text hover:bg-border px-5 py-1.5 rounded-md text-sm font-medium transition-all shadow-sm"
+                            className="flex items-center gap-2 bg-surface-raised hover:bg-surface-hover text-text px-4 py-1.5 rounded-lg text-sm font-medium transition-all border border-border-subtle"
                         >
-                            ← Back to Builder
+                            <ArrowLeft size={14} /> Back to Builder
                         </button>
                     </div>
                 )}
             </header>
 
             <main className="flex-1 grid grid-cols-1 lg:grid-cols-3 overflow-hidden">
-                <div className="col-span-2 flex flex-col border-r border-border bg-background">
-                    <div className="flex-1 p-8 overflow-hidden flex flex-col">
+                <div className="col-span-2 flex flex-col border-r border-border/60 bg-background relative">
+                    <div className="absolute inset-0 dot-grid pointer-events-none" />
+                    <div className="flex-1 p-8 overflow-hidden flex flex-col relative z-[1]">
                         {isBuilding ? (
                             <InteractiveCanvas 
                                 nodes={nodes}
@@ -214,7 +205,7 @@ export function Playground() {
                     </div>
                     
                     {!isBuilding && (
-                        <div className="border-t border-border bg-surface">
+                        <div className="border-t border-border/60 bg-surface/50 backdrop-blur-sm relative z-[1]">
                             <PlayerControls />
                         </div>
                     )}

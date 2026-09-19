@@ -32,22 +32,22 @@ export const Modal: React.FC<ModalProps> = ({
     };
 
     return createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-background/60 backdrop-blur-md transition-opacity">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(22, 19, 31, 0.7)', backdropFilter: 'blur(12px)' }}>
             <div 
-                className="bg-surface border border-border/60 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-3xl w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200"
-                style={{ maxWidth: '320px' }}
+                className="bg-surface-raised border border-border rounded-3xl w-full overflow-hidden"
+                style={{ maxWidth: '320px', boxShadow: '0 25px 60px rgba(0,0,0,0.5)' }}
             >
                 <div className="p-6 flex flex-col items-center text-center">
                     
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center mb-3 bg-background border border-border shadow-sm">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center mb-3 bg-surface border border-border-subtle">
                         {type === 'prompt' ? (
                             <HelpCircle size={18} className="text-accent" />
                         ) : (
-                            <AlertCircle size={18} className="text-red-400" />
+                            <AlertCircle size={18} className="text-state-swap" />
                         )}
                     </div>
                     
-                    <h3 className="text-sm font-bold text-text tracking-wide">{title}</h3>
+                    <h3 className="text-sm font-bold text-text tracking-wide font-display">{title}</h3>
                     {message && <p className="text-[11px] text-text-muted mt-1.5 leading-relaxed">{message}</p>}
                     
                     {type === 'prompt' && (
@@ -57,7 +57,7 @@ export const Modal: React.FC<ModalProps> = ({
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value.replace(/[^0-9-]/g, ''))}
                                 placeholder={placeholder}
-                                className="w-24 bg-transparent border-b-2 border-border/50 px-2 py-1 text-3xl font-bold font-mono text-center text-accent placeholder-text-muted/30 focus:outline-none focus:border-accent transition-colors"
+                                className="w-24 bg-transparent border-b-2 border-border px-2 py-1 text-3xl font-bold font-mono text-center text-accent placeholder-text-muted/30 focus:outline-none focus:border-accent transition-colors"
                                 autoFocus
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') handleConfirm();
@@ -68,7 +68,7 @@ export const Modal: React.FC<ModalProps> = ({
                     )}
                 </div>
                 
-                <div className="flex border-t border-border/60 bg-background/30">
+                <div className="flex border-t border-border/60">
                     {type === 'prompt' && (
                         <button 
                             onClick={onClose}
@@ -79,7 +79,7 @@ export const Modal: React.FC<ModalProps> = ({
                     )}
                     <button 
                         onClick={handleConfirm}
-                        className={`flex-1 py-3 text-[11px] uppercase tracking-wider font-bold transition-colors ${type === 'prompt' ? 'text-accent hover:bg-accent/10' : 'text-text hover:bg-surface-hover'}`}
+                        className={`flex-1 py-3 text-[11px] uppercase tracking-wider font-bold transition-colors ${type === 'prompt' ? 'text-accent hover:bg-accent-subtle' : 'text-text hover:bg-surface-hover'}`}
                     >
                         {type === 'prompt' ? 'Confirm' : 'OK'}
                     </button>

@@ -60,7 +60,7 @@ export const PlayerControls: React.FC = () => {
                     
                     {/* Custom thumb visible on hover */}
                     <div 
-                        className="absolute h-3 w-3 bg-white rounded-full shadow-md shadow-accent/50 pointer-events-none transition-transform scale-0 group-hover:scale-100"
+                        className="absolute h-3 w-3 bg-accent rounded-full shadow-md pointer-events-none transition-transform scale-0 group-hover:scale-100"
                         style={{ 
                             left: `calc(${progress}% - 6px)`,
                             top: '50%',
@@ -128,7 +128,7 @@ export const PlayerControls: React.FC = () => {
                         <select 
                             value={playbackSpeed} 
                             onChange={(e) => setPlaybackSpeed(Number(e.target.value))}
-                            className="bg-background border border-border text-text rounded px-2 py-1 outline-none focus:border-accent"
+                            className="bg-surface-raised border border-border-subtle text-text-secondary rounded-lg px-2 py-1 text-[11px] outline-none focus:border-accent cursor-pointer"
                         >
                             <option value={1000}>1.0s</option>
                             <option value={500}>0.5s</option>
