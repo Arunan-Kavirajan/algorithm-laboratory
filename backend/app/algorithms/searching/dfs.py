@@ -118,7 +118,7 @@ def dfs_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
                 ]),
                 state=get_state(),
                 active_elements=[curr],
-                line=11,
+                line=8,
                 pointers={"target": target, "curr": curr},
                 auxiliary=list(stack)
             )

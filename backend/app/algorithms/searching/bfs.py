@@ -53,16 +53,16 @@ def bfs_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
         description=f"Initiating BFS for target {target} starting at {start_node_name}...",
         state=get_state(),
         active_elements=[],
-        line=1,
+        line=3,
         pointers={"target": target}
     )
     
-    queue = [start_node]
+    queue = deque([start_node])
     visited = {start_node}
-    
+
     engine.record_event(
         type="ENQUEUE",
-        description=f"Starting BFS. Added {start_node.replace('node-', 'Node ')} to the queue.",
+        description=f"Starting BFS. Added {start_node_name} to queue.",
         state=get_state(),
         active_elements=[start_node],
         line=4,
@@ -73,16 +73,16 @@ def bfs_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
     found_id = None
     
     while queue:
-        curr = queue.pop(0) # popleft
+        curr = queue.popleft()
         curr_name = curr.replace('node-', 'Node ')
         curr_val = nodes_dict[curr].value
         
         engine.record_event(
             type="DEQUEUE",
             description=random.choice([
-                f"Popped {curr_name} from the front of the queue to process.",
-                f"It's {curr_name}'s turn. Popping it from the queue.",
-                f"Taking {curr_name} out of the queue to check its value."
+                f"Dequeued {curr_name} for exploration.",
+                f"Taking {curr_name} from the front of the queue.",
+                f"Current node is {curr_name}."
             ]),
             state=get_state(),
             active_elements=[curr],
@@ -98,8 +98,8 @@ def bfs_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
                 type="MATCH",
                 description=random.choice([
                     f"Match! {curr_name} holds the target value {target}.",
-                    f"Found it! {curr_name}'s value is {target}.",
-                    f"Success! {curr_name} matches our target."
+                    f"Found the target {target} at {curr_name}!",
+                    f"Success! Arrived at destination {curr_name}."
                 ]),
                 state=get_state(),
                 active_elements=[curr],
@@ -120,7 +120,7 @@ def bfs_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
                 ]),
                 state=get_state(),
                 active_elements=[curr],
-                line=11,
+                line=10,
                 pointers={"target": target, "curr": curr},
                 auxiliary=list(queue)
             )

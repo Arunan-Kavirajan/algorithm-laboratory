@@ -70,7 +70,7 @@ def dijkstra_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
         description=f"Initiating Dijkstra for target {target} starting at {start_node_name}...",
         state=get_state(),
         active_elements=[],
-        line=1,
+        line=3,
         pointers={"target": target}
     )
     
@@ -113,7 +113,7 @@ def dijkstra_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
             ]),
             state=get_state(),
             active_elements=[curr],
-            line=9,
+            line=10,
             pointers={"target": target, "curr": curr},
             auxiliary=get_pq_nodes()
         )
@@ -130,7 +130,7 @@ def dijkstra_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
                 ]),
                 state=get_state(),
                 active_elements=[curr],
-                line=16,
+                line=17,
                 pointers={"target": target, "curr": curr},
                 auxiliary=get_pq_nodes()
             )
@@ -147,7 +147,7 @@ def dijkstra_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
                 ]),
                 state=get_state(),
                 active_elements=[curr],
-                line=18,
+                line=17,
                 pointers={"target": target, "curr": curr},
                 auxiliary=get_pq_nodes()
             )
@@ -163,7 +163,7 @@ def dijkstra_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
                 ]),
                 state=get_state(),
                 active_elements=[curr] + [nbr[0] for nbr in neighbors],
-                line=19,
+                line=20,
                 pointers={"target": target, "curr": curr},
                 auxiliary=get_pq_nodes()
             )
@@ -187,7 +187,7 @@ def dijkstra_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
                     description=desc,
                     state=get_state(),
                     active_elements=[curr, nbr],
-                    line=23,
+                    line=24,
                     pointers={"target": target, "curr": curr, "neighbor": nbr},
                     auxiliary=get_pq_nodes()
                 )
@@ -198,7 +198,7 @@ def dijkstra_algorithm(dataset: GraphDataset, target: int) -> ExecutionResult:
             description=f"Priority Queue empty. Target {target} is unreachable.",
             state=get_state(),
             active_elements=[],
-            line=26,
+            line=27,
             pointers={"target": target},
             auxiliary=[]
         )
