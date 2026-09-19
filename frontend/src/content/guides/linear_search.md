@@ -96,6 +96,5 @@ def linear_search(arr, target):
 - **Depth-First Search (DFS) / Breadth-First Search (BFS):** These are essentially ways to do a linear search on more complex data structures like graphs and trees.
 
 ## 18. Try it yourself 🧪
-Ready to see it in action? 
 
 [Visualize this algorithm →](/)

@@ -129,4 +129,5 @@ In the worst-case scenario (like a really wide tree), our queue and visited set 
 - **A* (A-Star) Search:** An even smarter Dijkstra that uses guesses (heuristics) to find the target faster.
 
 ## 18. Try it yourself 🧪
+
 [Visualize this algorithm →](/)

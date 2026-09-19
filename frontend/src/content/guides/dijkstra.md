@@ -90,11 +90,17 @@ def dijkstra(graph, start):
     return distances
 
 # Example usage:
+
 # graph = {
+
 #     'A': {'B': 4, 'C': 2},
+
 #     'B': {},
+
 #     'C': {'B': 1}
+
 # }
+
 # print(dijkstra(graph, 'A'))
 ```
 
@@ -141,4 +147,5 @@ def dijkstra(graph, start):
 - **Prim's Algorithm**: Looks very similar to Dijkstra but is used to find a Minimum Spanning Tree, not shortest paths.
 
 ## 18. Try it yourself 🧪
+
 [Visualize this algorithm →](/)

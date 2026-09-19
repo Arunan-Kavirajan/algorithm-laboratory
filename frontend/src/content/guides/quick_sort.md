@@ -93,6 +93,7 @@ def quick_sort(arr):
 # Test it out!
 my_list = [8, 3, 1, 7, 0, 10, 2]
 print(quick_sort(my_list))
+
 # Output: [0, 1, 2, 3, 7, 8, 10]
 ```
 *(Note: The implementation above is simplified for clarity. In practice, Quick Sort is often done "in-place" to save memory, matching the pseudocode above.)*
@@ -144,4 +145,5 @@ print(quick_sort(my_list))
 - **Heap Sort:** Uses a tree-like structure to sort. Like Quick Sort, it's done in-place and is very efficient.
 
 ## 18. Try it yourself 🧪
+
 [Visualize this algorithm →](/)

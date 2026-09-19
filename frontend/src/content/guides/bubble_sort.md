@@ -104,4 +104,5 @@ Anytime you have a large list. If you try to Bubble Sort a million items, it mig
 - **Insertion Sort** -> Faster for mostly-sorted lists.
 
 ## 18. Try it yourself 🧪
-*[Visualize Bubble Sort ->]*
+
+[Visualize this algorithm →](/)

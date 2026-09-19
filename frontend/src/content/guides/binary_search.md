@@ -117,4 +117,5 @@ It only needs a few variables (`left`, `right`, `mid`) to keep track of its plac
 * **Binary Search Trees (BST):** A data structure built entirely around the concept of binary search to keep data organized as it's added and removed.
 
 ## 18. Try it yourself 🧪
+
 [Visualize this algorithm →](/)

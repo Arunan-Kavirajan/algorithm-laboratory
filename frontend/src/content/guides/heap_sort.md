@@ -160,4 +160,5 @@ This is one of Heap Sort's superpowers! It sorts the array "in-place", meaning i
 *   **Selection Sort:** The slow ($O(n^2)$) cousin of Heap Sort. Heap Sort is basically Selection Sort but using a clever data structure to find the largest element fast.
 
 ### 18. Try it yourself 🧪
+
 [Visualize this algorithm →](/)

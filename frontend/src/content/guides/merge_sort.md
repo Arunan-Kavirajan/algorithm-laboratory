@@ -122,4 +122,5 @@ Because we create new lists to hold the halves as we merge them back together, M
 - **Tim Sort:** The actual algorithm Python uses under the hood! It's a clever hybrid of Merge Sort and Insertion Sort.
 
 ## 18. Try it yourself 🧪
-[Visualize this algorithm →](/)'
+
+[Visualize this algorithm →](/)

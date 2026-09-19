@@ -114,4 +114,5 @@ print("Sorted array:", selection_sort(numbers))
 * **Heap Sort:** This is basically Selection Sort on steroids! It uses a clever data structure called a "Heap" to find the minimum element blazingly fast, improving the time to O(N log N).
 
 ## 18. Try it yourself 🧪
+
 [Visualize this algorithm →](/)

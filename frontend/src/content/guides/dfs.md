@@ -123,4 +123,5 @@ In the worst-case scenario (like a straight line of nodes), your recursion call 
 - **A* (A-Star) Search:** A smarter pathfinding algorithm that uses heuristics to find the shortest path efficiently.
 
 ### 18. Try it yourself 🧪
+
 [Visualize this algorithm →](/)

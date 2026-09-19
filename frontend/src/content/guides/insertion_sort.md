@@ -109,4 +109,5 @@ def insertion_sort(arr):
 - **Shell Sort:** A highly optimized version of insertion sort that compares items far apart before comparing items close together.
 
 ### 18. Try it yourself 🧪
+
 [Visualize this algorithm →](/)
