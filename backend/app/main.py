@@ -40,5 +40,7 @@ if os.path.isdir(dist_path):
     def serve_react_app(catchall: str):
         file_path = os.path.join(dist_path, catchall)
         if catchall and os.path.isfile(file_path):
+            if file_path.endswith(".svg"):
+                return FileResponse(file_path, media_type="image/svg+xml")
             return FileResponse(file_path)
         return FileResponse(os.path.join(dist_path, "index.html"))
