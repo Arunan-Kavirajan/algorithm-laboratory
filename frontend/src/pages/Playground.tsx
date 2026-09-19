@@ -189,21 +189,19 @@ export function Playground() {
             <main className="flex-1 grid grid-cols-1 lg:grid-cols-3 overflow-hidden">
                 <div className="col-span-2 flex flex-col border-r border-border/60 bg-background relative">
                     <div className="absolute inset-0 dot-grid pointer-events-none" />
-                    <div className="flex-1 p-4 lg:p-8 overflow-y-auto custom-scrollbar flex flex-col relative z-[1]">
-                        <div className="min-h-[650px] flex-1 flex flex-col">
-                            {isBuilding ? (
-                                <InteractiveCanvas 
-                                    nodes={nodes}
-                                    edges={edges}
-                                    onNodesChange={setNodes}
-                                    onEdgesChange={setEdges}
-                                    activeMode={activeMode}
-                                    isDijkstra={activeAlgorithm === 'dijkstra'}
-                                />
-                            ) : (
-                                <GraphVisualizer />
-                            )}
-                        </div>
+                    <div className="flex-1 p-8 overflow-hidden flex flex-col relative z-[1]">
+                        {isBuilding ? (
+                            <InteractiveCanvas 
+                                nodes={nodes}
+                                edges={edges}
+                                onNodesChange={setNodes}
+                                onEdgesChange={setEdges}
+                                activeMode={activeMode}
+                                isDijkstra={activeAlgorithm === 'dijkstra'}
+                            />
+                        ) : (
+                            <GraphVisualizer />
+                        )}
                     </div>
                     
                     {!isBuilding && (
