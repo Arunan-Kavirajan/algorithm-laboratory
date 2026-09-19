@@ -47,9 +47,14 @@ function App() {
           }
           
           // Let's add a few random edges to make it a generic graph, not strictly a tree!
+          if (arraySize > 4) edges.push({ source: 'node-1', target: 'node-4' });
           if (arraySize > 5) edges.push({ source: 'node-2', target: 'node-3' });
+          if (arraySize > 7) edges.push({ source: 'node-3', target: 'node-7' });
           if (arraySize > 8) edges.push({ source: 'node-4', target: 'node-6' });
+          if (arraySize > 10) edges.push({ source: 'node-5', target: 'node-9' });
           if (arraySize > 12) edges.push({ source: 'node-7', target: 'node-10' });
+          if (arraySize > 13) edges.push({ source: 'node-8', target: 'node-12' });
+          if (arraySize > 14) edges.push({ source: 'node-11', target: 'node-14' });
 
           dataset = { type: "GRAPH", nodes, edges };
       } else {
