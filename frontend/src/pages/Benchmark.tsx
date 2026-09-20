@@ -274,7 +274,16 @@ export function Benchmark() {
                                 <div className="flex items-center h-[24px]">
                                     <select
                                         value={searchTarget}
-                                        onChange={(e) => setSearchTarget(e.target.value)}
+                                        onChange={(e) => {
+                                            setSearchTarget(e.target.value);
+                                            if (hasData) {
+                                                setIsPlaying(false);
+                                                setStepA(0);
+                                                setStepB(0);
+                                                setEventsA([]);
+                                                setEventsB([]);
+                                            }
+                                        }}
                                         disabled={isPlaying || loading}
                                         className="bg-transparent text-text font-mono font-bold outline-none text-sm cursor-pointer border-b border-border-subtle pb-0.5"
                                     >
@@ -359,6 +368,7 @@ export function Benchmark() {
                             onChange={(id) => handleAlgorithmChange(id, setAlgorithmA)}
                             category={category}
                             disabled={isPlaying || loading}
+                            disabledOptions={[algorithmB]}
                         />
                     </div>
                     {category === 'Graph Algorithms' ? (
@@ -390,6 +400,7 @@ export function Benchmark() {
                             onChange={(id) => handleAlgorithmChange(id, setAlgorithmB)}
                             category={category}
                             disabled={isPlaying || loading}
+                            disabledOptions={[algorithmA]}
                         />
                     </div>
                     {category === 'Graph Algorithms' ? (

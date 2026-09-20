@@ -48,9 +48,10 @@ interface AlgorithmSelectorProps {
   filter?: string[];
   category?: 'Sorting' | 'Searching' | 'Graph Algorithms';
   disabled?: boolean;
+  disabledOptions?: string[];
 }
 
-export function AlgorithmSelector({ value, onChange, filter, category, disabled }: AlgorithmSelectorProps) {
+export function AlgorithmSelector({ value, onChange, filter, category, disabled, disabledOptions = [] }: AlgorithmSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -121,15 +122,20 @@ export function AlgorithmSelector({ value, onChange, filter, category, disabled 
                       {group.label}
                     </span>
                   </div>
-                  {group.algorithms.map((algo) => (
+                  {group.algorithms.map((algo) => {
+                    const isDisabledOption = disabledOptions.includes(algo.id);
+                    return (
                     <button
                       key={algo.id}
+                      disabled={isDisabledOption}
                       onClick={() => {
                         onChange(algo.id);
                         setIsOpen(false);
                       }}
                       className={`w-full flex items-center justify-between px-4 py-2.5 text-[13px] transition-colors ${
-                        value === algo.id
+                        isDisabledOption
+                          ? 'opacity-30 cursor-not-allowed text-text-muted'
+                          : value === algo.id
                           ? 'bg-accent-subtle text-accent'
                           : 'text-text-secondary hover:bg-surface-hover hover:text-text'
                       }`}
@@ -145,7 +151,7 @@ export function AlgorithmSelector({ value, onChange, filter, category, disabled 
                         {algo.complexity}
                       </span>
                     </button>
-                  ))}
+                  )})}
                 </div>
               ))}
             </div>
