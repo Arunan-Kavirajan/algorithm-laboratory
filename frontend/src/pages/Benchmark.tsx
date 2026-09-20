@@ -80,7 +80,7 @@ export function Benchmark() {
                 const radius = 35 + Math.random() * 10;
                 return {
                     id: String.fromCharCode(65 + i),
-                    value: String.fromCharCode(65 + i),
+                    value: i, // Must be an integer for backend validation!
                     x: 50 + radius * Math.cos(angle),
                     y: 50 + radius * Math.sin(angle)
                 };
@@ -98,7 +98,7 @@ export function Benchmark() {
             newDataset = { type: "GRAPH", nodes, edges };
             setAlgorithmA('bfs');
             setAlgorithmB('dfs');
-            setSearchTarget(nodes[nodes.length - 1].id);
+            setSearchTarget(nodes[nodes.length - 1].value);
         }
 
         setDataset(newDataset);
@@ -158,8 +158,8 @@ export function Benchmark() {
             const payloadB: any = { algorithmId: algorithmB, dataset };
             
             if (category === 'Searching' || category === 'Graph Algorithms') {
-                payloadA.target = searchTarget;
-                payloadB.target = searchTarget;
+                payloadA.target = Number(searchTarget);
+                payloadB.target = Number(searchTarget);
             }
 
             const [resA, resB] = await Promise.all([
@@ -282,7 +282,7 @@ export function Benchmark() {
                                             <option key={v.id} value={v.value} className="bg-surface text-text">{v.value}</option>
                                         ))}
                                         {dataset?.type === 'GRAPH' && dataset.nodes.map((n: any) => (
-                                            <option key={n.id} value={n.id} className="bg-surface text-text">{n.id}</option>
+                                            <option key={n.id} value={n.value} className="bg-surface text-text">{n.value}</option>
                                         ))}
                                         <option value={-999} className="bg-surface text-text">None</option>
                                     </select>
