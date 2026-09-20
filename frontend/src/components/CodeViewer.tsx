@@ -66,6 +66,14 @@ export const CodeViewer: React.FC = () => {
                         padding: '1rem 0',
                         background: 'transparent',
                         fontSize: '13px',
+                        lineHeight: '24px',
+                    }}
+                    codeTagProps={{
+                        style: {
+                            fontSize: '13px',
+                            lineHeight: '24px',
+                            fontFamily: 'inherit'
+                        }
                     }}
                     lineNumberStyle={(lineNum) => ({
                         minWidth: '2.5rem',
