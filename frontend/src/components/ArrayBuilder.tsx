@@ -10,9 +10,10 @@ export interface ArrayElement {
 interface ArrayBuilderProps {
     values: ArrayElement[];
     onChange: (newValues: ArrayElement[]) => void;
+    disableRandomize?: boolean;
 }
 
-export const ArrayBuilder: React.FC<ArrayBuilderProps> = ({ values, onChange }) => {
+export const ArrayBuilder: React.FC<ArrayBuilderProps> = ({ values, onChange, disableRandomize }) => {
     // Limits
     const MIN_SIZE = 3;
     const MAX_SIZE = 15;
@@ -129,12 +130,14 @@ export const ArrayBuilder: React.FC<ArrayBuilderProps> = ({ values, onChange }) 
 
                 <div className="w-px h-6 bg-border mx-2 hidden sm:block" />
 
-                <button 
-                    onClick={handleRandomize}
-                    className="flex items-center gap-2 px-4 py-2 text-xs font-semibold bg-surface border border-border hover:bg-surface-hover rounded-lg transition-colors"
-                >
-                    <Shuffle size={14} /> Randomize
-                </button>
+                {!disableRandomize && (
+                    <button 
+                        onClick={handleRandomize}
+                        className="flex items-center gap-2 px-4 py-2 text-xs font-semibold bg-surface border border-border hover:bg-surface-hover rounded-lg transition-colors"
+                    >
+                        <Shuffle size={14} /> Randomize
+                    </button>
+                )}
 
                 <div className="flex items-center gap-2 bg-surface p-1 rounded-lg border border-border">
                     <button 

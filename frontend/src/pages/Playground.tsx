@@ -57,6 +57,17 @@ export function Playground() {
         setSearchTarget('');
     }, [dataStructure]);
 
+    // Enforce sorted state when switching to binary search
+    useEffect(() => {
+        if (activeAlgorithm === 'binary_search') {
+            const isAscending = arrayValues.every((val, i, arr) => !i || val.value >= arr[i - 1].value);
+            const isDescending = arrayValues.every((val, i, arr) => !i || val.value <= arr[i - 1].value);
+            if (!isAscending && !isDescending) {
+                setArrayValues(prev => [...prev].sort((a, b) => a.value - b.value));
+            }
+        }
+    }, [activeAlgorithm]);
+
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -76,6 +87,16 @@ export function Playground() {
         if (dataStructure === 'Array' && arrayValues.length === 0) {
             setAlertMessage('Please add at least one element to the array.');
             return;
+        }
+
+        if (dataStructure === 'Array' && activeAlgorithm === 'binary_search') {
+            const isAscending = arrayValues.every((val, i, arr) => !i || val.value >= arr[i - 1].value);
+            const isDescending = arrayValues.every((val, i, arr) => !i || val.value <= arr[i - 1].value);
+            
+            if (!isAscending && !isDescending) {
+                setAlertMessage('Binary Search requires the array to be sorted! Please use the Sort Asc/Desc buttons to organize the data properly.');
+                return;
+            }
         }
 
         setLoading(true);
@@ -301,6 +322,7 @@ export function Playground() {
                                 <ArrayBuilder
                                     values={arrayValues}
                                     onChange={setArrayValues}
+                                    disableRandomize={activeAlgorithm === 'binary_search'}
                                 />
                             )
                         ) : (
