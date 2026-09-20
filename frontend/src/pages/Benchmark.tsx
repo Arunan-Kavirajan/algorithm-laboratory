@@ -186,8 +186,33 @@ export function Benchmark() {
         setStepB(0);
     };
 
+    const getAlgoCategory = (id: string) => {
+        if (['bfs', 'dfs', 'dijkstra'].includes(id)) return 'Graph';
+        if (['linear_search', 'binary_search'].includes(id)) return 'Searching';
+        return 'Sorting';
+    };
+
+    const getDefaultAlgo = (category: string, excludeId: string) => {
+        if (category === 'Searching') return excludeId === 'linear_search' ? 'binary_search' : 'linear_search';
+        if (category === 'Sorting') return excludeId === 'bubble_sort' ? 'quick_sort' : 'bubble_sort';
+        if (category === 'Graph') return excludeId === 'bfs' ? 'dfs' : 'bfs';
+        return excludeId;
+    };
+
     const handleAlgorithmChange = (id: string, setter: (val: string) => void) => {
         setter(id);
+        
+        const newCategory = getAlgoCategory(id);
+        if (setter === setAlgorithmA) {
+            if (getAlgoCategory(algorithmB) !== newCategory) {
+                setAlgorithmB(getDefaultAlgo(newCategory, id));
+            }
+        } else {
+            if (getAlgoCategory(algorithmA) !== newCategory) {
+                setAlgorithmA(getDefaultAlgo(newCategory, id));
+            }
+        }
+
         if (hasData) {
             setIsPlaying(false);
             setStepA(0);
