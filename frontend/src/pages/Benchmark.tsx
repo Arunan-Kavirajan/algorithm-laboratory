@@ -356,73 +356,71 @@ export function Benchmark() {
             </header>
 
             {/* Split Track Area */}
-            <main className={`flex-1 p-6 flex overflow-hidden relative transition-all duration-500 ${bothFinished ? 'h-[40%] min-h-[300px] shrink-0' : 'h-full'}`}>
+            <main className={`flex-1 p-6 flex gap-6 overflow-hidden relative transition-all duration-500 ${bothFinished ? 'h-[40%] min-h-[300px] shrink-0' : 'h-full'}`}>
                 <div className="absolute inset-0 dot-grid pointer-events-none opacity-50" />
                 
-                <div className="relative z-10 flex w-full h-full gap-6">
-                    {/* Track A */}
-                    <div className="flex-1 flex flex-col gap-4 min-w-0">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <span className="text-xs font-mono font-bold text-accent tracking-widest uppercase">Track A</span>
-                                <div className="flex gap-2 text-[10px] font-mono opacity-70">
-                                    <span className="bg-surface-raised px-2 py-0.5 rounded border border-border-subtle">⏱ {ALGORITHM_DATA[algorithmA]?.time}</span>
-                                    <span className="bg-surface-raised px-2 py-0.5 rounded border border-border-subtle">💾 {ALGORITHM_DATA[algorithmA]?.space}</span>
-                                </div>
+                {/* Track A */}
+                <div className="flex-1 flex flex-col gap-4 relative min-w-0">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <span className="text-xs font-mono font-bold text-accent tracking-widest uppercase">Track A</span>
+                            <div className="flex gap-2 text-[10px] font-mono opacity-70">
+                                <span className="bg-surface-raised px-2 py-0.5 rounded border border-border-subtle">⏱ {ALGORITHM_DATA[algorithmA]?.time}</span>
+                                <span className="bg-surface-raised px-2 py-0.5 rounded border border-border-subtle">💾 {ALGORITHM_DATA[algorithmA]?.space}</span>
                             </div>
-                            <AlgorithmSelector 
-                                value={algorithmA} 
-                                onChange={(id) => handleAlgorithmChange(id, setAlgorithmA)}
-                                filter={dataStructure === 'Graph' 
-                                    ? ['bfs', 'dfs', 'dijkstra'] 
-                                    : ['bubble_sort', 'selection_sort', 'insertion_sort', 'merge_sort', 'quick_sort', 'heap_sort', 'linear_search', 'binary_search']
-                                }
-                                disabled={isPlaying || loading}
-                                disabledOptions={[algorithmB]}
-                            />
                         </div>
-                        {dataStructure === 'Graph' ? (
-                            <RaceGraphVisualizer events={eventsA} currentStepIndex={stepA} />
-                        ) : (
-                            <RaceTrack title="Algorithm A" algorithmId={algorithmA} events={eventsA} currentStepIndex={stepA} winner={winnerId === 'A'} />
-                        )}
+                        <AlgorithmSelector 
+                            value={algorithmA} 
+                            onChange={(id) => handleAlgorithmChange(id, setAlgorithmA)}
+                            filter={dataStructure === 'Graph' 
+                                ? ['bfs', 'dfs', 'dijkstra'] 
+                                : ['bubble_sort', 'selection_sort', 'insertion_sort', 'merge_sort', 'quick_sort', 'heap_sort', 'linear_search', 'binary_search']
+                            }
+                            disabled={isPlaying || loading}
+                            disabledOptions={[algorithmB]}
+                        />
                     </div>
+                    {dataStructure === 'Graph' ? (
+                        <RaceGraphVisualizer events={eventsA} currentStepIndex={stepA} />
+                    ) : (
+                        <RaceTrack title="Algorithm A" algorithmId={algorithmA} events={eventsA} currentStepIndex={stepA} winner={winnerId === 'A'} />
+                    )}
+                </div>
 
-                    {/* VS Divider */}
-                    <div className="w-px bg-border/50 flex flex-col items-center justify-center">
-                        <div className="absolute bg-surface-raised border border-border px-3 py-1 rounded-full text-xs font-bold text-text-muted tracking-widest">
-                            VS
-                        </div>
+                {/* VS Divider */}
+                <div className="w-px bg-border/50 flex flex-col items-center justify-center relative">
+                    <div className="absolute bg-surface-raised border border-border px-3 py-1 rounded-full text-xs font-bold text-text-muted tracking-widest">
+                        VS
                     </div>
+                </div>
 
-                    {/* Track B */}
-                    <div className="flex-1 flex flex-col gap-4 min-w-0">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <span className="text-xs font-mono font-bold text-accent tracking-widest uppercase">Track B</span>
-                                <div className="flex gap-2 text-[10px] font-mono opacity-70">
-                                    <span className="bg-surface-raised px-2 py-0.5 rounded border border-border-subtle">⏱ {ALGORITHM_DATA[algorithmB]?.time}</span>
-                                    <span className="bg-surface-raised px-2 py-0.5 rounded border border-border-subtle">💾 {ALGORITHM_DATA[algorithmB]?.space}</span>
-                                </div>
+                {/* Track B */}
+                <div className="flex-1 flex flex-col gap-4 relative min-w-0">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <span className="text-xs font-mono font-bold text-accent tracking-widest uppercase">Track B</span>
+                            <div className="flex gap-2 text-[10px] font-mono opacity-70">
+                                <span className="bg-surface-raised px-2 py-0.5 rounded border border-border-subtle">⏱ {ALGORITHM_DATA[algorithmB]?.time}</span>
+                                <span className="bg-surface-raised px-2 py-0.5 rounded border border-border-subtle">💾 {ALGORITHM_DATA[algorithmB]?.space}</span>
                             </div>
-                            <AlgorithmSelector 
-                                value={algorithmB} 
-                                onChange={(id) => handleAlgorithmChange(id, setAlgorithmB)}
-                                filter={dataStructure === 'Graph' 
-                                    ? ['bfs', 'dfs', 'dijkstra'] 
-                                    : ['bubble_sort', 'selection_sort', 'insertion_sort', 'merge_sort', 'quick_sort', 'heap_sort', 'linear_search', 'binary_search']
-                                }
-                                disabled={isPlaying || loading}
-                                disabledOptions={[algorithmA]}
-                                align="right"
-                            />
                         </div>
-                        {dataStructure === 'Graph' ? (
-                            <RaceGraphVisualizer events={eventsB} currentStepIndex={stepB} />
-                        ) : (
-                            <RaceTrack title="Algorithm B" algorithmId={algorithmB} events={eventsB} currentStepIndex={stepB} winner={winnerId === 'B'} />
-                        )}
+                        <AlgorithmSelector 
+                            value={algorithmB} 
+                            onChange={(id) => handleAlgorithmChange(id, setAlgorithmB)}
+                            filter={dataStructure === 'Graph' 
+                                ? ['bfs', 'dfs', 'dijkstra'] 
+                                : ['bubble_sort', 'selection_sort', 'insertion_sort', 'merge_sort', 'quick_sort', 'heap_sort', 'linear_search', 'binary_search']
+                            }
+                            disabled={isPlaying || loading}
+                            disabledOptions={[algorithmA]}
+                            align="right"
+                        />
                     </div>
+                    {dataStructure === 'Graph' ? (
+                        <RaceGraphVisualizer events={eventsB} currentStepIndex={stepB} />
+                    ) : (
+                        <RaceTrack title="Algorithm B" algorithmId={algorithmB} events={eventsB} currentStepIndex={stepB} winner={winnerId === 'B'} />
+                    )}
                 </div>
             </main>
             
