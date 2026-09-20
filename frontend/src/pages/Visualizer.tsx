@@ -4,7 +4,7 @@ import { SortingVisualizer } from '../visualizers/SortingVisualizer';
 import { GraphVisualizer } from '../visualizers/GraphVisualizer';
 import { PlayerControls } from '../components/PlayerControls';
 import { CodeViewer } from '../components/CodeViewer';
-import { VisualizerAlgorithmSelector } from '../components/VisualizerAlgorithmSelector';
+import { AlgorithmSelector } from '../components/AlgorithmSelector';
 import { usePlayerStore } from '../store/usePlayerStore';
 import { Search, Play, Loader2 } from 'lucide-react';
 import type { ExecutionResult } from '../types';
@@ -97,7 +97,7 @@ export function Visualizer() {
       {/* Visualizer Controls Sub-Header */}
       <header className="border-b border-border/60 bg-surface/50 backdrop-blur-sm px-5 py-3 flex items-center justify-between z-10 shrink-0">
         <div className="flex items-center gap-4">
-          <VisualizerAlgorithmSelector value={activeAlgorithm} onChange={setActiveAlgorithm} />
+          <AlgorithmSelector value={activeAlgorithm} onChange={setActiveAlgorithm} />
         </div>
 
         <div className="flex items-center gap-4">

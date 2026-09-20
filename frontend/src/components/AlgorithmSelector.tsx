@@ -8,12 +8,12 @@ interface Algorithm {
   complexity: string;
 }
 
-interface AlgorithmGroup {
+interface AlgorithmCategory {
   label: string;
   algorithms: Algorithm[];
 }
 
-const ALL_ALGORITHMS: AlgorithmGroup[] = [
+const CATEGORIES: AlgorithmCategory[] = [
   {
     label: 'Sorting',
     algorithms: [
@@ -33,28 +33,38 @@ const ALL_ALGORITHMS: AlgorithmGroup[] = [
     ],
   },
   {
-    label: 'Graph Algorithms',
+    label: 'Graphs',
     algorithms: [
       { id: 'bfs', name: 'Breadth-First Search', complexity: 'O(V+E)' },
       { id: 'dfs', name: 'Depth-First Search', complexity: 'O(V+E)' },
-      { id: 'dijkstra', name: "Dijkstra's Shortest Path", complexity: 'O(V\u00B2)' },
+      { id: 'dijkstra', name: "Dijkstra's Algorithm", complexity: 'O(V\u00B2)' },
     ],
   },
 ];
 
+const MAX_COLS = 5;
+
 interface AlgorithmSelectorProps {
   value: string;
   onChange: (id: string) => void;
-  filter?: string[];
-  category?: 'Sorting' | 'Searching' | 'Graph Algorithms';
   disabled?: boolean;
+  filter?: string[];
   disabledOptions?: string[];
+  align?: 'left' | 'right';
 }
 
-export function AlgorithmSelector({ value, onChange, filter, category, disabled, disabledOptions = [] }: AlgorithmSelectorProps) {
+export function AlgorithmSelector({
+  value,
+  onChange,
+  disabled,
+  filter,
+  disabledOptions = [],
+  align = 'left'
+}: AlgorithmSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Close on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -65,6 +75,7 @@ export function AlgorithmSelector({ value, onChange, filter, category, disabled,
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
+  // Close on Escape
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setIsOpen(false);
@@ -73,18 +84,26 @@ export function AlgorithmSelector({ value, onChange, filter, category, disabled,
     return () => document.removeEventListener('keydown', handler);
   }, []);
 
-  let groups = ALL_ALGORITHMS;
-  if (category) {
-      groups = groups.filter(g => g.label === category);
-  }
+  // Filter categories and algorithms based on the `filter` prop
+  let groups = CATEGORIES;
   if (filter) {
-      groups = groups.map((g) => ({
+    groups = groups
+      .map((g) => ({
         ...g,
         algorithms: g.algorithms.filter((a) => filter.includes(a.id)),
-      })).filter((g) => g.algorithms.length > 0);
+      }))
+      .filter((g) => g.algorithms.length > 0);
   }
 
-  const selected = ALL_ALGORITHMS.flatMap((g) => g.algorithms).find((a) => a.id === value);
+  const allAlgorithms = CATEGORIES.flatMap(c => c.algorithms);
+  const selected = allAlgorithms.find(a => a.id === value);
+  const selectedCategory = CATEGORIES.find(c => c.algorithms.some(a => a.id === value));
+
+  // Split categories into rows of MAX_COLS
+  const rows: AlgorithmCategory[][] = [];
+  for (let i = 0; i < groups.length; i += MAX_COLS) {
+    rows.push(groups.slice(i, i + MAX_COLS));
+  }
 
   return (
     <div ref={containerRef} className="relative">
@@ -92,11 +111,17 @@ export function AlgorithmSelector({ value, onChange, filter, category, disabled,
       <button
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className={`flex items-center gap-2.5 px-3.5 py-2 rounded-xl border border-border bg-surface-raised transition-all ${
-          disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-surface-hover cursor-pointer'
-        } text-sm font-medium text-text`}
+        className={`group flex items-center gap-3 px-4 py-2 rounded-xl border border-border bg-surface-raised transition-all ${
+          disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-surface-hover hover:border-accent/30 cursor-pointer'
+        } ${isOpen ? 'border-accent/40 bg-surface-hover' : ''}`}
       >
-        <span className="truncate">{selected?.name || 'Select Algorithm'}</span>
+        {/* Category badge */}
+        {selectedCategory && (
+          <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-accent bg-accent/10 px-2 py-0.5 rounded-md">
+            {selectedCategory.label}
+          </span>
+        )}
+        <span className="text-sm font-medium text-text truncate">{selected?.name || 'Select Algorithm'}</span>
         <ChevronDown
           size={14}
           className={`text-text-muted transition-transform duration-200 shrink-0 ${isOpen && !disabled ? 'rotate-180' : ''}`}
@@ -107,51 +132,70 @@ export function AlgorithmSelector({ value, onChange, filter, category, disabled,
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -8, scale: 0.96 }}
+            initial={{ opacity: 0, y: -6, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.96 }}
-            transition={{ duration: 0.15, ease: 'easeOut' }}
-            className="absolute top-full left-0 mt-2 w-80 bg-surface-raised border border-border rounded-2xl shadow-2xl overflow-hidden z-50"
+            exit={{ opacity: 0, y: -6, scale: 0.97 }}
+            transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
+            className={`absolute top-full mt-2 w-max max-w-[calc(100vw-2rem)] bg-surface-raised border border-border rounded-2xl shadow-2xl z-50 ${align === 'right' ? 'right-0' : 'left-0'}`}
           >
-            <div className="py-2">
-              {groups.map((group, gi) => (
-                <div key={group.label}>
-                  {gi > 0 && <div className="mx-4 my-2 border-t border-border" />}
-                  <div className="px-4 pt-3 pb-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-text-muted">
-                      {group.label}
-                    </span>
-                  </div>
-                  {group.algorithms.map((algo) => {
-                    const isDisabledOption = disabledOptions.includes(algo.id);
-                    return (
-                    <button
-                      key={algo.id}
-                      disabled={isDisabledOption}
-                      onClick={() => {
-                        onChange(algo.id);
-                        setIsOpen(false);
-                      }}
-                      className={`w-full flex items-center justify-between px-4 py-2.5 text-[13px] transition-colors ${
-                        isDisabledOption
-                          ? 'opacity-30 cursor-not-allowed text-text-muted'
-                          : value === algo.id
-                          ? 'bg-accent-subtle text-accent'
-                          : 'text-text-secondary hover:bg-surface-hover hover:text-text'
-                      }`}
-                    >
-                      <span className="font-medium">{algo.name}</span>
-                      <span
-                        className={`text-[10px] font-mono px-2 py-0.5 rounded-md ${
-                          value === algo.id
-                            ? 'bg-accent/15 text-accent'
-                            : 'bg-surface-hover text-text-muted'
-                        }`}
-                      >
-                        {algo.complexity}
-                      </span>
-                    </button>
-                  )})}
+            <div className="p-3">
+              {rows.map((row, ri) => (
+                <div
+                  key={ri}
+                  className={`grid gap-3 ${ri > 0 ? 'mt-3 pt-3 border-t border-border-subtle' : ''}`}
+                  style={{
+                    gridTemplateColumns: `repeat(${row.length}, minmax(170px, 1fr))`,
+                  }}
+                >
+                  {row.map((category) => (
+                    <div key={category.label} className="flex flex-col min-w-0">
+                      {/* Category Header */}
+                      <div className="px-3 pt-2 pb-2.5 flex items-center gap-2">
+                        <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-text-muted">
+                          {category.label}
+                        </span>
+                        <div className="flex-1 h-px bg-border-subtle" />
+                      </div>
+
+                      {/* Algorithm List */}
+                      <div className="flex flex-col gap-0.5">
+                        {category.algorithms.map((algo) => {
+                          const isSelected = value === algo.id;
+                          const isDisabledOption = disabledOptions.includes(algo.id);
+                          return (
+                            <button
+                              key={algo.id}
+                              disabled={isDisabledOption}
+                              onClick={() => {
+                                onChange(algo.id);
+                                setIsOpen(false);
+                              }}
+                              className={`group/item flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-[13px] transition-all duration-150 ${
+                                isDisabledOption
+                                  ? 'opacity-30 cursor-not-allowed text-text-muted'
+                                  : isSelected
+                                  ? 'bg-accent/12 text-accent'
+                                  : 'text-text-secondary hover:bg-surface-hover hover:text-text'
+                              }`}
+                            >
+                              <span className={`font-medium truncate ${isSelected ? 'text-accent' : ''}`}>
+                                {algo.name}
+                              </span>
+                              <span
+                                className={`text-[10px] font-mono px-1.5 py-0.5 rounded shrink-0 transition-colors ${
+                                  isSelected
+                                    ? 'bg-accent/15 text-accent'
+                                    : 'text-text-muted group-hover/item:text-text-secondary'
+                                }`}
+                              >
+                                {algo.complexity}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               ))}
             </div>

@@ -210,7 +210,7 @@ export function Benchmark() {
         <div className="flex-1 flex flex-col h-full relative overflow-hidden bg-background">
             
             {/* Header / Global Controls */}
-            <header className="border-b border-border/60 bg-surface/50 backdrop-blur-sm px-5 py-3 flex items-center justify-between z-10 shrink-0 overflow-x-auto">
+            <header className="border-b border-border/60 bg-surface/50 backdrop-blur-sm px-5 py-3 flex items-center justify-between z-20 shrink-0 relative">
                 <div className="flex items-center">
                     <div className="flex items-center gap-3 border-r border-border/50 pr-4 md:pr-6 shrink-0">
                         <Trophy size={16} className="text-accent" />
@@ -388,6 +388,7 @@ export function Benchmark() {
                             }
                             disabled={isPlaying || loading}
                             disabledOptions={[algorithmA]}
+                            align="right"
                         />
                     </div>
                     {dataStructure === 'Graph' ? (
