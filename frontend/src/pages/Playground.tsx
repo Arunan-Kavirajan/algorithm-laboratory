@@ -6,13 +6,14 @@ import { SortingVisualizer } from '../visualizers/SortingVisualizer';
 import { PlayerControls } from '../components/PlayerControls';
 import { CodeViewer } from '../components/CodeViewer';
 import { InteractiveCanvas } from '../components/InteractiveCanvas';
+import { DataStructureSelector } from '../components/DataStructureSelector';
 import { AlgorithmSelector } from '../components/AlgorithmSelector';
 import { ArrayBuilder } from '../components/ArrayBuilder';
 import type { ArrayElement } from '../components/ArrayBuilder';
 import { Modal } from '../components/Modal';
 import type { CustomNode, CustomEdge } from '../components/InteractiveCanvas';
 import type { ExecutionResult } from '../types';
-import { ChevronDown, Plus, Minus, Trash2, Play, Loader2, ArrowLeft, BarChart2, Network } from 'lucide-react';
+import { ChevronDown, Plus, Minus, Trash2, Play, Loader2, ArrowLeft } from 'lucide-react';
 
 type BuildMode = 'ADD_NODE' | 'ADD_EDGE' | 'REMOVE_NODE';
 type DataStructure = 'Array' | 'Graph';
@@ -161,24 +162,12 @@ export function Playground() {
         <div className="flex-1 flex flex-col h-full relative">
             <header className="border-b border-border/60 bg-surface/50 backdrop-blur-sm px-5 py-3 flex flex-wrap items-center justify-between gap-4 z-10 shrink-0">
                 <div className="flex items-center gap-4">
-                    {/* Data Structure Toggle */}
-                    <div className="flex bg-surface-raised p-1 rounded-lg border border-border-subtle shrink-0">
-                        {(['Array', 'Graph'] as const).map(ds => (
-                            <button
-                                key={ds}
-                                disabled={!isBuilding || loading}
-                                onClick={() => setDataStructure(ds)}
-                                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold font-mono rounded-md uppercase tracking-wider transition-colors ${
-                                    dataStructure === ds 
-                                    ? 'bg-accent/20 text-accent' 
-                                    : 'text-text-muted hover:text-text disabled:opacity-50 disabled:cursor-not-allowed'
-                                }`}
-                            >
-                                {ds === 'Array' ? <BarChart2 size={14} /> : <Network size={14} />}
-                                {ds}
-                            </button>
-                        ))}
-                    </div>
+                    {/* Data Structure Dropdown */}
+                    <DataStructureSelector
+                        value={dataStructure}
+                        onChange={(id) => setDataStructure(id as DataStructure)}
+                        disabled={!isBuilding || loading}
+                    />
 
                     <div className="w-px h-6 bg-border mx-1" />
 

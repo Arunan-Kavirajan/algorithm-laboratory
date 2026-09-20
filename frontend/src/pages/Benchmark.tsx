@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import axios from 'axios';
 import { AlgorithmSelector } from '../components/AlgorithmSelector';
+import { DataStructureSelector } from '../components/DataStructureSelector';
 import { RaceTrack } from '../components/RaceTrack';
 import { RaceGraphVisualizer } from '../components/RaceGraphVisualizer';
-import { Play, Pause, RotateCcw, Loader2, Trophy, FastForward, Activity, Database } from 'lucide-react';
+import { Play, Pause, RotateCcw, Loader2, Trophy, FastForward, Database } from 'lucide-react';
 import type { ExecutionResult, ExecutionEvent } from '../types';
 import { generateReport } from '../utils/benchmarkReports';
 
@@ -22,7 +23,7 @@ const ALGORITHM_DATA: Record<string, { time: string, space: string, name: string
 };
 
 export function Benchmark() {
-    const [category, setCategory] = useState<'Sorting' | 'Searching' | 'Graph Algorithms'>('Sorting');
+    const [dataStructure, setDataStructure] = useState<'Array' | 'Graph'>('Array');
     
     const [algorithmA, setAlgorithmA] = useState('quick_sort');
     const [algorithmB, setAlgorithmB] = useState('bubble_sort');
@@ -43,7 +44,7 @@ export function Benchmark() {
     
     const timerRef = useRef<number | null>(null);
 
-    // Whenever category or size changes, regenerate the underlying dataset
+    // Whenever dataStructure or size changes, regenerate the underlying dataset
     useEffect(() => {
         setIsPlaying(false);
         setStepA(0);
@@ -53,7 +54,7 @@ export function Benchmark() {
         
         let newDataset: any;
 
-        if (category === 'Sorting') {
+        if (dataStructure === 'Array') {
             const values = Array.from({ length: arraySize }, (_, i) => ({
                 id: `el-${i}`,
                 value: Math.floor(Math.random() * 95) + 5
@@ -61,19 +62,7 @@ export function Benchmark() {
             newDataset = { type: "ARRAY", values };
             setAlgorithmA('quick_sort');
             setAlgorithmB('bubble_sort');
-        } else if (category === 'Searching') {
-            const values = Array.from({ length: arraySize }, (_, i) => ({
-                id: `el-${i}`,
-                value: Math.floor(Math.random() * 95) + 5
-            })).sort((a, b) => a.value - b.value); // Must be sorted for binary search!
-            newDataset = { type: "ARRAY", values };
-            setAlgorithmA('binary_search');
-            setAlgorithmB('linear_search');
-            
-            // Auto-select a valid target
-            const randomIndex = Math.floor(Math.random() * values.length);
-            setSearchTarget(values[randomIndex].value);
-        } else if (category === 'Graph Algorithms') {
+        } else if (dataStructure === 'Graph') {
             const numNodes = Math.min(15, Math.floor(arraySize / 2));
             const nodes = Array.from({ length: numNodes }, (_, i) => {
                 const angle = (i / numNodes) * 2 * Math.PI;
@@ -102,7 +91,7 @@ export function Benchmark() {
         }
 
         setDataset(newDataset);
-    }, [category, arraySize]);
+    }, [dataStructure, arraySize]);
 
     // Playback loop
     useEffect(() => {
@@ -157,7 +146,9 @@ export function Benchmark() {
             const payloadA: any = { algorithmId: algorithmA, dataset };
             const payloadB: any = { algorithmId: algorithmB, dataset };
             
-            if (category === 'Searching' || category === 'Graph Algorithms') {
+            // Determine if the selected algorithms need a target
+            const isSearchAlgo = (id: string) => id.includes('search') || id === 'bfs' || id === 'dfs' || id === 'dijkstra';
+            if (isSearchAlgo(algorithmA) || isSearchAlgo(algorithmB)) {
                 payloadA.target = Number(searchTarget);
                 payloadB.target = Number(searchTarget);
             }
@@ -228,23 +219,12 @@ export function Benchmark() {
 
                     <div className="flex items-center gap-4 md:gap-6 ml-4 md:ml-6 shrink-0">
                         
-                        {/* Category Selector */}
-                        <div className="flex bg-surface-raised p-1 rounded-lg border border-border-subtle shrink-0">
-                            {(['Sorting', 'Searching', 'Graph Algorithms'] as const).map(cat => (
-                                <button
-                                    key={cat}
-                                    disabled={isPlaying || loading}
-                                    onClick={() => setCategory(cat)}
-                                    className={`px-3 py-1.5 text-xs font-bold font-mono rounded-md uppercase tracking-wider transition-colors ${
-                                        category === cat 
-                                        ? 'bg-accent/20 text-accent' 
-                                        : 'text-text-muted hover:text-text disabled:opacity-50'
-                                    }`}
-                                >
-                                    {cat.split(' ')[0]}
-                                </button>
-                            ))}
-                        </div>
+                        {/* Data Structure Dropdown */}
+                        <DataStructureSelector
+                            value={dataStructure}
+                            onChange={(id) => setDataStructure(id as 'Array' | 'Graph')}
+                            disabled={isPlaying || loading}
+                        />
 
                         {/* Dataset Size */}
                         <div className="flex flex-col gap-1.5 shrink-0">
@@ -265,8 +245,9 @@ export function Benchmark() {
                             </div>
                         </div>
 
-                        {/* Target Selector (If Searching or Graph) */}
-                        {(category === 'Searching' || category === 'Graph Algorithms') && (
+                        {/* Target Selector (If any search/graph algorithm is selected) */}
+                        {(algorithmA.includes('search') || algorithmB.includes('search') || 
+                          ['bfs', 'dfs', 'dijkstra'].includes(algorithmA) || ['bfs', 'dfs', 'dijkstra'].includes(algorithmB)) && (
                             <div className="flex flex-col gap-1.5 shrink-0">
                                 <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-text-muted flex items-center gap-1.5">
                                     Target
@@ -366,12 +347,15 @@ export function Benchmark() {
                         <AlgorithmSelector 
                             value={algorithmA} 
                             onChange={(id) => handleAlgorithmChange(id, setAlgorithmA)}
-                            category={category}
+                            filter={dataStructure === 'Graph' 
+                                ? ['bfs', 'dfs', 'dijkstra'] 
+                                : ['bubble_sort', 'selection_sort', 'insertion_sort', 'merge_sort', 'quick_sort', 'heap_sort', 'linear_search', 'binary_search']
+                            }
                             disabled={isPlaying || loading}
                             disabledOptions={[algorithmB]}
                         />
                     </div>
-                    {category === 'Graph Algorithms' ? (
+                    {dataStructure === 'Graph' ? (
                         <RaceGraphVisualizer events={eventsA} currentStepIndex={stepA} />
                     ) : (
                         <RaceTrack title="Algorithm A" algorithmId={algorithmA} events={eventsA} currentStepIndex={stepA} winner={winnerId === 'A'} />
@@ -398,12 +382,15 @@ export function Benchmark() {
                         <AlgorithmSelector 
                             value={algorithmB} 
                             onChange={(id) => handleAlgorithmChange(id, setAlgorithmB)}
-                            category={category}
+                            filter={dataStructure === 'Graph' 
+                                ? ['bfs', 'dfs', 'dijkstra'] 
+                                : ['bubble_sort', 'selection_sort', 'insertion_sort', 'merge_sort', 'quick_sort', 'heap_sort', 'linear_search', 'binary_search']
+                            }
                             disabled={isPlaying || loading}
                             disabledOptions={[algorithmA]}
                         />
                     </div>
-                    {category === 'Graph Algorithms' ? (
+                    {dataStructure === 'Graph' ? (
                         <RaceGraphVisualizer events={eventsB} currentStepIndex={stepB} />
                     ) : (
                         <RaceTrack title="Algorithm B" algorithmId={algorithmB} events={eventsB} currentStepIndex={stepB} winner={winnerId === 'B'} />
@@ -415,7 +402,7 @@ export function Benchmark() {
             {bothFinished && (
                 <div className="h-[60%] border-t border-border bg-surface/95 backdrop-blur-md p-8 flex flex-col items-center z-20 shadow-[0_-10px_40px_rgba(0,0,0,0.3)] overflow-y-auto overflow-x-hidden animate-in slide-in-from-bottom-12 duration-500">
                     <div className="flex items-center gap-3 mb-6 text-accent font-bold uppercase tracking-widest text-base border-b border-border/50 pb-4 w-full max-w-5xl justify-center">
-                        <Activity size={18} /> Laboratory Benchmark Report
+                        <Trophy size={18} /> Laboratory Benchmark Report
                     </div>
                     
                     <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8">
