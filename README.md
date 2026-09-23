@@ -1,131 +1,216 @@
 <div align="center">
-  <h1>Algorithm Laboratory 🧪</h1>
-  <p>An interactive web platform for visualizing data structures and benchmarking algorithms side by side.</p>
 
-  <p><strong>🌐 Live Demo: <a href="https://algorithm-laboratory.vercel.app">algorithm-laboratory.vercel.app</a></strong></p>
+# Algorithm Laboratory
 
-  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
-  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind" />
-  <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
-  <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
-  <img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel" />
-  <img src="https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge" alt="MIT License" />
+**Data structures and algorithms, visualized.**
+
+*An interactive web platform built to visualize complex data structures and benchmark algorithmic performance side by side.*
+
+**[View Live Demo](https://algorithm-laboratory.vercel.app)**
+
+<br />
+
+<img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
+<img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+<img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
+<img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
+<img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
+<br />
+<br />
+<img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge" alt="License: MIT" />
+<img src="https://img.shields.io/badge/PRs-Welcome-brightgreen.svg?style=for-the-badge" alt="PRs Welcome" />
+
 </div>
 
 <br />
 
-Welcome to the **Algorithm Laboratory**! Have you ever wondered what exactly happens inside a Quick Sort, or why Binary Search is so much faster than Linear Search? I built this project to answer those questions visually. 
+## Introduction
 
-Algorithm Laboratory takes complex computer science concepts and turns them into interactive, fluid animations. It is not just a visualizer; it is a full workbench where you can build datasets, race algorithms, and study their internal mechanics line by line.
+Algorithm Laboratory is an interactive platform that eliminates the guesswork in understanding how computer science algorithms operate under the hood. 
 
-### ✨ What You Can Do
-
-#### 1. Interactive Visualizer
-The core of the laboratory. Select an algorithm, generate a random dataset (Array or Graph), and watch the magic happen. You are in complete control of the playback: play, pause, step forward, rewind, or adjust the speed dynamically. As the algorithm runs, a code viewer highlights the exact line of code currently being executed.
-
-#### 2. Algorithmic Racing (Benchmark)
-The most exciting feature of the app. Put two algorithms head to head on identical datasets! The Benchmark page features a split screen where you can, for example, pit Bubble Sort against Merge Sort. It tracks execution time, total steps, comparisons, and memory space. A smart synchronization system ensures you only compare algorithms that solve the same problem.
-
-#### 3. Sandbox Playground
-Want to test a specific edge case? The Playground allows you to build custom arrays manually. You can tweak individual values, enforce sorting (required for Binary Search), and see how algorithms behave on your tailored data.
+Generate custom datasets, select algorithms, and watch real-time visualizations of sorting, searching, and graph traversals. Or pit two algorithms against each other in the benchmark arena to compare performance metrics natively, executed via a Python serverless backend.
 
 <br />
 
-### 🧠 How It Works (The Snapshot Methodology)
+## Features
 
-You might be wondering: how do we pause a Python algorithm from a React frontend? 
-
-Traditional visualizers often simulate algorithms in JavaScript using generator functions. However, Algorithm Laboratory takes a different, more authentic approach. We run the actual native Python code on the backend and trace its execution.
-
-Because HTTP requests are stateless and time out, we cannot keep a connection open and constantly pause the Python server. Instead, we use a **Snapshot Tracing Methodology**:
-
-1. **The Request:** The frontend sends the chosen algorithm and dataset to the backend.
-2. **The Execution:** The Python engine runs the algorithm instantly from start to finish.
-3. **The Tracer:** As the algorithm runs, a custom tracing engine hooks into the logic. Every time a variable changes, two items are swapped, or a graph node is visited, the tracer takes a snapshot of the current state.
-4. **The Response:** The backend packages all these snapshots into a chronological array of events and sends it back.
-5. **The Playback:** The frontend receives this array. The Zustand state manager acts like a VCR player, allowing you to scrub through the events. Framer Motion calculates the difference between snapshots and smoothly animates the elements to their new positions.
+*   **Interactive visualizer**: Step through sorting, searching, and graph algorithms line by line.
+*   **Algorithmic racing (Benchmark)**: Put two algorithms head to head on identical datasets to compare execution time, step count, comparisons, and memory space.
+*   **Smart synchronization**: Automatically ensures you only benchmark algorithms that solve the same problem (e.g., sorting vs sorting).
+*   **Sandbox playground**: Build custom arrays manually, tweak individual values, and enforce sorting for algorithms like Binary Search.
+*   **Playback controls**: Full control over execution visualization with play, pause, step forward, rewind, and dynamic speed adjustment.
+*   **Live code tracking**: Highlights the exact line of code currently being executed as the visualizer runs.
+*   **Desktop-first experience**: The visualizer is optimized for desktop and laptop screens to accommodate complex canvas rendering and split-screen races.
+*   **Native execution**: Algorithms are not simulated in JavaScript; they run natively on a Python backend which traces and returns chronological execution snapshots.
 
 <br />
 
-### 🏗️ System Architecture Workflow
+## Tech Stack
 
-```mermaid
-graph TD
-    User([User])
-    UI[React UI]
-    Store[Zustand Store]
-    API[FastAPI Endpoint]
-    Engine[Execution Engine]
-    Tracer[Event Tracer]
-    Algo[Python Algorithms]
+### Frontend
+*   **React**: UI library
+*   **Vite**: Build tool and dev server
+*   **TypeScript**: Static typing across the app
+*   **Tailwind CSS**: Utility-first styling for the dark mode interface
+*   **Zustand**: Global state management for playback and event tracking
 
-    User ==>|Configures Race or Visualizer| UI
-    UI ==>|Dispatches Action| Store
-    Store ==>|POST /api/execute| API
-    API ==>|Routes Payload| Engine
-    Engine ==>|Injects Tracer| Algo
-    Algo ==>|Executes Natively| Tracer
-    Tracer ==>|Captures State Snapshots| Engine
-    Engine ==>|Returns JSON Event Array| API
-    API ==>|Sends Response| Store
-    Store ==>|Feeds Events to UI| UI
-    UI ==>|Animates with Framer Motion| User
+### Backend
+*   **Python**: Core execution engine for algorithms
+*   **FastAPI**: High-performance API framework serving execution snapshots
+*   **Vercel Serverless**: Stateless, instantly scaling function deployments
+
+### Core Libraries
+*   **Framer Motion**: Fluid, spring-based animations for array bars and graph nodes
+*   **Lucide React**: Clean and consistent iconography
+
+<br />
+
+## Project Structure
+
+```text
+algorithm_laboratory/
+├── backend/
+│   ├── app/
+│   │   ├── algorithms/     # Native Python implementations of sorting/searching algorithms
+│   │   ├── api/            # FastAPI routers
+│   │   ├── engine/         # Execution engine and custom tracer for state snapshots
+│   │   └── models/         # Pydantic schemas for data validation
+├── frontend/
+│   ├── src/
+│   │   ├── components/     # Reusable UI elements (AlgorithmSelect, PlayerControls)
+│   │   ├── content/        # Markdown guides for algorithms
+│   │   ├── pages/          # Main views: Visualizer, Benchmark, Playground, Guides
+│   │   ├── store/          # Zustand global state (usePlayerStore, useThemeStore)
+│   │   └── visualizers/    # Complex rendering logic for arrays and graphs
 ```
 
 <br />
 
-### 📂 Project Structure
+## How It Works
 
-Algorithm Laboratory uses a decoupled frontend and backend architecture.
+```text
+User Request
+     │  Selects algorithm and dataset via React UI
+     ▼
+FastAPI Backend
+     │  Receives payload and initializes native Python algorithm
+     │  Injects custom Tracer into the execution loop
+     │  Algorithm runs to completion instantly
+     │  Tracer records every atomic operation (swap, compare, read)
+     ▼
+Snapshot Generation
+     │  Events are packaged into a chronological JSON array
+     │  Calculates total steps, time, and space complexity
+     ▼
+React Frontend
+     │  Zustand store receives the event array
+     │  Acts as a VCR player, iterating through events sequentially
+     ▼
+Visual Render
+     │  Framer Motion calculates positional differences
+     │  Animates elements smoothly to their new states on the canvas
+```
 
-**Frontend Workspace (React / Vite / Tailwind)**
-* `src/components/` Contains all the reusable UI elements like dropdowns, sliders, and playback controls.
-* `src/pages/` The main views (Visualizer, Benchmark, Playground).
-* `src/visualizers/` The complex rendering components where Framer Motion animates the arrays and graphs.
-* `src/store/` The Zustand global state that acts as the bridge between the UI and the backend data.
-
-**Backend Workspace (Python / FastAPI)**
-* `app/api/` Contains the FastAPI routers that handle incoming requests.
-* `app/engine/` The core execution logic and event tracer that captures the snapshots.
-* `app/algorithms/` The raw, native Python implementations of sorting and searching algorithms.
-* `app/models/` Pydantic schemas that ensure data validation between the frontend and backend.
+> **Note:** Because HTTP requests are stateless, the Python backend runs the algorithm instantly and returns the complete history of states. The frontend handles the pacing and visualization locally.
 
 <br />
 
-### 🚀 Quick Start Guide
+## Getting Started
 
-Want to run this locally? It is incredibly easy.
+### Prerequisites
+*   Node.js (LTS recommended)
+*   Python (v3.10 or higher)
+*   npm
 
-#### Prerequisites
-* Node.js (v18 or higher)
-* Python (v3.10 or higher)
+### Installation
 
-#### 1. Clone the repository
 ```bash
 git clone https://github.com/Arunan-Kavirajan/algorithm-laboratory.git
 cd algorithm-laboratory
+npm install
 ```
 
-#### 2. Start the Python Backend
-Navigate to the root directory and install the Python dependencies. Then, start the FastAPI server:
+### Start the Backend
+
 ```bash
 pip install -r requirements.txt
 uvicorn api.index:app 
 ```
-*Note: The API will be available at `http://localhost:8000`*
 
-#### 3. Start the React Frontend
-Open a fresh terminal window, navigate to the `frontend` folder, install the node modules, and spin up the development server:
+*The API will be available at `http://localhost:8000`.*
+
+### Start the Frontend
+
+Open a new terminal window:
+
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-*Note: The frontend will be available at `http://localhost:5173`*
+
+*The app will be available at `http://localhost:5173` (or the port Vite assigns).*
 
 <br />
 
-### 🤝 Contributing & License
+## Design System
 
-This project is open sourced under the MIT License. Contributions, issues, and feature requests are highly welcome! Whether you want to add a new algorithm like pathfinding, or improve the UI, feel free to fork the repository and submit a pull request.
+Algorithm Laboratory uses a sleek, dark-mode-first aesthetic inspired by IDEs and terminal environments, ensuring data visualizations pop against the background. Typography relies on a clean, monospace-heavy structure for data points and code tracking.
+
+<table>
+  <thead>
+    <tr>
+      <th align="left">Token</th>
+      <th align="left">Color</th>
+      <th align="left">Usage</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Background</td>
+      <td><code>#0F172A</code> (Slate 900)</td>
+      <td>Primary page background</td>
+    </tr>
+    <tr>
+      <td>Surface</td>
+      <td><code>#1E293B</code> (Slate 800)</td>
+      <td>Cards, panels, and dropdowns</td>
+    </tr>
+    <tr>
+      <td>Accent</td>
+      <td><code>#38BDF8</code> (Sky 400)</td>
+      <td>Primary buttons, active states, track A highlights</td>
+    </tr>
+    <tr>
+      <td>Success</td>
+      <td><code>#10B981</code> (Emerald 500)</td>
+      <td>Sorted elements, completed states</td>
+    </tr>
+    <tr>
+      <td>Warning</td>
+      <td><code>#F59E0B</code> (Amber 500)</td>
+      <td>Comparisons, active processing elements</td>
+    </tr>
+    <tr>
+      <td>Heading text</td>
+      <td><code>#F8FAFC</code> (Slate 50)</td>
+      <td>Headings, high emphasis text</td>
+    </tr>
+    <tr>
+      <td>Muted text</td>
+      <td><code>#94A3B8</code> (Slate 400)</td>
+      <td>Labels, secondary text, idle array bars</td>
+    </tr>
+    <tr>
+      <td>Border</td>
+      <td><code>#334155</code> (Slate 700)</td>
+      <td>Default borders and dividers</td>
+    </tr>
+  </tbody>
+</table>
+
+<br />
+
+## Browser Support
+
+Algorithm Laboratory is designed for desktop and laptop screens. Visiting on a mobile device or narrow window shows a dedicated notice asking the user to switch to a larger screen, as the complex canvas visualizers and side-by-side benchmarking tracks require adequate horizontal space to function and render properly.
